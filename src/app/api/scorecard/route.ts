@@ -17,8 +17,21 @@ const SITES = [
       { path: "/bill-impact", label: "Bill Impact" },
     ],
   },
-  // Future sites can be added here:
-  // { id: "gardencalc", domain: "gardencalc.com", label: "GardenCalc", color: "#22c55e", pages: [...] },
+  {
+    id: "plantingcalc",
+    domain: "plantingcalc.com",
+    label: "PlantingCalc",
+    color: "#22c55e",
+    pages: [
+      { path: "/", label: "Homepage" },
+      { path: "/soil-calculator", label: "Soil Calculator" },
+      { path: "/planting-dates", label: "Planting Dates" },
+      { path: "/seed-spacing", label: "Seed Spacing" },
+      { path: "/companion-planting", label: "Companion Planting" },
+      { path: "/fertilizer", label: "Fertilizer" },
+      { path: "/watering", label: "Watering" },
+    ],
+  },
 ];
 
 async function getAccessToken(): Promise<string> {
