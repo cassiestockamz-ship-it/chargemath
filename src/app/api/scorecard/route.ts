@@ -6,6 +6,7 @@ const SITES = [
     domain: "chargemath.com",
     label: "ChargeMath",
     color: "#0ea5e9",
+    type: "Calculator",
     pages: [
       { path: "/", label: "Homepage" },
       { path: "/ev-charging-cost", label: "Charging Cost" },
@@ -22,6 +23,7 @@ const SITES = [
     domain: "plantingcalc.com",
     label: "PlantingCalc",
     color: "#22c55e",
+    type: "Calculator",
     pages: [
       { path: "/", label: "Homepage" },
       { path: "/soil-calculator", label: "Soil Calculator" },
@@ -30,6 +32,17 @@ const SITES = [
       { path: "/companion-planting", label: "Companion Planting" },
       { path: "/fertilizer", label: "Fertilizer" },
       { path: "/watering", label: "Watering" },
+    ],
+  },
+  {
+    id: "recallscanner",
+    domain: "recallscanner.com",
+    label: "RecallScanner",
+    color: "#ef4444",
+    type: "Tool",
+    pages: [
+      { path: "/", label: "Homepage" },
+      { path: "/recalls", label: "All Brands" },
     ],
   },
 ];
@@ -150,7 +163,7 @@ function dateFmt(d: Date): string {
 
 export async function GET(request: NextRequest) {
   const range = request.nextUrl.searchParams.get("range") || "28";
-  const days = Math.min(Math.max(parseInt(range) || 28, 1), 365);
+  const days = Math.min(Math.max(parseInt(range) || 28, 1), 480);
 
   const endDate = new Date();
   // GSC data has ~3 day delay
@@ -236,6 +249,7 @@ export async function GET(request: NextRequest) {
         domain: site.domain,
         label: site.label,
         color: site.color,
+        type: site.type,
         totals: {
           clicks: totalClicks,
           impressions: totalImpressions,
@@ -267,6 +281,7 @@ export async function GET(request: NextRequest) {
         domain: site.domain,
         label: site.label,
         color: site.color,
+        type: site.type,
         totals: { clicks: 0, impressions: 0, ctr: 0, position: 0, pages: site.pages.length },
         pages: site.pages.map((p) => ({
           path: p.path,

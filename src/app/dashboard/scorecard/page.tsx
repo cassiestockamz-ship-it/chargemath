@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 
 // ─── Types ───────────────────────────────────────────────
 interface Query {
@@ -26,6 +26,7 @@ interface SiteData {
   domain: string;
   label: string;
   color: string;
+  type: string;
   totals: {
     clicks: number;
     impressions: number;
@@ -50,7 +51,11 @@ const RANGES = [
   { value: "14", label: "14d" },
   { value: "28", label: "28d" },
   { value: "90", label: "90d" },
+  { value: "365", label: "All" },
 ];
+
+type SortKey = "label" | "type" | "pages" | "clicks" | "impressions" | "ctr" | "position";
+type SortDir = "asc" | "desc";
 
 function n(v: number) {
   return v.toLocaleString("en-US");
@@ -78,6 +83,7 @@ function posBadge(pos: number) {
 const SITE_ICONS: Record<string, string> = {
   chargemath: "⚡",
   plantingcalc: "🌱",
+  recallscanner: "🔍",
 };
 
 const PAGE_ICONS: Record<string, string> = {
@@ -95,6 +101,12 @@ const PAGE_ICONS: Record<string, string> = {
   "/companion-planting": "🤝",
   "/fertilizer": "🧪",
   "/watering": "💧",
+  "/recalls": "🚗",
+};
+
+const TYPE_COLORS: Record<string, string> = {
+  Calculator: "#0ea5e9",
+  Tool: "#ef4444",
 };
 
 // ─── Component ───────────────────────────────────────────
@@ -103,6 +115,9 @@ export default function ScorecardPage() {
   const [loading, setLoading] = useState(true);
   const [range, setRange] = useState("28");
   const [expandedSite, setExpandedSite] = useState<string | null>(null);
+  const [sortKey, setSortKey] = useState<SortKey>("clicks");
+  const [sortDir, setSortDir] = useState<SortDir>("desc");
+  const [typeFilter, setTypeFilter] = useState<string>("all");
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -121,6 +136,50 @@ export default function ScorecardPage() {
     fetchData();
   }, [fetchData]);
 
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) {
+      setSortDir(sortDir === "desc" ? "asc" : "desc");
+    } else {
+      setSortKey(key);
+      setSortDir(key === "label" || key === "type" ? "asc" : "desc");
+    }
+  };
+
+  const sortArrow = (key: SortKey) => {
+    if (sortKey !== key) return "";
+    return sortDir === "desc" ? " ▼" : " ▲";
+  };
+
+  const types = useMemo(() => {
+    if (!data) return [];
+    return Array.from(new Set(data.sites.map((s) => s.type)));
+  }, [data]);
+
+  const filteredSites = useMemo(() => {
+    if (!data) return [];
+    let sites = [...data.sites];
+    if (typeFilter !== "all") {
+      sites = sites.filter((s) => s.type === typeFilter);
+    }
+    sites.sort((a, b) => {
+      let av: string | number, bv: string | number;
+      switch (sortKey) {
+        case "label": av = a.label.toLowerCase(); bv = b.label.toLowerCase(); break;
+        case "type": av = a.type; bv = b.type; break;
+        case "pages": av = a.totals.pages; bv = b.totals.pages; break;
+        case "clicks": av = a.totals.clicks; bv = b.totals.clicks; break;
+        case "impressions": av = a.totals.impressions; bv = b.totals.impressions; break;
+        case "ctr": av = a.totals.ctr; bv = b.totals.ctr; break;
+        case "position": av = a.totals.position || 999; bv = b.totals.position || 999; break;
+        default: av = 0; bv = 0;
+      }
+      if (av < bv) return sortDir === "asc" ? -1 : 1;
+      if (av > bv) return sortDir === "asc" ? 1 : -1;
+      return 0;
+    });
+    return sites;
+  }, [data, sortKey, sortDir, typeFilter]);
+
   const updatedAt = data?.lastUpdated
     ? new Date(data.lastUpdated).toLocaleString("en-US", {
         month: "short",
@@ -130,7 +189,7 @@ export default function ScorecardPage() {
       })
     : "";
 
-  const grandTotals = data?.sites.reduce(
+  const grandTotals = filteredSites.reduce(
     (acc, site) => ({
       clicks: acc.clicks + site.totals.clicks,
       impressions: acc.impressions + site.totals.impressions,
@@ -138,7 +197,7 @@ export default function ScorecardPage() {
       sites: acc.sites + 1,
     }),
     { clicks: 0, impressions: 0, pages: 0, sites: 0 }
-  ) ?? { clicks: 0, impressions: 0, pages: 0, sites: 0 };
+  );
 
   const grandCtr =
     grandTotals.impressions > 0
@@ -170,6 +229,12 @@ export default function ScorecardPage() {
         .sc-btn:hover { border-color:#475569; color:#e2e8f0; }
         .sc-load { height:2px; background:linear-gradient(90deg,transparent,#0ea5e9,transparent); animation:loadSlide 1.2s ease-in-out infinite; }
 
+        /* Filters row */
+        .sc-filters { background:#1e293b; border-bottom:1px solid #334155; padding:6px 20px; display:flex; align-items:center; gap:8px; }
+        .sc-fbtn { padding:3px 10px; font-size:10px; font-weight:600; border:1px solid #334155; border-radius:12px; cursor:pointer; color:#94a3b8; background:transparent; transition:all 0.15s; }
+        .sc-fbtn:hover { border-color:#475569; color:#e2e8f0; }
+        .sc-fbtn.on { background:#475569; color:#e2e8f0; border-color:#64748b; }
+
         /* Summary */
         .sc-sum { display:flex; gap:1px; background:#1e293b; border-bottom:1px solid #334155; }
         .sc-s { flex:1; padding:14px 18px; background:#0f172a; }
@@ -178,12 +243,14 @@ export default function ScorecardPage() {
 
         /* Main table */
         .sc-tw { overflow-x:auto; padding:0; }
-        .sc-tw table { width:100%; border-collapse:collapse; min-width:750px; }
+        .sc-tw table { width:100%; border-collapse:collapse; min-width:850px; }
         .sc-tw thead th {
           position:sticky; top:0; z-index:2; background:#1a1a2e; color:#64748b;
           font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em;
-          padding:8px 16px; border-bottom:2px solid #334155; white-space:nowrap;
+          padding:8px 16px; border-bottom:2px solid #334155; white-space:nowrap; cursor:pointer;
+          user-select:none; transition:color 0.15s;
         }
+        .sc-tw thead th:hover { color:#e2e8f0; }
         .sc-tw thead th:first-child { text-align:left; }
         .sc-tw thead th:not(:first-child) { text-align:right; }
 
@@ -202,6 +269,9 @@ export default function ScorecardPage() {
         .site-domain { font-size:11px; color:#64748b; font-family:"SF Mono",monospace; }
         .site-chevron { color:#475569; font-size:14px; margin-left:auto; transition:transform 0.2s; }
         .site-chevron.open { transform:rotate(90deg); color:#94a3b8; }
+
+        /* Type badge */
+        .type-badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700; letter-spacing:0.03em; }
 
         /* Page sub-rows */
         .page-row { border-bottom:1px solid #151d2e; }
@@ -259,6 +329,30 @@ export default function ScorecardPage() {
           </button>
         </div>
 
+        {/* Type filter row */}
+        {types.length > 1 && (
+          <div className="sc-filters">
+            <span style={{ fontSize: 10, color: "#64748b", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+              Filter:
+            </span>
+            <button
+              className={`sc-fbtn ${typeFilter === "all" ? "on" : ""}`}
+              onClick={() => setTypeFilter("all")}
+            >
+              All
+            </button>
+            {types.map((t) => (
+              <button
+                key={t}
+                className={`sc-fbtn ${typeFilter === t ? "on" : ""}`}
+                onClick={() => setTypeFilter(t)}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+        )}
+
         {loading && <div style={{ overflow: "hidden" }}><div className="sc-load" /></div>}
 
         {/* Summary Strip */}
@@ -300,20 +394,24 @@ export default function ScorecardPage() {
           <table>
             <thead>
               <tr>
-                <th style={{ width: "35%" }}>Website</th>
-                <th>Pages</th>
-                <th>Clicks</th>
-                <th>Impressions</th>
-                <th>CTR</th>
-                <th>Avg Position</th>
+                <th style={{ width: "30%" }} onClick={() => handleSort("label")}>
+                  Website{sortArrow("label")}
+                </th>
+                <th onClick={() => handleSort("type")}>Type{sortArrow("type")}</th>
+                <th onClick={() => handleSort("pages")}>Pages{sortArrow("pages")}</th>
+                <th onClick={() => handleSort("clicks")}>Clicks{sortArrow("clicks")}</th>
+                <th onClick={() => handleSort("impressions")}>Impressions{sortArrow("impressions")}</th>
+                <th onClick={() => handleSort("ctr")}>CTR{sortArrow("ctr")}</th>
+                <th onClick={() => handleSort("position")}>Avg Position{sortArrow("position")}</th>
                 <th>Top Keyword</th>
               </tr>
             </thead>
             <tbody>
               {loading
-                ? [...Array(2)].map((_, i) => (
+                ? [...Array(3)].map((_, i) => (
                     <tr key={i} className="site-row">
                       <td><div className="skel" style={{ width: "60%" }} /></td>
+                      <td><div className="skel" style={{ width: "50%", marginLeft: "auto" }} /></td>
                       <td><div className="skel" style={{ width: "30%", marginLeft: "auto" }} /></td>
                       <td><div className="skel" style={{ width: "40%", marginLeft: "auto" }} /></td>
                       <td><div className="skel" style={{ width: "40%", marginLeft: "auto" }} /></td>
@@ -322,11 +420,11 @@ export default function ScorecardPage() {
                       <td><div className="skel" style={{ width: "50%", marginLeft: "auto" }} /></td>
                     </tr>
                   ))
-                : (data?.sites ?? []).map((site) => {
+                : filteredSites.map((site) => {
                     const isOpen = expandedSite === site.id;
                     const topPage = site.pages.reduce((best, p) => (p.clicks > best.clicks ? p : best), site.pages[0]);
                     const topKw = topPage?.topQueries?.[0];
-                    const maxImpressions = Math.max(...(data?.sites ?? []).map((s) => s.totals.impressions), 1);
+                    const maxImpressions = Math.max(...filteredSites.map((s) => s.totals.impressions), 1);
 
                     return (
                       <>{/* Site row */}
@@ -346,6 +444,17 @@ export default function ScorecardPage() {
                               </div>
                               <span className={`site-chevron ${isOpen ? "open" : ""}`}>▶</span>
                             </div>
+                          </td>
+                          <td>
+                            <span
+                              className="type-badge"
+                              style={{
+                                background: `${TYPE_COLORS[site.type] || "#64748b"}20`,
+                                color: TYPE_COLORS[site.type] || "#94a3b8",
+                              }}
+                            >
+                              {site.type}
+                            </span>
                           </td>
                           <td style={{ color: "#a78bfa", fontWeight: 600 }}>
                             {site.totals.pages}
@@ -402,6 +511,7 @@ export default function ScorecardPage() {
                                   </div>
                                 </div>
                               </td>
+                              <td style={{ color: "#475569" }}>—</td>
                               <td style={{ color: "#475569" }}>—</td>
                               <td style={{ color: page.clicks > 0 ? "#0ea5e9" : "#475569", fontWeight: page.clicks > 0 ? 600 : 400 }}>
                                 {n(page.clicks)}
