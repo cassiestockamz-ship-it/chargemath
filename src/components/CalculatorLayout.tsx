@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import AffiliateDisclosure from "./AffiliateDisclosure";
 
 interface CalculatorLayoutProps {
   title: string;
@@ -33,6 +34,7 @@ export default function CalculatorLayout({
       {/* Calculator content */}
       <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-sm sm:p-8">
         {children}
+        <AffiliateDisclosure />
       </div>
     </div>
   );

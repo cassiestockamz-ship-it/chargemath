@@ -105,11 +105,17 @@ export default function RootLayout({
                 and driving conditions.
               </p>
               <p className="text-xs text-[var(--color-text-muted)]">
+                Some links are affiliate links. See our{" "}
+                <Link href="/disclosure" className="underline hover:text-[var(--color-text)] transition-colors">disclosure</Link>.
+              </p>
+              <div className="flex items-center gap-4 text-xs text-[var(--color-text-muted)]">
+                <Link href="/about" className="hover:text-[var(--color-text)] transition-colors">About</Link>
+                <Link href="/disclosure" className="hover:text-[var(--color-text)] transition-colors">Disclosure</Link>
+                <Link href="/dashboard" className="hover:text-[var(--color-text)] transition-colors">Analytics</Link>
+              </div>
+              <p className="text-xs text-[var(--color-text-muted)]">
                 &copy; {new Date().getFullYear()} ChargeMath. All rights
                 reserved.
-              </p>
-              <p className="text-xs text-[var(--color-text-muted)]">
-                <Link href="/dashboard" className="hover:text-[var(--color-text)] transition-colors">Analytics</Link>
               </p>
             </div>
           </div>
