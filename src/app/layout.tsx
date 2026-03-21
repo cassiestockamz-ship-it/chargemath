@@ -34,20 +34,38 @@ export default function RootLayout({
               </span>
               ChargeMath
             </Link>
-            <nav className="flex items-center gap-1">
+            <nav className="hidden items-center gap-0.5 sm:flex">
               <Link
                 href="/ev-charging-cost"
-                className="whitespace-nowrap rounded-lg px-2 py-2 text-xs font-medium text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-alt)] hover:text-[var(--color-text)] sm:px-3 sm:text-sm"
+                className="whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-alt)] hover:text-[var(--color-text)]"
               >
                 Charging Cost
               </Link>
               <Link
                 href="/gas-vs-electric"
-                className="whitespace-nowrap rounded-lg px-2 py-2 text-xs font-medium text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-alt)] hover:text-[var(--color-text)] sm:px-3 sm:text-sm"
+                className="whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-alt)] hover:text-[var(--color-text)]"
               >
                 Gas vs Electric
               </Link>
+              <Link
+                href="/charging-time"
+                className="whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-alt)] hover:text-[var(--color-text)]"
+              >
+                Charge Time
+              </Link>
+              <Link
+                href="/charger-roi"
+                className="whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-alt)] hover:text-[var(--color-text)]"
+              >
+                Charger ROI
+              </Link>
             </nav>
+            <Link
+              href="/"
+              className="rounded-lg px-2.5 py-2 text-xs font-medium text-[var(--color-primary)] sm:hidden"
+            >
+              All Calculators
+            </Link>
           </div>
         </header>
 

@@ -21,9 +21,17 @@ const calculators = [
     title: "Charging Time Estimator",
     description:
       "Find out how long it takes to charge your EV at home or at a public station.",
-    href: "#",
+    href: "/charging-time",
     icon: "⏱️",
-    live: false,
+    live: true,
+  },
+  {
+    title: "Home Charger ROI Calculator",
+    description:
+      "Calculate the payback period for installing a Level 2 home charger vs public charging.",
+    href: "/charger-roi",
+    icon: "💰",
+    live: true,
   },
   {
     title: "Range Calculator",
@@ -31,14 +39,6 @@ const calculators = [
       "Calculate your real-world EV range based on speed, temperature, and terrain.",
     href: "#",
     icon: "🗺️",
-    live: false,
-  },
-  {
-    title: "EV Tax Credit Estimator",
-    description:
-      "Check which federal and state EV tax credits you may qualify for.",
-    href: "#",
-    icon: "💰",
     live: false,
   },
 ];
@@ -77,19 +77,11 @@ export default function HomePage() {
           Free, accurate calculators powered by real EPA vehicle data and
           state-specific electricity rates. No sign-up required.
         </p>
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <Link
-            href="/ev-charging-cost"
-            className="rounded-xl bg-[var(--color-primary)] px-6 py-3 text-sm font-semibold text-white shadow-md transition-colors hover:bg-[var(--color-primary-dark)]"
-          >
-            Calculate Charging Cost
-          </Link>
-          <Link
-            href="/gas-vs-electric"
-            className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-3 text-sm font-semibold text-[var(--color-text)] shadow-sm transition-colors hover:bg-[var(--color-surface-alt)]"
-          >
-            Compare Gas vs Electric
-          </Link>
+        <div className="mt-8 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:justify-center">
+          <Link href="/ev-charging-cost" className="rounded-xl bg-[var(--color-primary)] px-5 py-3 text-center text-sm font-semibold text-white shadow-md transition-colors hover:bg-[var(--color-primary-dark)]">Charging Cost</Link>
+          <Link href="/gas-vs-electric" className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-5 py-3 text-center text-sm font-semibold text-[var(--color-text)] shadow-sm transition-colors hover:bg-[var(--color-surface-alt)]">Gas vs Electric</Link>
+          <Link href="/charging-time" className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-5 py-3 text-center text-sm font-semibold text-[var(--color-text)] shadow-sm transition-colors hover:bg-[var(--color-surface-alt)]">Charge Time</Link>
+          <Link href="/charger-roi" className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-5 py-3 text-center text-sm font-semibold text-[var(--color-text)] shadow-sm transition-colors hover:bg-[var(--color-surface-alt)]">Charger ROI</Link>
         </div>
       </section>
 

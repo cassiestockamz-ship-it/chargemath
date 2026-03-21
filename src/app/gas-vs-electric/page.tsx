@@ -7,6 +7,8 @@ import NumberInput from "@/components/NumberInput";
 import SliderInput from "@/components/SliderInput";
 import ResultCard from "@/components/ResultCard";
 import AffiliateCard from "@/components/AffiliateCard";
+import RelatedCalculators from "@/components/RelatedCalculators";
+import CalculatorSchema from "@/components/CalculatorSchema";
 import {
   ELECTRICITY_RATES,
   NATIONAL_AVERAGE_RATE,
@@ -116,6 +118,7 @@ export default function GasVsElectricPage() {
       description="Compare the true fuel costs of driving electric vs gas, and see your potential savings and environmental impact."
       lastUpdated="March 2026"
     >
+      <CalculatorSchema name="Gas vs Electric Cost Comparison" description="Compare the true fuel costs of driving electric vs gas with side-by-side savings and CO2 analysis." url="https://chargemath.com/gas-vs-electric" />
       {/* Inputs */}
       <div className="grid gap-6 sm:grid-cols-2">
         <SelectInput
@@ -332,6 +335,7 @@ export default function GasVsElectricPage() {
           />
         </div>
       </div>
+      <RelatedCalculators currentPath="/gas-vs-electric" />
     </CalculatorLayout>
   );
 }

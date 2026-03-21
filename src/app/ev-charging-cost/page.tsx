@@ -7,6 +7,8 @@ import NumberInput from "@/components/NumberInput";
 import SliderInput from "@/components/SliderInput";
 import ResultCard from "@/components/ResultCard";
 import AffiliateCard from "@/components/AffiliateCard";
+import RelatedCalculators from "@/components/RelatedCalculators";
+import CalculatorSchema from "@/components/CalculatorSchema";
 import {
   ELECTRICITY_RATES,
   NATIONAL_AVERAGE_RATE,
@@ -119,6 +121,7 @@ export default function EVChargingCostPage() {
       description="Estimate your monthly and annual EV charging costs based on your vehicle, electricity rate, and daily driving."
       lastUpdated="March 2026"
     >
+      <CalculatorSchema name="EV Charging Cost Calculator" description="Calculate your monthly and annual EV charging costs based on your vehicle, state electricity rates, and daily driving habits." url="https://chargemath.com/ev-charging-cost" />
       {/* Inputs */}
       <div className="grid gap-6 sm:grid-cols-2">
         <SelectInput
@@ -310,6 +313,7 @@ export default function EVChargingCostPage() {
           />
         </div>
       </div>
+      <RelatedCalculators currentPath="/ev-charging-cost" />
     </CalculatorLayout>
   );
 }
