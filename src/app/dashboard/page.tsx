@@ -341,6 +341,13 @@ export default function DashboardPage() {
           <span className="dash-updated">
             {updatedAt ? `Updated ${updatedAt}` : ""}
           </span>
+          <a
+            href="/dashboard/scorecard"
+            className="dash-refresh"
+            style={{ textDecoration: "none" }}
+          >
+            Scorecard →
+          </a>
           <button
             className="dash-refresh"
             onClick={fetchData}
