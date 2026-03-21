@@ -8,6 +8,10 @@ import ResultCard from "@/components/ResultCard";
 import AffiliateCard from "@/components/AffiliateCard";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
+import BreadcrumbSchema from "@/components/BreadcrumbSchema";
+import FAQSection from "@/components/FAQSection";
+import ShareResults from "@/components/ShareResults";
+import { chargingTimeFAQ } from "@/data/faq-data";
 import { NATIONAL_AVERAGE_RATE } from "@/data/electricity-rates";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
 
@@ -155,6 +159,7 @@ export default function ChargingTimePage() {
       lastUpdated="March 2026"
     >
       <CalculatorSchema name="EV Charging Time Calculator" description="Calculate how long it takes to charge your EV from any battery level at Level 1, Level 2, or DC Fast charging speeds." url="https://chargemath.com/charging-time" />
+      <BreadcrumbSchema items={[{name: "Home", url: "https://chargemath.com"}, {name: "Charging Time Calculator", url: "https://chargemath.com/charging-time"}]} />
       {/* Inputs */}
       <div className="grid gap-6 sm:grid-cols-2">
         <SelectInput
@@ -399,6 +404,11 @@ export default function ChargingTimePage() {
         </div>
       </div>
 
+      <ShareResults
+        title={`Charging Time: ${formatTime(results.chargeTimeHours)}`}
+        text={`My ${vehicle.year} ${vehicle.make} ${vehicle.model} takes ${formatTime(results.chargeTimeHours)} to charge from ${startPercent}% to ${effectiveTarget}% on ${chargingLevel === "level1" ? "Level 1" : chargingLevel === "level2" ? "Level 2" : "DC Fast"} (${results.power} kW). That adds ${Math.round(results.milesAdded)} miles of range for ${fmt.format(results.cost)}.`}
+      />
+
       {/* Affiliate Cards */}
       <div className="mt-10">
         <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
@@ -445,6 +455,7 @@ export default function ChargingTimePage() {
           />
         </div>
       </div>
+      <FAQSection questions={chargingTimeFAQ} />
       <RelatedCalculators currentPath="/charging-time" />
     </CalculatorLayout>
   );

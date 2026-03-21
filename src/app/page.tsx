@@ -41,6 +41,22 @@ const calculators = [
     icon: "🗺️",
     live: true,
   },
+  {
+    title: "EV Tax Credit Estimator",
+    description:
+      "Check which federal and state EV tax credits and incentives you may qualify for.",
+    href: "/tax-credits",
+    icon: "🏛️",
+    live: true,
+  },
+  {
+    title: "Electricity Bill Impact",
+    description:
+      "See exactly how much your monthly electricity bill will increase when you start charging an EV.",
+    href: "/bill-impact",
+    icon: "📄",
+    live: true,
+  },
 ];
 
 const features = [
@@ -86,7 +102,7 @@ export default function HomePage() {
           </Link>
         </div>
         <p className="mx-auto mt-4 text-sm text-[var(--color-text-muted)]">
-          Plus: <Link href="/charging-time" className="text-[var(--color-primary)] hover:underline">Charge Time</Link> &middot; <Link href="/charger-roi" className="text-[var(--color-primary)] hover:underline">Charger ROI</Link> &middot; <Link href="/range" className="text-[var(--color-primary)] hover:underline">Range Calculator</Link>
+          Plus: <Link href="/charging-time" className="text-[var(--color-primary)] hover:underline">Charge Time</Link> &middot; <Link href="/charger-roi" className="text-[var(--color-primary)] hover:underline">Charger ROI</Link> &middot; <Link href="/range" className="text-[var(--color-primary)] hover:underline">Range</Link> &middot; <Link href="/tax-credits" className="text-[var(--color-primary)] hover:underline">Tax Credits</Link> &middot; <Link href="/bill-impact" className="text-[var(--color-primary)] hover:underline">Bill Impact</Link>
         </p>
       </section>
 

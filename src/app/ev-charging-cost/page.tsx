@@ -9,6 +9,10 @@ import ResultCard from "@/components/ResultCard";
 import AffiliateCard from "@/components/AffiliateCard";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
+import BreadcrumbSchema from "@/components/BreadcrumbSchema";
+import FAQSection from "@/components/FAQSection";
+import ShareResults from "@/components/ShareResults";
+import { chargingCostFAQ } from "@/data/faq-data";
 import {
   ELECTRICITY_RATES,
   NATIONAL_AVERAGE_RATE,
@@ -122,6 +126,7 @@ export default function EVChargingCostPage() {
       lastUpdated="March 2026"
     >
       <CalculatorSchema name="EV Charging Cost Calculator" description="Calculate your monthly and annual EV charging costs based on your vehicle, state electricity rates, and daily driving habits." url="https://chargemath.com/ev-charging-cost" />
+      <BreadcrumbSchema items={[{name: "Home", url: "https://chargemath.com"}, {name: "EV Charging Cost Calculator", url: "https://chargemath.com/ev-charging-cost"}]} />
       {/* Inputs */}
       <div className="grid gap-6 sm:grid-cols-2">
         <SelectInput
@@ -275,6 +280,11 @@ export default function EVChargingCostPage() {
             You save {fmt.format(results.monthlySavings)}/month with an EV
           </p>
         </div>
+
+        <ShareResults
+          title={`EV Charging Cost: ${fmt.format(results.monthlyCost)}/month`}
+          text={`My ${vehicle.year} ${vehicle.make} ${vehicle.model} costs ${fmt.format(results.monthlyCost)}/month to charge (${fmt.format(results.annualCost)}/year). That's ${fmtShort.format(results.annualSavings)}/year less than gas!`}
+        />
       </div>
 
       {/* Affiliate Cards */}
@@ -313,6 +323,7 @@ export default function EVChargingCostPage() {
           />
         </div>
       </div>
+      <FAQSection questions={chargingCostFAQ} />
       <RelatedCalculators currentPath="/ev-charging-cost" />
     </CalculatorLayout>
   );

@@ -8,6 +8,10 @@ import ResultCard from "@/components/ResultCard";
 import AffiliateCard from "@/components/AffiliateCard";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
+import BreadcrumbSchema from "@/components/BreadcrumbSchema";
+import FAQSection from "@/components/FAQSection";
+import ShareResults from "@/components/ShareResults";
+import { rangeFAQ } from "@/data/faq-data";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
 
 const AMAZON_TAG = "kawaiiguy0f-20";
@@ -171,6 +175,7 @@ export default function RangePage() {
         description="Calculate your EV's real-world range based on temperature, speed, terrain, climate control, and cargo. See how each factor reduces your EPA-rated range."
         url="https://chargemath.com/range"
       />
+      <BreadcrumbSchema items={[{name: "Home", url: "https://chargemath.com"}, {name: "Range Calculator", url: "https://chargemath.com/range"}]} />
 
       {/* Inputs */}
       <div className="grid gap-6 sm:grid-cols-2">
@@ -352,6 +357,11 @@ export default function RangePage() {
         </div>
       </div>
 
+      <ShareResults
+        title={`Real Range: ${Math.round(results.adjustedRange)} miles`}
+        text={`My ${vehicle.year} ${vehicle.make} ${vehicle.model} gets ${Math.round(results.adjustedRange)} miles real-world range vs ${Math.round(results.baseRange)} miles EPA at ${startPercent}% battery. That's ${results.percentOfEpa.toFixed(0)}% of EPA range at ${speed} mph and ${temperature}°F.`}
+      />
+
       {/* Affiliate Cards */}
       <div className="mt-10">
         <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
@@ -397,6 +407,7 @@ export default function RangePage() {
         </div>
       </div>
 
+      <FAQSection questions={rangeFAQ} />
       <RelatedCalculators currentPath="/range" />
     </CalculatorLayout>
   );

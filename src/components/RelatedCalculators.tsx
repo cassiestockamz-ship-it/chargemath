@@ -31,6 +31,18 @@ const ALL_CALCULATORS = [
     href: "/range",
     icon: "🗺️",
   },
+  {
+    title: "Tax Credits",
+    description: "Federal & state EV incentives",
+    href: "/tax-credits",
+    icon: "🏛️",
+  },
+  {
+    title: "Bill Impact",
+    description: "How much your electric bill goes up",
+    href: "/bill-impact",
+    icon: "📄",
+  },
 ];
 
 export default function RelatedCalculators({

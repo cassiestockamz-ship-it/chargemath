@@ -1,0 +1,10 @@
+{
+  "redirects": [
+    {
+      "source": "/:path(.*)",
+      "has": [{ "type": "host", "value": "www.chargemath.com" }],
+      "destination": "https://chargemath.com/:path",
+      "permanent": true
+    }
+  ]
+}

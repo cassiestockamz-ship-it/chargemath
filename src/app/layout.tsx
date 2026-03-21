@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Link from "next/link";
+import MobileMenu from "@/components/MobileMenu";
 import "./globals.css";
 
 const inter = Inter({
@@ -9,9 +10,32 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "ChargeMath — EV Calculators & Charging Cost Tools",
+  metadataBase: new URL('https://chargemath.com'),
+  alternates: {
+    canonical: '/',
+  },
+  title: {
+    default: "ChargeMath — EV Calculators & Charging Cost Tools",
+    template: "%s — ChargeMath",
+  },
   description:
     "Free EV charging cost calculators. Compare gas vs electric costs, estimate monthly charging expenses, and find savings with real EPA vehicle data and state electricity rates.",
+  openGraph: {
+    type: "website",
+    siteName: "ChargeMath",
+    title: "ChargeMath — Free EV Charging Calculators",
+    description: "Calculate EV charging costs, compare gas vs electric, estimate range, and find tax credits. Powered by real EPA data and state electricity rates.",
+    url: "https://chargemath.com",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ChargeMath — Free EV Charging Calculators",
+    description: "Calculate EV charging costs, compare gas vs electric, estimate range, and find tax credits.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
@@ -50,13 +74,14 @@ export default function RootLayout({
               <Link href="/range" className="whitespace-nowrap rounded-lg px-2 py-1.5 text-xs font-medium text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-alt)] hover:text-[var(--color-text)] lg:px-2.5 lg:py-2 lg:text-sm">
                 Range
               </Link>
+              <Link href="/tax-credits" className="whitespace-nowrap rounded-lg px-2 py-1.5 text-xs font-medium text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-alt)] hover:text-[var(--color-text)] lg:px-2.5 lg:py-2 lg:text-sm">
+                Credits
+              </Link>
+              <Link href="/bill-impact" className="whitespace-nowrap rounded-lg px-2 py-1.5 text-xs font-medium text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-alt)] hover:text-[var(--color-text)] lg:px-2.5 lg:py-2 lg:text-sm">
+                Bill Impact
+              </Link>
             </nav>
-            <Link
-              href="/"
-              className="rounded-lg px-2.5 py-2 text-xs font-medium text-[var(--color-primary)] md:hidden"
-            >
-              All Calculators
-            </Link>
+            <MobileMenu />
           </div>
         </header>
 
@@ -82,6 +107,9 @@ export default function RootLayout({
               <p className="text-xs text-[var(--color-text-muted)]">
                 &copy; {new Date().getFullYear()} ChargeMath. All rights
                 reserved.
+              </p>
+              <p className="text-xs text-[var(--color-text-muted)]">
+                <Link href="/dashboard" className="hover:text-[var(--color-text)] transition-colors">Analytics</Link>
               </p>
             </div>
           </div>

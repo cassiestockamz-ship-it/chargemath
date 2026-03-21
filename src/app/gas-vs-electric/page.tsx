@@ -9,6 +9,10 @@ import ResultCard from "@/components/ResultCard";
 import AffiliateCard from "@/components/AffiliateCard";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
+import BreadcrumbSchema from "@/components/BreadcrumbSchema";
+import FAQSection from "@/components/FAQSection";
+import ShareResults from "@/components/ShareResults";
+import { gasVsElectricFAQ } from "@/data/faq-data";
 import {
   ELECTRICITY_RATES,
   NATIONAL_AVERAGE_RATE,
@@ -119,6 +123,7 @@ export default function GasVsElectricPage() {
       lastUpdated="March 2026"
     >
       <CalculatorSchema name="Gas vs Electric Cost Comparison" description="Compare the true fuel costs of driving electric vs gas with side-by-side savings and CO2 analysis." url="https://chargemath.com/gas-vs-electric" />
+      <BreadcrumbSchema items={[{name: "Home", url: "https://chargemath.com"}, {name: "Gas vs Electric Comparison", url: "https://chargemath.com/gas-vs-electric"}]} />
       {/* Inputs */}
       <div className="grid gap-6 sm:grid-cols-2">
         <SelectInput
@@ -311,6 +316,11 @@ export default function GasVsElectricPage() {
         </div>
       </div>
 
+      <ShareResults
+        title={`Gas vs Electric: Save ${fmtWhole.format(results.annualSavings)}/year`}
+        text={`Switching from gas to electric saves me ${fmtWhole.format(results.annualSavings)}/year on fuel. My ${vehicle.year} ${vehicle.make} ${vehicle.model} costs ${fmt.format(results.evCostPerMile)}/mile vs ${fmt.format(results.gasCostPerMile)}/mile for gas — ${fmtWhole.format(results.totalSavings)} total savings over ${periodYears} years!`}
+      />
+
       {/* Affiliate Cards */}
       <div className="mt-10">
         <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
@@ -335,6 +345,7 @@ export default function GasVsElectricPage() {
           />
         </div>
       </div>
+      <FAQSection questions={gasVsElectricFAQ} />
       <RelatedCalculators currentPath="/gas-vs-electric" />
     </CalculatorLayout>
   );

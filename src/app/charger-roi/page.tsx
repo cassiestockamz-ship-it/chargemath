@@ -9,6 +9,10 @@ import ResultCard from "@/components/ResultCard";
 import AffiliateCard from "@/components/AffiliateCard";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
+import BreadcrumbSchema from "@/components/BreadcrumbSchema";
+import FAQSection from "@/components/FAQSection";
+import ShareResults from "@/components/ShareResults";
+import { chargerRoiFAQ } from "@/data/faq-data";
 import {
   ELECTRICITY_RATES,
   NATIONAL_AVERAGE_RATE,
@@ -146,6 +150,7 @@ export default function ChargerROIPage() {
       lastUpdated="March 2026"
     >
       <CalculatorSchema name="Home EV Charger ROI Calculator" description="Calculate the payback period for installing a Level 2 home EV charger compared to public charging or Level 1 charging." url="https://chargemath.com/charger-roi" />
+      <BreadcrumbSchema items={[{name: "Home", url: "https://chargemath.com"}, {name: "Home Charger ROI", url: "https://chargemath.com/charger-roi"}]} />
       {/* Inputs */}
       <div className="grid gap-6 sm:grid-cols-2">
         <SelectInput
@@ -339,6 +344,11 @@ export default function ChargerROIPage() {
         </div>
       </div>
 
+      <ShareResults
+        title={`Charger ROI: ${formatPayback(results.paybackMonths)} payback`}
+        text={`A home charger pays for itself in ${formatPayback(results.paybackMonths)} with ${fmt.format(results.monthlySavings)}/month in savings vs public charging. ${fmtShort.format(results.totalUpfront)} upfront → ${fmtShort.format(results.fiveYearNet)} net savings over 5 years!`}
+      />
+
       {/* Affiliate Cards */}
       <div className="mt-10">
         <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
@@ -371,6 +381,7 @@ export default function ChargerROIPage() {
           />
         </div>
       </div>
+      <FAQSection questions={chargerRoiFAQ} />
       <RelatedCalculators currentPath="/charger-roi" />
     </CalculatorLayout>
   );

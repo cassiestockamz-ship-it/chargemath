@@ -7,6 +7,8 @@ const PATH_LABELS: Record<string, string> = {
   "/charging-time": "Charging Time",
   "/charger-roi": "Charger ROI",
   "/range": "Range Calculator",
+  "/tax-credits": "Tax Credits",
+  "/bill-impact": "Bill Impact",
 };
 
 function pathToLabel(path: string): string {
