@@ -25,6 +25,12 @@ const ALL_CALCULATORS = [
     href: "/charger-roi",
     icon: "💰",
   },
+  {
+    title: "Range",
+    description: "Real-world range by conditions",
+    href: "/range",
+    icon: "🗺️",
+  },
 ];
 
 export default function RelatedCalculators({

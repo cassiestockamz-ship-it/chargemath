@@ -34,35 +34,26 @@ export default function RootLayout({
               </span>
               ChargeMath
             </Link>
-            <nav className="hidden items-center gap-0.5 sm:flex">
-              <Link
-                href="/ev-charging-cost"
-                className="whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-alt)] hover:text-[var(--color-text)]"
-              >
-                Charging Cost
+            <nav className="hidden items-center gap-0.5 md:flex">
+              <Link href="/ev-charging-cost" className="whitespace-nowrap rounded-lg px-2 py-1.5 text-xs font-medium text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-alt)] hover:text-[var(--color-text)] lg:px-2.5 lg:py-2 lg:text-sm">
+                Cost
               </Link>
-              <Link
-                href="/gas-vs-electric"
-                className="whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-alt)] hover:text-[var(--color-text)]"
-              >
-                Gas vs Electric
+              <Link href="/gas-vs-electric" className="whitespace-nowrap rounded-lg px-2 py-1.5 text-xs font-medium text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-alt)] hover:text-[var(--color-text)] lg:px-2.5 lg:py-2 lg:text-sm">
+                Gas vs EV
               </Link>
-              <Link
-                href="/charging-time"
-                className="whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-alt)] hover:text-[var(--color-text)]"
-              >
-                Charge Time
+              <Link href="/charging-time" className="whitespace-nowrap rounded-lg px-2 py-1.5 text-xs font-medium text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-alt)] hover:text-[var(--color-text)] lg:px-2.5 lg:py-2 lg:text-sm">
+                Time
               </Link>
-              <Link
-                href="/charger-roi"
-                className="whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-alt)] hover:text-[var(--color-text)]"
-              >
-                Charger ROI
+              <Link href="/charger-roi" className="whitespace-nowrap rounded-lg px-2 py-1.5 text-xs font-medium text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-alt)] hover:text-[var(--color-text)] lg:px-2.5 lg:py-2 lg:text-sm">
+                ROI
+              </Link>
+              <Link href="/range" className="whitespace-nowrap rounded-lg px-2 py-1.5 text-xs font-medium text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-alt)] hover:text-[var(--color-text)] lg:px-2.5 lg:py-2 lg:text-sm">
+                Range
               </Link>
             </nav>
             <Link
               href="/"
-              className="rounded-lg px-2.5 py-2 text-xs font-medium text-[var(--color-primary)] sm:hidden"
+              className="rounded-lg px-2.5 py-2 text-xs font-medium text-[var(--color-primary)] md:hidden"
             >
               All Calculators
             </Link>

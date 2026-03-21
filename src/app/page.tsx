@@ -37,9 +37,9 @@ const calculators = [
     title: "Range Calculator",
     description:
       "Calculate your real-world EV range based on speed, temperature, and terrain.",
-    href: "#",
+    href: "/range",
     icon: "🗺️",
-    live: false,
+    live: true,
   },
 ];
 
@@ -77,12 +77,17 @@ export default function HomePage() {
           Free, accurate calculators powered by real EPA vehicle data and
           state-specific electricity rates. No sign-up required.
         </p>
-        <div className="mt-8 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:justify-center">
-          <Link href="/ev-charging-cost" className="rounded-xl bg-[var(--color-primary)] px-5 py-3 text-center text-sm font-semibold text-white shadow-md transition-colors hover:bg-[var(--color-primary-dark)]">Charging Cost</Link>
-          <Link href="/gas-vs-electric" className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-5 py-3 text-center text-sm font-semibold text-[var(--color-text)] shadow-sm transition-colors hover:bg-[var(--color-surface-alt)]">Gas vs Electric</Link>
-          <Link href="/charging-time" className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-5 py-3 text-center text-sm font-semibold text-[var(--color-text)] shadow-sm transition-colors hover:bg-[var(--color-surface-alt)]">Charge Time</Link>
-          <Link href="/charger-roi" className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-5 py-3 text-center text-sm font-semibold text-[var(--color-text)] shadow-sm transition-colors hover:bg-[var(--color-surface-alt)]">Charger ROI</Link>
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <Link href="/ev-charging-cost" className="rounded-xl bg-[var(--color-primary)] px-6 py-3 text-sm font-semibold text-white shadow-md transition-colors hover:bg-[var(--color-primary-dark)]">
+            Calculate Charging Cost
+          </Link>
+          <Link href="/gas-vs-electric" className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-3 text-sm font-semibold text-[var(--color-text)] shadow-sm transition-colors hover:bg-[var(--color-surface-alt)]">
+            Compare Gas vs Electric
+          </Link>
         </div>
+        <p className="mx-auto mt-4 text-sm text-[var(--color-text-muted)]">
+          Plus: <Link href="/charging-time" className="text-[var(--color-primary)] hover:underline">Charge Time</Link> &middot; <Link href="/charger-roi" className="text-[var(--color-primary)] hover:underline">Charger ROI</Link> &middot; <Link href="/range" className="text-[var(--color-primary)] hover:underline">Range Calculator</Link>
+        </p>
       </section>
 
       {/* Calculator Cards */}

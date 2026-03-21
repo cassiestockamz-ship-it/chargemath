@@ -9,5 +9,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/gas-vs-electric`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9 },
     { url: `${baseUrl}/charging-time`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9 },
     { url: `${baseUrl}/charger-roi`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9 },
+    { url: `${baseUrl}/range`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9 },
   ]
 }
