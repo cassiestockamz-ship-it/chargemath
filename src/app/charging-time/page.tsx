@@ -424,6 +424,7 @@ export default function ChargingTimePage() {
               amazonTag={AMAZON_TAG}
               searchQuery="portable ev charger level 1 level 2"
               imageAlt="Portable EV charger on Amazon"
+              slug="charging-time"
             />
           )}
           {chargingLevel === "level2" && (
@@ -434,6 +435,7 @@ export default function ChargingTimePage() {
               amazonTag={AMAZON_TAG}
               searchQuery="level 2 ev home charger"
               imageAlt="Level 2 EV home charger on Amazon"
+              slug="charging-time"
             />
           )}
           {chargingLevel === "dcfast" && (
@@ -444,6 +446,7 @@ export default function ChargingTimePage() {
               amazonTag={AMAZON_TAG}
               searchQuery="ev charging adapter ccs nacs j1772"
               imageAlt="EV charging adapter on Amazon"
+              slug="charging-time"
             />
           )}
           <AffiliateCard
@@ -453,6 +456,7 @@ export default function ChargingTimePage() {
             amazonTag={AMAZON_TAG}
             searchQuery="ev charging cable organizer wall mount"
             imageAlt="EV charging cable wall mount organizer on Amazon"
+            slug="charging-time"
           />
         </div>
       </div>

@@ -8,6 +8,7 @@ interface AffiliateCardProps {
   searchQuery: string;
   imageAlt: string;
   icon?: string;
+  slug?: string;
 }
 
 // Product category icons — simple inline SVGs that load instantly
@@ -136,15 +137,16 @@ export default function AffiliateCard({
   amazonTag,
   searchQuery,
   imageAlt,
+  slug,
 }: AffiliateCardProps) {
-  const href = `https://www.amazon.com/s?k=${encodeURIComponent(searchQuery)}&tag=${amazonTag}`;
+  const href = `https://www.amazon.com/s?k=${encodeURIComponent(searchQuery)}&tag=${amazonTag}${slug ? `&ascsubtag=${slug}` : ''}`;
   const productIcon = getIconForProduct(searchQuery);
 
   return (
     <a
       href={href}
       target="_blank"
-      rel="noopener noreferrer nofollow"
+      rel="noopener noreferrer nofollow sponsored"
       className="group block overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] transition-all hover:border-[var(--color-primary)]/30 hover:shadow-md"
       aria-label={imageAlt}
     >

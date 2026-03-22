@@ -362,6 +362,7 @@ export default function ChargerROIPage() {
             amazonTag={AMAZON_TAG}
             searchQuery="ChargePoint Home Flex ev charger"
             imageAlt="ChargePoint Home Flex EV charger on Amazon"
+            slug="charger-roi"
           />
           <AffiliateCard
             title="Emporia Smart Level 2 Charger"
@@ -370,6 +371,7 @@ export default function ChargerROIPage() {
             amazonTag={AMAZON_TAG}
             searchQuery="Emporia smart ev charger level 2"
             imageAlt="Emporia Smart Level 2 EV charger on Amazon"
+            slug="charger-roi"
           />
           <AffiliateCard
             title="Grizzl-E Classic"
@@ -378,6 +380,7 @@ export default function ChargerROIPage() {
             amazonTag={AMAZON_TAG}
             searchQuery="Grizzl-E classic ev charger"
             imageAlt="Grizzl-E Classic EV charger on Amazon"
+            slug="charger-roi"
           />
         </div>
       </div>

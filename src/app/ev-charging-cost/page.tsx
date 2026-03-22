@@ -130,6 +130,7 @@ export default function EVChargingCostPage() {
       title="EV Charging Cost Calculator"
       description="Estimate your monthly and annual EV charging costs based on your vehicle, electricity rate, and daily driving."
       lastUpdated="March 2026"
+      intro="The average EV costs $50-80 per month to charge at home, depending on your vehicle efficiency and local electricity rate. At the national average of 16.11¢/kWh, a Tesla Model 3 costs about $9.67 for a full charge providing 272 miles of range — roughly $0.04 per mile compared to $0.13 per mile for a gas car."
     >
       <CalculatorSchema name="EV Charging Cost Calculator" description="Calculate your monthly and annual EV charging costs based on your vehicle, state electricity rates, and daily driving habits." url="https://chargemath.com/ev-charging-cost" />
       <BreadcrumbSchema items={[{name: "Home", url: "https://chargemath.com"}, {name: "EV Charging Cost Calculator", url: "https://chargemath.com/ev-charging-cost"}]} />
@@ -327,6 +328,7 @@ export default function EVChargingCostPage() {
               amazonTag={AMAZON_TAG}
               searchQuery="level 2 ev home charger"
               imageAlt="Level 2 EV home charger on Amazon"
+              slug="ev-charging-cost"
             />
           )}
           {chargingLevel === "level1" && (
@@ -337,6 +339,7 @@ export default function EVChargingCostPage() {
               amazonTag={AMAZON_TAG}
               searchQuery="portable ev charger level 1 level 2"
               imageAlt="Portable EV charger on Amazon"
+              slug="ev-charging-cost"
             />
           )}
           <AffiliateCard
@@ -346,6 +349,7 @@ export default function EVChargingCostPage() {
             amazonTag={AMAZON_TAG}
             searchQuery="ev charging cable organizer wall mount"
             imageAlt="EV charging cable wall mount organizer on Amazon"
+            slug="ev-charging-cost"
           />
         </div>
       </div>

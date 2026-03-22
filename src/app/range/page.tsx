@@ -169,6 +169,7 @@ export default function RangePage() {
       title="EV Range Calculator"
       description="See how temperature, speed, terrain, and other real-world conditions affect your EV's range compared to its EPA rating."
       lastUpdated="March 2026"
+      intro="Real-world EV range is typically 10-20% less than the EPA rating. Cold weather can reduce range by 30-40%, highway speeds over 75 mph cut range by 15-25%, and towing can halve your range. This calculator shows exactly how each factor affects your specific vehicle."
     >
       <CalculatorSchema
         name="EV Range Calculator"
@@ -376,6 +377,7 @@ export default function RangePage() {
               amazonTag={AMAZON_TAG}
               searchQuery="electric car winter accessories kit"
               imageAlt="EV winter accessories kit on Amazon"
+              slug="range"
             />
           )}
           {cargo === "towing" && (
@@ -386,6 +388,7 @@ export default function RangePage() {
               amazonTag={AMAZON_TAG}
               searchQuery="electric vehicle towing hitch accessories"
               imageAlt="EV towing hitch accessories on Amazon"
+              slug="range"
             />
           )}
           <AffiliateCard
@@ -395,6 +398,7 @@ export default function RangePage() {
             amazonTag={AMAZON_TAG}
             searchQuery="digital tire pressure gauge accurate"
             imageAlt="Digital tire pressure gauge on Amazon"
+            slug="range"
           />
           <AffiliateCard
             title="EV Charging Cable Bag"
@@ -403,6 +407,7 @@ export default function RangePage() {
             amazonTag={AMAZON_TAG}
             searchQuery="ev charging cable bag organizer"
             imageAlt="EV charging cable bag organizer on Amazon"
+            slug="range"
           />
         </div>
       </div>

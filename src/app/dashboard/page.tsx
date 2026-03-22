@@ -109,6 +109,7 @@ export default function DashboardPage() {
 
   return (
     <>
+      <meta name="robots" content="noindex, nofollow" />
       <style>{`
         /* Hide site header and footer on this page */
         body > header,

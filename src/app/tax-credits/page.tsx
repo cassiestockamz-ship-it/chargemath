@@ -391,6 +391,7 @@ export default function TaxCreditsPage() {
               amazonTag={AMAZON_TAG}
               searchQuery="ChargePoint Home Flex ev charger"
               imageAlt="ChargePoint Home Flex EV charger on Amazon"
+              slug="tax-credits"
             />
           )}
           <AffiliateCard
@@ -400,6 +401,7 @@ export default function TaxCreditsPage() {
             amazonTag={AMAZON_TAG}
             searchQuery="electric vehicle tax credit guide book"
             imageAlt="EV tax credit guide book on Amazon"
+            slug="tax-credits"
           />
         </div>
       </div>

@@ -206,6 +206,7 @@ export default function ScorecardPage() {
 
   return (
     <>
+      <meta name="robots" content="noindex, nofollow" />
       <style>{`
         * { box-sizing: border-box; }
         body > header, body > footer { display: none !important; }

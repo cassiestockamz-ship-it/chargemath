@@ -328,6 +328,7 @@ export default function BillImpactPage() {
             amazonTag={AMAZON_TAG}
             searchQuery="smart home energy monitor electricity"
             imageAlt="Smart home energy monitor on Amazon"
+            slug="bill-impact"
           />
           <AffiliateCard
             title="Smart EV Charger with Energy Tracking"
@@ -336,6 +337,7 @@ export default function BillImpactPage() {
             amazonTag={AMAZON_TAG}
             searchQuery="smart ev charger energy monitoring wifi"
             imageAlt="Smart EV charger with energy monitoring on Amazon"
+            slug="bill-impact"
           />
         </div>
       </div>

@@ -121,6 +121,7 @@ export default function GasVsElectricPage() {
       title="Gas vs Electric Cost Comparison"
       description="Compare the true fuel costs of driving electric vs gas, and see your potential savings and environmental impact."
       lastUpdated="March 2026"
+      intro="Electric vehicles cost 60-70% less to fuel than gas cars. The average EV driver saves $800-1,200 per year on fuel, with additional savings on maintenance. Use this calculator to see your exact savings based on your specific vehicles and local rates."
     >
       <CalculatorSchema name="Gas vs Electric Cost Comparison" description="Compare the true fuel costs of driving electric vs gas with side-by-side savings and CO2 analysis." url="https://chargemath.com/gas-vs-electric" />
       <BreadcrumbSchema items={[{name: "Home", url: "https://chargemath.com"}, {name: "Gas vs Electric Comparison", url: "https://chargemath.com/gas-vs-electric"}]} />
@@ -334,6 +335,7 @@ export default function GasVsElectricPage() {
             amazonTag={AMAZON_TAG}
             searchQuery="level 2 ev home charger"
             imageAlt="Level 2 EV home charger on Amazon"
+            slug="gas-vs-electric"
           />
           <AffiliateCard
             title="Smart Energy Monitor"
@@ -342,6 +344,7 @@ export default function GasVsElectricPage() {
             amazonTag={AMAZON_TAG}
             searchQuery="home energy monitor electricity usage"
             imageAlt="Smart home energy monitor on Amazon"
+            slug="gas-vs-electric"
           />
         </div>
       </div>
