@@ -11,6 +11,7 @@ import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import FAQSection from "@/components/FAQSection";
 import ShareResults from "@/components/ShareResults";
+import Link from "next/link";
 import { chargingTimeFAQ } from "@/data/faq-data";
 import { NATIONAL_AVERAGE_RATE } from "@/data/electricity-rates";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
@@ -156,6 +157,7 @@ export default function ChargingTimePage() {
     <CalculatorLayout
       title="EV Charging Time Calculator"
       description="See how long it takes to charge your EV from any battery level, at Level 1, Level 2, or DC Fast speeds."
+      intro="A Level 2 home charger (240V) charges most EVs from 20% to 80% in 4-6 hours — perfect for overnight charging. Level 1 (120V wall outlet) takes 24-40+ hours for a full charge, while DC Fast chargers can reach 80% in 20-45 minutes depending on your vehicle's max charging rate."
       lastUpdated="March 2026"
     >
       <CalculatorSchema name="EV Charging Time Calculator" description="Calculate how long it takes to charge your EV from any battery level at Level 1, Level 2, or DC Fast charging speeds." url="https://chargemath.com/charging-time" />
@@ -322,6 +324,9 @@ export default function ChargingTimePage() {
             icon="💰"
           />
         </div>
+        <p className="text-sm text-gray-500 mt-4">
+          <Link href="/ev-charging-cost" className="text-blue-500 hover:underline">See how much this costs &rarr;</Link>
+        </p>
       </div>
 
       {/* Comparison Table */}

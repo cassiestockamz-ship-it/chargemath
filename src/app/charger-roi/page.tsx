@@ -12,6 +12,7 @@ import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import FAQSection from "@/components/FAQSection";
 import ShareResults from "@/components/ShareResults";
+import Link from "next/link";
 import { chargerRoiFAQ } from "@/data/faq-data";
 import {
   ELECTRICITY_RATES,
@@ -147,6 +148,7 @@ export default function ChargerROIPage() {
     <CalculatorLayout
       title="Home EV Charger ROI Calculator"
       description="Find out how quickly a Level 2 home charger pays for itself compared to public charging or Level 1 charging."
+      intro="A Level 2 home EV charger costs $500-2,000 installed but typically pays for itself in 12-24 months through savings versus public charging. Home electricity costs 12-16¢/kWh on average, while public DC fast chargers run 30-60¢/kWh — saving $50-150+ per month for daily drivers."
       lastUpdated="March 2026"
     >
       <CalculatorSchema name="Home EV Charger ROI Calculator" description="Calculate the payback period for installing a Level 2 home EV charger compared to public charging or Level 1 charging." url="https://chargemath.com/charger-roi" />
@@ -342,6 +344,9 @@ export default function ChargerROIPage() {
             </p>
           )}
         </div>
+        <p className="text-sm text-gray-500 mt-4">
+          <Link href="/charging-time" className="text-blue-500 hover:underline">Check your charging time &rarr;</Link>
+        </p>
       </div>
 
       <ShareResults

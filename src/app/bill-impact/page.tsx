@@ -12,6 +12,7 @@ import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import FAQSection from "@/components/FAQSection";
 import ShareResults from "@/components/ShareResults";
+import Link from "next/link";
 import { billImpactFAQ } from "@/data/faq-data";
 import {
   ELECTRICITY_RATES,
@@ -113,6 +114,7 @@ export default function BillImpactPage() {
     <CalculatorLayout
       title="EV Electricity Bill Impact Calculator"
       description="See exactly how much your monthly electricity bill will increase when you start charging an EV at home."
+      intro="Charging an EV at home typically adds $30-60 per month to your electricity bill, depending on how far you drive and your local rates. The average EV uses 25-35 kWh per 100 miles — at the national average of 16¢/kWh, that's about $4-6 per 100 miles added to your bill."
       lastUpdated="March 2026"
     >
       <CalculatorSchema
@@ -308,6 +310,10 @@ export default function BillImpactPage() {
                 : " significant — consider a TOU rate plan to reduce costs."}
           </p>
         </div>
+
+        <p className="text-sm text-gray-500 mt-4">
+          <Link href="/gas-vs-electric" className="text-blue-500 hover:underline">Compare gas vs electric costs &rarr;</Link>
+        </p>
 
         <ShareResults
           title={`EV Bill Impact: ${fmtPct(results.percentIncrease)}`}

@@ -183,6 +183,7 @@ export default function TaxCreditsPage() {
     <CalculatorLayout
       title="EV Tax Credit Estimator"
       description="Estimate your federal and state EV tax credits, rebates, and charger installation incentives."
+      intro="The federal EV tax credit is worth up to $7,500 for new EVs and $4,000 for used EVs in 2024-2026. Eligibility depends on your income, the vehicle's MSRP, and where it was assembled. Many states offer additional rebates of $500-5,000 on top of the federal credit."
       lastUpdated="March 2026"
     >
       <CalculatorSchema

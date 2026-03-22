@@ -83,6 +83,18 @@ const features = [
 export default function HomePage() {
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "ChargeMath",
+        "url": "https://chargemath.com",
+        "description": "Free EV calculators powered by real EPA vehicle data and state-specific electricity rates.",
+        "publisher": {
+          "@type": "Organization",
+          "name": "ChargeMath",
+          "url": "https://chargemath.com/about"
+        }
+      })}} />
       {/* Hero */}
       <section className="px-4 pb-16 pt-20 text-center sm:px-6">
         <h1 className="text-4xl font-extrabold tracking-tight text-[var(--color-text)] sm:text-5xl lg:text-6xl">
