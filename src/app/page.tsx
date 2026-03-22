@@ -113,17 +113,13 @@ export default function HomePage() {
         </h2>
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {calculators.map((calc) => {
-            const Wrapper = calc.live ? Link : "div";
-            return (
-              <Wrapper
-                key={calc.title}
-                href={calc.href}
-                className={`group relative rounded-xl border bg-[var(--color-surface)] p-6 transition-all ${
-                  calc.live
-                    ? "border-[var(--color-border)] shadow-sm hover:border-[var(--color-primary)]/30 hover:shadow-md"
-                    : "border-dashed border-[var(--color-border)] opacity-70"
-                }`}
-              >
+            const cardClass = `group relative rounded-xl border bg-[var(--color-surface)] p-6 transition-all ${
+              calc.live
+                ? "border-[var(--color-border)] shadow-sm hover:border-[var(--color-primary)]/30 hover:shadow-md"
+                : "border-dashed border-[var(--color-border)] opacity-70"
+            }`;
+            const cardContent = (
+              <>
                 {!calc.live && (
                   <span className="absolute right-4 top-4 rounded-full bg-[var(--color-surface-alt)] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">
                     Coming Soon
@@ -141,7 +137,16 @@ export default function HomePage() {
                     Try it &rarr;
                   </span>
                 )}
-              </Wrapper>
+              </>
+            );
+            return calc.live ? (
+              <Link key={calc.title} href={calc.href} className={cardClass}>
+                {cardContent}
+              </Link>
+            ) : (
+              <div key={calc.title} className={cardClass}>
+                {cardContent}
+              </div>
             );
           })}
         </div>

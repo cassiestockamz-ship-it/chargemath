@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Link from "next/link";
 import CalculatorLayout from "@/components/CalculatorLayout";
 import SelectInput from "@/components/SelectInput";
 import NumberInput from "@/components/NumberInput";
@@ -55,15 +56,20 @@ export default function EVChargingCostPage() {
     return (stateRate?.residential ?? NATIONAL_AVERAGE_RATE) / 100;
   }, [customRate, stateCode]);
 
+  const effectiveRate = useMemo(() => {
+    if (chargingLevel === "dcfast") return rate * 2.5;
+    return rate;
+  }, [rate, chargingLevel]);
+
   const results = useMemo(() => {
     const dailyKwh = (dailyMiles / 100) * vehicle.kwhPer100Miles;
     const monthlyKwh = dailyKwh * 30;
     const annualKwh = dailyKwh * 365;
 
-    const costPerFullCharge = vehicle.batteryCapacityKwh * rate;
-    const monthlyCost = monthlyKwh * rate;
-    const annualCost = annualKwh * rate;
-    const costPerMile = rate * (vehicle.kwhPer100Miles / 100);
+    const costPerFullCharge = vehicle.batteryCapacityKwh * effectiveRate;
+    const monthlyCost = monthlyKwh * effectiveRate;
+    const annualCost = annualKwh * effectiveRate;
+    const costPerMile = effectiveRate * (vehicle.kwhPer100Miles / 100);
 
     // Gas comparison
     const gasMpg = 28;
@@ -86,7 +92,7 @@ export default function EVChargingCostPage() {
       monthlySavings,
       annualSavings,
     };
-  }, [dailyMiles, vehicle, rate]);
+  }, [dailyMiles, vehicle, effectiveRate]);
 
   const vehicleOptions = EV_VEHICLES.map((v) => ({
     value: v.id,
@@ -145,16 +151,23 @@ export default function EVChargingCostPage() {
           helpText="Average residential electricity rate from EIA"
         />
 
-        <NumberInput
-          label="Custom Electricity Rate (optional)"
-          value={customRate ?? 0}
-          onChange={(v) => setCustomRate(v > 0 ? v : null)}
-          min={0}
-          max={100}
-          step={0.1}
-          unit={"¢/kWh"}
-          helpText="Leave at 0 to use your state's average rate"
-        />
+        <div>
+          <NumberInput
+            label="Custom Electricity Rate (optional)"
+            value={customRate ?? 0}
+            onChange={(v) => setCustomRate(v > 0 ? v : null)}
+            min={0}
+            max={100}
+            step={0.1}
+            unit={"¢/kWh"}
+            helpText="Leave at 0 to use your state's average rate"
+          />
+          {chargingLevel === "dcfast" && (
+            <p className="mt-1.5 text-xs text-[var(--color-text-muted)]">
+              DC Fast uses public station rates (~2.5x home rates)
+            </p>
+          )}
+        </div>
 
         <div>
           <span className="mb-1.5 block text-sm font-medium text-[var(--color-text)]">
@@ -165,6 +178,7 @@ export default function EVChargingCostPage() {
               <button
                 key={cl.value}
                 onClick={() => setChargingLevel(cl.value)}
+                aria-pressed={chargingLevel === cl.value}
                 className={`flex-1 rounded-lg border px-3 py-2.5 text-xs font-medium transition-colors ${
                   chargingLevel === cl.value
                     ? "border-[var(--color-primary)] bg-[var(--color-primary)]/5 text-[var(--color-primary)]"
@@ -276,8 +290,20 @@ export default function EVChargingCostPage() {
               </div>
             </div>
           </div>
-          <p className="mt-4 text-center text-sm font-semibold text-[var(--color-ev-green)]">
-            You save {fmt.format(results.monthlySavings)}/month with an EV
+          {results.monthlySavings > 0 ? (
+            <p className="mt-4 text-center text-sm font-semibold text-[var(--color-ev-green)]">
+              You save {fmt.format(results.monthlySavings)}/month with an EV
+            </p>
+          ) : (
+            <p className="mt-4 text-center text-sm font-semibold text-amber-600">
+              Gas is cheaper by {fmt.format(Math.abs(results.monthlySavings))}/month in this scenario
+            </p>
+          )}
+          <p className="mt-3 text-center text-xs text-[var(--color-text-muted)]">
+            Comparison assumes 28 MPG and $3.50/gal. For custom values, try our{" "}
+            <Link href="/gas-vs-electric" className="text-[var(--color-primary)] hover:underline">
+              Gas vs Electric calculator
+            </Link>.
           </p>
         </div>
 

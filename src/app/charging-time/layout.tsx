@@ -4,6 +4,9 @@ export const metadata: Metadata = {
   title: "EV Charging Time Calculator",
   description:
     "Calculate how long it takes to charge your EV at Level 1, Level 2, and DC Fast charging speeds. Compare charge times for 22+ vehicles with real EPA data.",
+  alternates: {
+    canonical: "/charging-time",
+  },
   openGraph: {
     title: "EV Charging Time Calculator",
     description:

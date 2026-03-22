@@ -191,7 +191,7 @@ export default function RangePage() {
           label="Starting Battery %"
           value={startPercent}
           onChange={setStartPercent}
-          min={0}
+          min={5}
           max={100}
           step={1}
           unit="%"

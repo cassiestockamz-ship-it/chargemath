@@ -4,6 +4,9 @@ export const metadata: Metadata = {
   title: "EV Charging Cost Calculator",
   description:
     "Calculate your monthly and annual EV charging costs. Select your vehicle and state to see personalized estimates using real EPA data and EIA electricity rates.",
+  alternates: {
+    canonical: "/ev-charging-cost",
+  },
   openGraph: {
     title: "EV Charging Cost Calculator",
     description:

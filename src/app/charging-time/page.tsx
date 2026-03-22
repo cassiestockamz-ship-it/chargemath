@@ -179,6 +179,7 @@ export default function ChargingTimePage() {
               <button
                 key={cl.value}
                 onClick={() => setChargingLevel(cl.value)}
+                aria-pressed={chargingLevel === cl.value}
                 className={`flex-1 rounded-lg border px-3 py-2.5 text-xs font-medium transition-colors ${
                   chargingLevel === cl.value
                     ? "border-[var(--color-primary)] bg-[var(--color-primary)]/5 text-[var(--color-primary)]"

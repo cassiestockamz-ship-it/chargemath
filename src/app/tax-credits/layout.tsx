@@ -4,6 +4,9 @@ export const metadata: Metadata = {
   title: "EV Tax Credit Estimator",
   description:
     "Estimate your EV tax credits, rebates, and incentives. Check federal and state credits for new and used electric vehicles, plus charger installation credits.",
+  alternates: {
+    canonical: "/tax-credits",
+  },
   openGraph: {
     title: "EV Tax Credit Estimator",
     description:
