@@ -19,7 +19,7 @@ import {
 } from "@/data/electricity-rates";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
 
-const AMAZON_TAG = "kawaiiguy0f-20";
+const AMAZON_TAG = "kawaiiguy0f-cm-20";
 const CO2_GRAMS_PER_GALLON = 8887;
 const CO2_LBS_PER_KWH = 0.86;
 const LBS_CO2_PER_TREE_PER_YEAR = 48;

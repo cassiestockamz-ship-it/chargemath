@@ -17,7 +17,7 @@ import { EV_VEHICLES } from "@/data/ev-vehicles";
 
 type ChargingLevel = "level1" | "level2" | "dcfast";
 
-const AMAZON_TAG = "kawaiiguy0f-20";
+const AMAZON_TAG = "kawaiiguy0f-cm-20";
 
 const fmt = new Intl.NumberFormat("en-US", {
   style: "currency",

@@ -14,7 +14,7 @@ import ShareResults from "@/components/ShareResults";
 import { rangeFAQ } from "@/data/faq-data";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
 
-const AMAZON_TAG = "kawaiiguy0f-20";
+const AMAZON_TAG = "kawaiiguy0f-cm-20";
 
 type ClimateControl = "off" | "ac" | "heat" | "heat_seats";
 type Terrain = "flat" | "hilly" | "mountainous";
