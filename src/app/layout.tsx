@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Link from "next/link";
 import MobileMenu from "@/components/MobileMenu";
+import NavDropdown from "@/components/NavDropdown";
 import "./globals.css";
 
 const inter = Inter({
@@ -88,18 +89,7 @@ export default function RootLayout({
               ChargeMath
             </Link>
             <nav className="hidden items-center gap-1 md:flex">
-              <Link href="/calculators#cost" className="whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-alt)] hover:text-[var(--color-text)]">
-                Cost & Savings
-              </Link>
-              <Link href="/calculators#charging" className="whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-alt)] hover:text-[var(--color-text)]">
-                Charging
-              </Link>
-              <Link href="/calculators#range" className="whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-alt)] hover:text-[var(--color-text)]">
-                Range & Trips
-              </Link>
-              <Link href="/calculators#battery" className="whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-alt)] hover:text-[var(--color-text)]">
-                Battery & Energy
-              </Link>
+              <NavDropdown />
               <Link href="/guides" className="whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-alt)] hover:text-[var(--color-text)]">
                 State Guides
               </Link>
