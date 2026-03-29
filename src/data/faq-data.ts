@@ -195,3 +195,31 @@ export const taxCreditFAQ = [
       "For the Used Clean Vehicle Credit (25E): $75,000 AGI for single filers, $112,500 for head of household, and $150,000 for married filing jointly. The expired 30D credit had higher limits: $150,000 single, $225,000 head of household, $300,000 married filing jointly. State incentive income limits vary by program.",
   },
 ];
+
+export const paybackPeriodFAQ = [
+  {
+    question: "How long does it take for an EV to pay for itself?",
+    answer:
+      "The average EV pays for itself in 3 to 7 years compared to a similar gas car, depending on gas prices, electricity rates, daily mileage, and incentives. Drivers in states with cheap electricity and high gas prices break even fastest. Federal and state incentives can shorten the payback period by 1 to 3 years.",
+  },
+  {
+    question: "What factors affect EV payback period the most?",
+    answer:
+      "The biggest factors are (1) the price difference between the EV and a comparable gas car, (2) how many miles you drive daily, (3) local gas and electricity prices, and (4) available tax credits or rebates. Maintenance savings also contribute, since EVs have no oil changes, fewer brake replacements, and no transmission service.",
+  },
+  {
+    question: "Do EVs really save money on maintenance?",
+    answer:
+      "Yes. Consumer Reports found that EV owners spend roughly 50% less on maintenance and repairs over the life of the vehicle. EVs have no engine oil, fewer brake pad replacements (thanks to regenerative braking), no transmission fluid, and no exhaust system. Typical savings are $30 to $60 per month compared to a gas car.",
+  },
+  {
+    question: "Should I include tax credits in my payback calculation?",
+    answer:
+      "Yes, if you qualify. The federal 30D clean vehicle credit expired in early 2026, but many states still offer EV rebates or tax credits ranging from $1,000 to $7,500. These incentives directly reduce the effective price premium of the EV, shortening your payback period. Check your state's current programs before purchasing.",
+  },
+  {
+    question: "Is an EV worth it if I only drive 20 miles a day?",
+    answer:
+      "Low-mileage drivers still save on fuel and maintenance, but the payback period is longer since monthly savings are smaller. At 20 miles per day with average gas and electricity prices, expect a payback period of 5 to 8 years. If you also value lower emissions or a better driving experience, the non-financial benefits may tip the scales.",
+  },
+];

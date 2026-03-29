@@ -37,7 +37,7 @@ export default function ShareResults({ title, text, url }: ShareResultsProps) {
   };
 
   return (
-    <div className="mt-6 flex items-center justify-center gap-3">
+    <div className="mt-6 flex items-center justify-center gap-3" data-share-results>
       <button
         onClick={handleShare}
         className="inline-flex items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-sm font-medium text-[var(--color-text)] shadow-sm transition-colors hover:bg-[var(--color-surface-alt)]"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import CalculatorLayout from "@/components/CalculatorLayout";
 import SelectInput from "@/components/SelectInput";
 import SliderInput from "@/components/SliderInput";
@@ -11,7 +11,10 @@ import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import FAQSection from "@/components/FAQSection";
 import ShareResults from "@/components/ShareResults";
+import EducationalContent from "@/components/EducationalContent";
+import EmailCapture from "@/components/EmailCapture";
 import Link from "next/link";
+import { useUrlSync } from "@/lib/useUrlState";
 import { chargingTimeFAQ } from "@/data/faq-data";
 import { NATIONAL_AVERAGE_RATE } from "@/data/electricity-rates";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
@@ -78,6 +81,16 @@ export default function ChargingTimePage() {
   const [startPercent, setStartPercent] = useState(20);
   const [targetPercent, setTargetPercent] = useState(80);
   const [chargingLevel, setChargingLevel] = useState<ChargingLevel>("level2");
+
+  useUrlSync(
+    { vehicle: vehicleId, start: startPercent, target: targetPercent, level: chargingLevel },
+    useCallback((p: Record<string, string>) => {
+      if (p.vehicle && EV_VEHICLES.some((v) => v.id === p.vehicle)) setVehicleId(p.vehicle);
+      if (p.start) setStartPercent(Number(p.start));
+      if (p.target) setTargetPercent(Number(p.target));
+      if (p.level && ["level1", "level2", "dcfast"].includes(p.level)) setChargingLevel(p.level as ChargingLevel);
+    }, [])
+  );
 
   const vehicle = useMemo(
     () => EV_VEHICLES.find((v) => v.id === vehicleId) ?? EV_VEHICLES[0],
@@ -324,9 +337,18 @@ export default function ChargingTimePage() {
             icon="💰"
           />
         </div>
-        <p className="text-sm text-gray-500 mt-4">
-          <Link href="/ev-charging-cost" className="text-blue-500 hover:underline">See how much this costs &rarr;</Link>
-        </p>
+        {/* Contextual Cross-Links */}
+        <div className="mt-6 flex flex-wrap gap-3 text-sm">
+          <Link href="/ev-charging-cost" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
+            Calculate your charging cost →
+          </Link>
+          <Link href="/range" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
+            Check your real-world range →
+          </Link>
+          <Link href="/charger-roi" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
+            Is a home charger worth it? →
+          </Link>
+        </div>
       </div>
 
       {/* Comparison Table */}
@@ -465,7 +487,25 @@ export default function ChargingTimePage() {
           />
         </div>
       </div>
+      <EducationalContent>
+        <h2>How EV Charging Time Is Calculated</h2>
+        <p>
+          Charging time is determined by dividing the energy needed (kWh) by the charger&apos;s power output (kW). For example, adding 40 kWh to a battery using a 10 kW Level 2 charger takes 4 hours. Each vehicle in this calculator uses its manufacturer-rated maximum charging power for each level, sourced from EPA testing data.
+        </p>
+        <h3>Why DC Fast Charging Slows Above 80%</h3>
+        <p>
+          Lithium-ion batteries accept charge more slowly as they approach full capacity — a physical limitation of the chemistry, not a software restriction. Between 80-100%, the battery management system reduces charging power by roughly 50% to prevent overheating and degradation. This is why most charging networks price sessions by the minute above 80%, and why daily charging to 80% is standard practice.
+        </p>
+        <h3>Real-World Factors That Affect Charging Speed</h3>
+        <ul>
+          <li>Battery temperature — cold batteries charge 20-40% slower until they warm up. Many EVs now pre-condition the battery when navigating to a fast charger.</li>
+          <li>State of charge — the 10-80% window is the fastest charging zone. Below 10%, some vehicles also reduce charging speed.</li>
+          <li>Charger sharing — if another vehicle is using the same power cabinet, both may receive reduced power (common at older Tesla Supercharger sites).</li>
+          <li>Home circuit capacity — Level 2 charging speed depends on your circuit amperage. A 50A circuit delivers 40A continuous (9.6 kW), while a 30A circuit delivers only 24A (5.7 kW).</li>
+        </ul>
+      </EducationalContent>
       <FAQSection questions={chargingTimeFAQ} />
+      <EmailCapture source="charging-time" />
       <RelatedCalculators currentPath="/charging-time" />
     </CalculatorLayout>
   );

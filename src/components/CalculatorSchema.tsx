@@ -24,6 +24,7 @@ export default function CalculatorSchema({
       "@type": "Organization",
       name: "ChargeMath",
       url: "https://chargemath.com/about",
+      sameAs: ["https://github.com/cassiestockamz-ship-it/chargemath"],
     },
     dateModified: "2026-03-21",
   };

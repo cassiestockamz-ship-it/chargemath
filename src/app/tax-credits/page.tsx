@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
+import Link from "next/link";
 import CalculatorLayout from "@/components/CalculatorLayout";
 import SelectInput from "@/components/SelectInput";
 import NumberInput from "@/components/NumberInput";
@@ -10,6 +11,10 @@ import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import FAQSection from "@/components/FAQSection";
 import ShareResults from "@/components/ShareResults";
+import EducationalContent from "@/components/EducationalContent";
+import EmailCapture from "@/components/EmailCapture";
+import { getDefaultStateCode } from "@/lib/useDefaultState";
+import { useUrlSync } from "@/lib/useUrlState";
 import { taxCreditFAQ } from "@/data/faq-data";
 import { ELECTRICITY_RATES } from "@/data/electricity-rates";
 import { STATE_INCENTIVES, FEDERAL_CREDITS } from "@/data/ev-incentives";
@@ -61,6 +66,24 @@ export default function TaxCreditsPage() {
   const [agi, setAgi] = useState(75000);
   const [wantsCharger, setWantsCharger] = useState("no");
   const [chargerCost, setChargerCost] = useState(1300);
+
+  const [stateDetected, setStateDetected] = useState(false);
+  useEffect(() => {
+    if (!stateDetected) {
+      setStateCode(getDefaultStateCode());
+      setStateDetected(true);
+    }
+  }, [stateDetected]);
+
+  useUrlSync(
+    { type: vehicleType, state: stateCode, price: purchasePrice, filing: filingStatus },
+    useCallback((p: Record<string, string>) => {
+      if (p.type && ["new", "used"].includes(p.type)) setVehicleType(p.type as VehicleType);
+      if (p.state) setStateCode(p.state);
+      if (p.price) setPurchasePrice(Number(p.price));
+      if (p.filing && ["single", "headOfHousehold", "married"].includes(p.filing)) setFilingStatus(p.filing as FilingStatus);
+    }, [])
+  );
 
   const stateOptions = Object.entries(ELECTRICITY_RATES)
     .sort((a, b) => a[1].state.localeCompare(b[1].state))
@@ -373,6 +396,19 @@ export default function TaxCreditsPage() {
         </div>
       </div>
 
+      {/* Contextual Cross-Links */}
+      <div className="mt-6 flex flex-wrap gap-3 text-sm">
+        <Link href="/gas-vs-electric" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
+          Compare gas vs electric savings →
+        </Link>
+        <Link href="/charger-roi" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
+          Calculate charger ROI →
+        </Link>
+        <Link href="/ev-charging-cost" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
+          Estimate your charging costs →
+        </Link>
+      </div>
+
       <ShareResults
         title={`EV Tax Credits: ${fmt.format(totalEstimate)}`}
         text={`I may qualify for ${fmt.format(totalEstimate)} in EV tax credits for a ${vehicleType === "new" ? "new" : "used"} EV in ${ELECTRICITY_RATES[stateCode]?.state ?? stateCode}.${wantsCharger === "yes" ? ` Plus a charger installation credit!` : ""}`}
@@ -397,7 +433,7 @@ export default function TaxCreditsPage() {
           )}
           <AffiliateCard
             title="EV Tax Preparation Guide"
-            description="Comprehensive guide to claiming EV tax credits, understanding eligibility, and maximizing your savings at tax time."
+            description="Step-by-step guide to claiming EV tax credits, checking eligibility, and getting the most back at tax time."
             priceRange="$10 - $25"
             amazonTag={AMAZON_TAG}
             searchQuery="electric vehicle tax credit guide book"
@@ -407,7 +443,25 @@ export default function TaxCreditsPage() {
         </div>
       </div>
 
+      <EducationalContent>
+        <h2>How EV Tax Credits Work</h2>
+        <p>
+          Federal EV tax credits reduce your federal income tax liability dollar-for-dollar — a $4,000 credit means $4,000 less in taxes owed. These are nonrefundable credits, meaning they can reduce your tax bill to zero but won&apos;t generate a refund beyond that. Credits are claimed when you file your annual tax return using IRS Form 8936.
+        </p>
+        <h3>Current Federal Credit Status (2026)</h3>
+        <p>
+          The Section 30D new vehicle credit expired September 30, 2025 and has not been renewed. The Section 25E used vehicle credit remains active: 30% of the purchase price up to $4,000 for qualifying used EVs priced under $25,000. The Section 30C charger installation credit also remains: 30% of equipment and installation costs up to $1,000.
+        </p>
+        <h3>State Incentives Vary Widely</h3>
+        <ul>
+          <li>California offers rebates up to $7,500 through CVRP for lower-income buyers, plus utility-specific programs worth $500-1,000.</li>
+          <li>Colorado provides $5,000 state tax credits for new EVs, one of the most generous state programs.</li>
+          <li>Some states (Connecticut, Delaware, Maine) offer point-of-sale rebates that reduce the purchase price directly, rather than tax credits claimed later.</li>
+          <li>State programs change frequently — check your state&apos;s energy office website for the most current information before purchasing.</li>
+        </ul>
+      </EducationalContent>
       <FAQSection questions={taxCreditFAQ} />
+      <EmailCapture source="tax-credits" />
       <RelatedCalculators currentPath="/tax-credits" />
     </CalculatorLayout>
   );

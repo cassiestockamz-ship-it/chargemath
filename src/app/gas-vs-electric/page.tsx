@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
+import Link from "next/link";
 import CalculatorLayout from "@/components/CalculatorLayout";
 import SelectInput from "@/components/SelectInput";
 import NumberInput from "@/components/NumberInput";
@@ -12,6 +13,10 @@ import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import FAQSection from "@/components/FAQSection";
 import ShareResults from "@/components/ShareResults";
+import EducationalContent from "@/components/EducationalContent";
+import EmailCapture from "@/components/EmailCapture";
+import { getDefaultStateCode } from "@/lib/useDefaultState";
+import { useUrlSync } from "@/lib/useUrlState";
 import { gasVsElectricFAQ } from "@/data/faq-data";
 import {
   ELECTRICITY_RATES,
@@ -50,6 +55,26 @@ export default function GasVsElectricPage() {
   const [gasPrice, setGasPrice] = useState(3.5);
   const [gasMpg, setGasMpg] = useState(28);
   const [years, setYears] = useState("5");
+
+  const [stateDetected, setStateDetected] = useState(false);
+  useEffect(() => {
+    if (!stateDetected) {
+      setStateCode(getDefaultStateCode());
+      setStateDetected(true);
+    }
+  }, [stateDetected]);
+
+  useUrlSync(
+    { vehicle: vehicleId, state: stateCode, miles: dailyMiles, gas: gasPrice, mpg: gasMpg, years },
+    useCallback((p: Record<string, string>) => {
+      if (p.vehicle && EV_VEHICLES.some((v) => v.id === p.vehicle)) setVehicleId(p.vehicle);
+      if (p.state && p.state in ELECTRICITY_RATES) setStateCode(p.state);
+      if (p.miles) setDailyMiles(Number(p.miles));
+      if (p.gas) setGasPrice(Number(p.gas));
+      if (p.mpg) setGasMpg(Number(p.mpg));
+      if (p.years) setYears(p.years);
+    }, [])
+  );
 
   const vehicle = useMemo(
     () => EV_VEHICLES.find((v) => v.id === vehicleId) ?? EV_VEHICLES[0],
@@ -317,6 +342,19 @@ export default function GasVsElectricPage() {
         </div>
       </div>
 
+      {/* Contextual Cross-Links */}
+      <div className="mt-6 flex flex-wrap gap-3 text-sm">
+        <Link href="/ev-charging-cost" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
+          Calculate your exact charging cost →
+        </Link>
+        <Link href="/charger-roi" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
+          Calculate home charger ROI →
+        </Link>
+        <Link href="/tax-credits" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
+          Check your EV tax credits →
+        </Link>
+      </div>
+
       <ShareResults
         title={`Gas vs Electric: Save ${fmtWhole.format(results.annualSavings)}/year`}
         text={`Switching from gas to electric saves me ${fmtWhole.format(results.annualSavings)}/year on fuel. My ${vehicle.year} ${vehicle.make} ${vehicle.model} costs ${fmt.format(results.evCostPerMile)}/mile vs ${fmt.format(results.gasCostPerMile)}/mile for gas — ${fmtWhole.format(results.totalSavings)} total savings over ${periodYears} years!`}
@@ -348,7 +386,25 @@ export default function GasVsElectricPage() {
           />
         </div>
       </div>
+      <EducationalContent>
+        <h2>How the Gas vs Electric Comparison Works</h2>
+        <p>
+          We calculate the per-mile fuel cost for both drivetrains using real data: your EV&apos;s EPA efficiency rating in kWh/100 miles multiplied by your local electricity rate, versus your gas car&apos;s MPG rating divided into the current gas price. CO2 emissions use the EPA&apos;s standard of 8,887 grams per gallon of gasoline and 0.86 lbs of CO2 per kWh of electricity (the U.S. grid average).
+        </p>
+        <h3>Why EV Fuel Costs Are Lower</h3>
+        <p>
+          Electric motors convert 85-90% of electrical energy to motion, while internal combustion engines convert only 20-35% of gasoline energy. This fundamental efficiency gap means EVs travel 3-4 miles per kWh equivalent, compared to gas cars at roughly 1 mile per kWh equivalent. Home electricity at 12-16¢/kWh is also far cheaper per unit of energy than gasoline.
+        </p>
+        <h3>What This Comparison Doesn&apos;t Include</h3>
+        <ul>
+          <li>Maintenance savings — EVs have no oil changes, fewer brake replacements (regenerative braking), and no transmission service. This adds $500-1,000/year in savings.</li>
+          <li>Purchase price difference — the upfront cost gap is narrowing, and tax credits can close it further.</li>
+          <li>Insurance differences — EV insurance typically costs 10-15% more due to higher repair costs.</li>
+          <li>Battery degradation — most EV batteries retain 90%+ capacity after 200,000 miles, but replacement costs $5,000-15,000 if needed.</li>
+        </ul>
+      </EducationalContent>
       <FAQSection questions={gasVsElectricFAQ} />
+      <EmailCapture source="gas-vs-electric" />
       <RelatedCalculators currentPath="/gas-vs-electric" />
     </CalculatorLayout>
   );

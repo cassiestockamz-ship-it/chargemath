@@ -12,6 +12,8 @@ const NAV_LINKS = [
   { href: "/range", label: "Range", icon: "🗺️" },
   { href: "/tax-credits", label: "Tax Credits", icon: "🏛️" },
   { href: "/bill-impact", label: "Bill Impact", icon: "📄" },
+  { href: "/ev-vs-hybrid", label: "EV vs Hybrid", icon: "🔄" },
+  { href: "/lease-vs-buy", label: "Lease vs Buy", icon: "🔑" },
 ];
 
 export default function MobileMenu() {
@@ -19,7 +21,7 @@ export default function MobileMenu() {
   const pathname = usePathname();
 
   return (
-    <div className="md:hidden">
+    <div className="md:hidden" data-mobile-menu>
       <button
         onClick={() => setOpen(!open)}
         className="rounded-lg p-2 text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-alt)] hover:text-[var(--color-text)]"

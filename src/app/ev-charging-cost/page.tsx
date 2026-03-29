@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 import CalculatorLayout from "@/components/CalculatorLayout";
 import SelectInput from "@/components/SelectInput";
@@ -13,6 +13,10 @@ import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import FAQSection from "@/components/FAQSection";
 import ShareResults from "@/components/ShareResults";
+import EducationalContent from "@/components/EducationalContent";
+import EmailCapture from "@/components/EmailCapture";
+import { getDefaultStateCode } from "@/lib/useDefaultState";
+import { useUrlSync } from "@/lib/useUrlState";
 import { chargingCostFAQ } from "@/data/faq-data";
 import {
   ELECTRICITY_RATES,
@@ -44,6 +48,26 @@ export default function EVChargingCostPage() {
   const [customRate, setCustomRate] = useState<number | null>(null);
   const [dailyMiles, setDailyMiles] = useState(35);
   const [chargingLevel, setChargingLevel] = useState<ChargingLevel>("level2");
+
+  // Auto-detect state from timezone on first visit
+  const [stateDetected, setStateDetected] = useState(false);
+  useEffect(() => {
+    if (!stateDetected) {
+      setStateCode(getDefaultStateCode());
+      setStateDetected(true);
+    }
+  }, [stateDetected]);
+
+  // Sync state to/from URL for shareable links
+  useUrlSync(
+    { vehicle: vehicleId, state: stateCode, miles: dailyMiles, level: chargingLevel },
+    useCallback((p: Record<string, string>) => {
+      if (p.vehicle && EV_VEHICLES.some((v) => v.id === p.vehicle)) setVehicleId(p.vehicle);
+      if (p.state && p.state in ELECTRICITY_RATES) setStateCode(p.state);
+      if (p.miles) setDailyMiles(Number(p.miles));
+      if (p.level && ["level1", "level2", "dcfast"].includes(p.level)) setChargingLevel(p.level as ChargingLevel);
+    }, [])
+  );
 
   const vehicle = useMemo(
     () => EV_VEHICLES.find((v) => v.id === vehicleId) ?? EV_VEHICLES[0],
@@ -308,6 +332,19 @@ export default function EVChargingCostPage() {
           </p>
         </div>
 
+        {/* Contextual Cross-Links */}
+        <div className="mt-6 flex flex-wrap gap-3 text-sm">
+          <Link href="/gas-vs-electric" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
+            Compare gas vs electric costs →
+          </Link>
+          <Link href="/charging-time" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
+            How long does this charge take? →
+          </Link>
+          <Link href="/bill-impact" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
+            See your bill impact →
+          </Link>
+        </div>
+
         <ShareResults
           title={`EV Charging Cost: ${fmt.format(results.monthlyCost)}/month`}
           text={`My ${vehicle.year} ${vehicle.make} ${vehicle.model} costs ${fmt.format(results.monthlyCost)}/month to charge (${fmt.format(results.annualCost)}/year). That's ${fmtShort.format(results.annualSavings)}/year less than gas!`}
@@ -353,7 +390,25 @@ export default function EVChargingCostPage() {
           />
         </div>
       </div>
+      <EducationalContent>
+        <h2>How We Calculate EV Charging Costs</h2>
+        <p>
+          This calculator multiplies your vehicle&apos;s EPA-rated efficiency (kWh per 100 miles) by your daily mileage to determine energy consumption, then applies your state&apos;s residential electricity rate from the U.S. Energy Information Administration (EIA). DC Fast charging uses a 2.5x rate multiplier to reflect typical public station pricing.
+        </p>
+        <h3>Where the Data Comes From</h3>
+        <p>
+          Vehicle efficiency ratings come from the EPA&apos;s FuelEconomy.gov database, which tests every EV sold in the U.S. under standardized conditions. Electricity rates are EIA state-level residential averages updated annually. Real-world efficiency varies by 10-20% from EPA ratings depending on driving conditions, temperature, and speed.
+        </p>
+        <h3>Tips for Accuracy</h3>
+        <ul>
+          <li>Check your actual electricity rate on your utility bill — it may differ from the state average, especially if you have a time-of-use plan.</li>
+          <li>DC Fast charging rates vary widely by network ($0.25-0.60/kWh). Check your preferred network&apos;s pricing.</li>
+          <li>Cold weather can increase energy consumption by 30-40%, so winter costs may be noticeably higher.</li>
+          <li>Most EV owners charge to 80% daily, not 100%. A full charge estimate assumes you occasionally need maximum range.</li>
+        </ul>
+      </EducationalContent>
       <FAQSection questions={chargingCostFAQ} />
+      <EmailCapture source="ev-charging-cost" />
       <RelatedCalculators currentPath="/ev-charging-cost" />
     </CalculatorLayout>
   );

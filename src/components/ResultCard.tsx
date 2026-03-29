@@ -20,6 +20,8 @@ export default function ResultCard({
           ? "border-[var(--color-ev-green)]/30 bg-[var(--color-ev-green)]/5"
           : "border-[var(--color-border)] bg-[var(--color-surface)]"
       }`}
+      aria-live="polite"
+      role="status"
     >
       <div className="mb-1 text-sm font-medium text-[var(--color-text-muted)]">
         {icon && <span className="mr-1.5">{icon}</span>}

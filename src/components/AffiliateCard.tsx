@@ -149,6 +149,7 @@ export default function AffiliateCard({
       rel="noopener noreferrer nofollow sponsored"
       className="group block overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] transition-all hover:border-[var(--color-primary)]/30 hover:shadow-md"
       aria-label={imageAlt}
+      data-affiliate-card
     >
       {/* Product Image Area */}
       <div className={`flex h-36 items-center justify-center bg-gradient-to-br ${productIcon.bg}`}>

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
+import Link from "next/link";
 import CalculatorLayout from "@/components/CalculatorLayout";
 import SelectInput from "@/components/SelectInput";
 import SliderInput from "@/components/SliderInput";
@@ -11,6 +12,9 @@ import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import FAQSection from "@/components/FAQSection";
 import ShareResults from "@/components/ShareResults";
+import EducationalContent from "@/components/EducationalContent";
+import EmailCapture from "@/components/EmailCapture";
+import { useUrlSync } from "@/lib/useUrlState";
 import { rangeFAQ } from "@/data/faq-data";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
 
@@ -87,6 +91,19 @@ export default function RangePage() {
   const [climate, setClimate] = useState<ClimateControl>("off");
   const [terrain, setTerrain] = useState<Terrain>("flat");
   const [cargo, setCargo] = useState<Cargo>("driver");
+
+  useUrlSync(
+    { vehicle: vehicleId, battery: startPercent, temp: temperature, speed, climate, terrain, cargo },
+    useCallback((p: Record<string, string>) => {
+      if (p.vehicle && EV_VEHICLES.some((v) => v.id === p.vehicle)) setVehicleId(p.vehicle);
+      if (p.battery) setStartPercent(Number(p.battery));
+      if (p.temp) setTemperature(Number(p.temp));
+      if (p.speed) setSpeed(Number(p.speed));
+      if (p.climate && ["off", "ac", "heat", "heat_seats"].includes(p.climate)) setClimate(p.climate as ClimateControl);
+      if (p.terrain && ["flat", "hilly", "mountainous"].includes(p.terrain)) setTerrain(p.terrain as Terrain);
+      if (p.cargo && ["driver", "two_passengers", "full", "towing"].includes(p.cargo)) setCargo(p.cargo as Cargo);
+    }, [])
+  );
 
   const vehicle = useMemo(
     () => EV_VEHICLES.find((v) => v.id === vehicleId) ?? EV_VEHICLES[0],
@@ -358,6 +375,19 @@ export default function RangePage() {
         </div>
       </div>
 
+      {/* Contextual Cross-Links */}
+      <div className="mt-6 flex flex-wrap gap-3 text-sm">
+        <Link href="/ev-charging-cost" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
+          How much does this range cost? →
+        </Link>
+        <Link href="/charging-time" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
+          Calculate charging time →
+        </Link>
+        <Link href="/gas-vs-electric" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
+          Compare gas vs electric costs →
+        </Link>
+      </div>
+
       <ShareResults
         title={`Real Range: ${Math.round(results.adjustedRange)} miles`}
         text={`My ${vehicle.year} ${vehicle.make} ${vehicle.model} gets ${Math.round(results.adjustedRange)} miles real-world range vs ${Math.round(results.baseRange)} miles EPA at ${startPercent}% battery. That's ${results.percentOfEpa.toFixed(0)}% of EPA range at ${speed} mph and ${temperature}°F.`}
@@ -412,7 +442,25 @@ export default function RangePage() {
         </div>
       </div>
 
+      <EducationalContent>
+        <h2>How Real-World EV Range Is Calculated</h2>
+        <p>
+          This calculator starts with your vehicle&apos;s EPA-rated range and applies multiplicative reduction factors for temperature, speed, climate control, terrain, and cargo weight. Each factor is based on published research from organizations including AAA, Idaho National Laboratory, and Recurrent Auto.
+        </p>
+        <h3>Why EPA Range Doesn&apos;t Match Reality</h3>
+        <p>
+          The EPA tests vehicles on a dynamometer at 73°F with no climate control, no wind, and a standardized drive cycle averaging about 48 mph. Real driving includes highway speeds, temperature extremes, hills, and passenger weight — all of which reduce efficiency. Most drivers see 10-20% less range than the EPA rating under normal conditions, and up to 40% less in extreme cold.
+        </p>
+        <h3>Maximizing Your Range</h3>
+        <ul>
+          <li>Tire pressure matters — under-inflated tires can reduce range by 3-5%. Check monthly and inflate to the door placard spec, not the tire sidewall maximum.</li>
+          <li>Pre-condition while plugged in — heating or cooling the cabin while still connected to the charger preserves battery energy for driving.</li>
+          <li>Use seat heaters instead of cabin heat — heated seats and steering wheel use 75% less energy than the climate system.</li>
+          <li>Slow down on highways — aerodynamic drag increases with the square of speed. Driving 65 mph instead of 75 mph can recover 10-15% of range.</li>
+        </ul>
+      </EducationalContent>
       <FAQSection questions={rangeFAQ} />
+      <EmailCapture source="range" />
       <RelatedCalculators currentPath="/range" />
     </CalculatorLayout>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import CalculatorLayout from "@/components/CalculatorLayout";
 import SelectInput from "@/components/SelectInput";
 import NumberInput from "@/components/NumberInput";
@@ -12,7 +12,11 @@ import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import FAQSection from "@/components/FAQSection";
 import ShareResults from "@/components/ShareResults";
+import EducationalContent from "@/components/EducationalContent";
+import EmailCapture from "@/components/EmailCapture";
 import Link from "next/link";
+import { getDefaultStateCode } from "@/lib/useDefaultState";
+import { useUrlSync } from "@/lib/useUrlState";
 import { billImpactFAQ } from "@/data/faq-data";
 import {
   ELECTRICITY_RATES,
@@ -39,6 +43,25 @@ export default function BillImpactPage() {
   const [chargingHome, setChargingHome] = useState(100);
   const [hasTOU, setHasTOU] = useState("no");
   const [offPeakDiscount, setOffPeakDiscount] = useState(40);
+
+  const [stateDetected, setStateDetected] = useState(false);
+  useEffect(() => {
+    if (!stateDetected) {
+      setStateCode(getDefaultStateCode());
+      setStateDetected(true);
+    }
+  }, [stateDetected]);
+
+  useUrlSync(
+    { vehicle: vehicleId, state: stateCode, bill: currentBill, miles: dailyMiles, home: chargingHome },
+    useCallback((p: Record<string, string>) => {
+      if (p.vehicle && EV_VEHICLES.some((v) => v.id === p.vehicle)) setVehicleId(p.vehicle);
+      if (p.state && p.state in ELECTRICITY_RATES) setStateCode(p.state);
+      if (p.bill) setCurrentBill(Number(p.bill));
+      if (p.miles) setDailyMiles(Number(p.miles));
+      if (p.home) setChargingHome(Number(p.home));
+    }, [])
+  );
 
   const vehicle = useMemo(
     () => EV_VEHICLES.find((v) => v.id === vehicleId) ?? EV_VEHICLES[0],
@@ -311,9 +334,18 @@ export default function BillImpactPage() {
           </p>
         </div>
 
-        <p className="text-sm text-gray-500 mt-4">
-          <Link href="/gas-vs-electric" className="text-blue-500 hover:underline">Compare gas vs electric costs &rarr;</Link>
-        </p>
+        {/* Contextual Cross-Links */}
+        <div className="mt-6 flex flex-wrap gap-3 text-sm">
+          <Link href="/gas-vs-electric" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
+            Compare gas vs electric costs →
+          </Link>
+          <Link href="/ev-charging-cost" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
+            Break down your charging cost →
+          </Link>
+          <Link href="/charger-roi" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
+            Is a home charger worth it? →
+          </Link>
+        </div>
 
         <ShareResults
           title={`EV Bill Impact: ${fmtPct(results.percentIncrease)}`}
@@ -348,7 +380,25 @@ export default function BillImpactPage() {
         </div>
       </div>
 
+      <EducationalContent>
+        <h2>How We Estimate Your Bill Impact</h2>
+        <p>
+          This calculator converts your daily mileage into energy consumption using your vehicle&apos;s EPA efficiency rating, then multiplies by your state&apos;s average residential electricity rate from the EIA. The home charging percentage lets you account for workplace or public charging that wouldn&apos;t appear on your home bill.
+        </p>
+        <h3>Time-of-Use Plans Can Cut EV Costs 30-50%</h3>
+        <p>
+          Many utilities offer time-of-use (TOU) rate plans with heavily discounted overnight rates — exactly when most people charge their EVs. In California, PG&amp;E&apos;s EV rate charges 25¢/kWh off-peak versus 55¢/kWh peak. Most smart EV chargers can schedule charging to start automatically when off-peak rates begin.
+        </p>
+        <h3>Reducing Your EV&apos;s Impact on Your Bill</h3>
+        <ul>
+          <li>Switch to a TOU plan — this is the single biggest cost reduction available to most EV owners. Contact your utility to compare plan options.</li>
+          <li>Charge during off-peak hours (typically 9pm-6am) — even without a formal TOU plan, avoiding peak demand helps grid stability and may qualify for utility incentives.</li>
+          <li>A whole-home energy monitor ($100-300) can track exactly what your EV costs per charge and identify other energy savings opportunities.</li>
+          <li>Solar panels can offset 100% of EV charging costs for homeowners, with typical payback periods of 5-8 years depending on your state&apos;s solar resources.</li>
+        </ul>
+      </EducationalContent>
       <FAQSection questions={billImpactFAQ} />
+      <EmailCapture source="bill-impact" />
       <RelatedCalculators currentPath="/bill-impact" />
     </CalculatorLayout>
   );

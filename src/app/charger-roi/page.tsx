@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import CalculatorLayout from "@/components/CalculatorLayout";
 import SelectInput from "@/components/SelectInput";
 import NumberInput from "@/components/NumberInput";
@@ -12,7 +12,11 @@ import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import FAQSection from "@/components/FAQSection";
 import ShareResults from "@/components/ShareResults";
+import EducationalContent from "@/components/EducationalContent";
+import EmailCapture from "@/components/EmailCapture";
 import Link from "next/link";
+import { getDefaultStateCode } from "@/lib/useDefaultState";
+import { useUrlSync } from "@/lib/useUrlState";
 import { chargerRoiFAQ } from "@/data/faq-data";
 import {
   ELECTRICITY_RATES,
@@ -47,6 +51,25 @@ export default function ChargerROIPage() {
   const [installCost, setInstallCost] = useState(800);
   const [publicRate, setPublicRate] = useState(0.35);
   const [publicSplit, setPublicSplit] = useState<PublicSplit>("100");
+
+  const [stateDetected, setStateDetected] = useState(false);
+  useEffect(() => {
+    if (!stateDetected) {
+      setStateCode(getDefaultStateCode());
+      setStateDetected(true);
+    }
+  }, [stateDetected]);
+
+  useUrlSync(
+    { vehicle: vehicleId, state: stateCode, miles: dailyMiles, charger: chargerCost, install: installCost },
+    useCallback((p: Record<string, string>) => {
+      if (p.vehicle && EV_VEHICLES.some((v) => v.id === p.vehicle)) setVehicleId(p.vehicle);
+      if (p.state && p.state in ELECTRICITY_RATES) setStateCode(p.state);
+      if (p.miles) setDailyMiles(Number(p.miles));
+      if (p.charger) setChargerCost(Number(p.charger));
+      if (p.install) setInstallCost(Number(p.install));
+    }, [])
+  );
 
   const vehicle = useMemo(
     () => EV_VEHICLES.find((v) => v.id === vehicleId) ?? EV_VEHICLES[0],
@@ -344,9 +367,18 @@ export default function ChargerROIPage() {
             </p>
           )}
         </div>
-        <p className="text-sm text-gray-500 mt-4">
-          <Link href="/charging-time" className="text-blue-500 hover:underline">Check your charging time &rarr;</Link>
-        </p>
+        {/* Contextual Cross-Links */}
+        <div className="mt-6 flex flex-wrap gap-3 text-sm">
+          <Link href="/charging-time" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
+            Check your charging time →
+          </Link>
+          <Link href="/ev-charging-cost" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
+            Calculate monthly charging cost →
+          </Link>
+          <Link href="/tax-credits" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
+            Get a charger installation credit →
+          </Link>
+        </div>
       </div>
 
       <ShareResults
@@ -389,7 +421,25 @@ export default function ChargerROIPage() {
           />
         </div>
       </div>
+      <EducationalContent>
+        <h2>How the Charger ROI Calculation Works</h2>
+        <p>
+          The payback period divides your total upfront cost (charger + installation) by the monthly savings from charging at home versus your current mix of public and Level 1 charging. Home electricity rates come from EIA state averages. Public charging rates default to $0.35/kWh, which reflects the 2026 average across major networks like Electrify America and ChargePoint.
+        </p>
+        <h3>Installation Costs: What to Expect</h3>
+        <p>
+          The charger unit itself typically costs $300-600. Installation costs vary more: a simple NEMA 14-50 outlet install runs $200-500 if your panel is nearby and has capacity. Panel upgrades add $1,000-3,000. Running new wire from a distant panel adds $500-1,500. Get three quotes from licensed electricians — prices vary significantly by region.
+        </p>
+        <h3>Factors That Improve Your ROI</h3>
+        <ul>
+          <li>High daily mileage — the more you drive, the faster a home charger pays off. Commuters driving 50+ miles/day typically break even in under a year.</li>
+          <li>Time-of-use electricity plans — many utilities offer overnight rates 30-50% below standard rates, making home charging even cheaper.</li>
+          <li>The federal 30C charger tax credit covers 30% of equipment and installation costs (up to $1,000), effectively reducing your payback period by nearly a third.</li>
+          <li>Home chargers increase property value — a 2024 Zillow study found homes with EV chargers sold for 3.3% more on average.</li>
+        </ul>
+      </EducationalContent>
       <FAQSection questions={chargerRoiFAQ} />
+      <EmailCapture source="charger-roi" />
       <RelatedCalculators currentPath="/charger-roi" />
     </CalculatorLayout>
   );
