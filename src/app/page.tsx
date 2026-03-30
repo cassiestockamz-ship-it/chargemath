@@ -123,12 +123,14 @@ export default function HomePage() {
       <section className="border-t border-[var(--color-border)] bg-[var(--color-surface-alt)]">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
           <h2 className="mb-8 text-center text-xl font-bold text-[var(--color-text)]">All Calculators</h2>
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid items-start gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {categories.map((cat) => (
               <div key={cat.label}>
-                <h3 className="mb-3 border-b-2 border-[var(--color-primary)]/30 pb-2 text-sm font-bold uppercase tracking-wider text-[var(--color-primary)]">
-                  <span className="mr-1.5">{cat.icon}</span>{cat.label}
-                </h3>
+                <div className="mb-3 border-b-2 border-[var(--color-primary)]/20 pb-2">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--color-primary)]">
+                    <span className="mr-1.5">{cat.icon}</span>{cat.label}
+                  </h3>
+                </div>
                 <ul className="space-y-1.5">
                   {cat.items.map((item) => (
                     <li key={item.href}>
