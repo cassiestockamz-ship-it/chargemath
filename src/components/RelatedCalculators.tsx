@@ -34,6 +34,7 @@ const ALL_CALCULATORS: Calc[] = [
   { title: "Battery Degradation", description: "Estimate battery capacity over time", href: "/battery-degradation", icon: "🔋", category: "battery" },
   { title: "Carbon Footprint", description: "CO2 savings vs a gas car", href: "/carbon-footprint", icon: "🌱", category: "battery" },
   { title: "Solar + EV", description: "Solar panel offset for EV charging", href: "/solar-ev", icon: "☀️", category: "battery" },
+  { title: "Solar Panel Sizing", description: "How many panels to charge your EV", href: "/solar-ev-sizing", icon: "🔢", category: "battery" },
   { title: "Fleet Calculator", description: "Fleet electrification ROI", href: "/fleet", icon: "🚐", category: "battery" },
 ];
 
