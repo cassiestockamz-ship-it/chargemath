@@ -33,8 +33,11 @@ const ALL_CALCULATORS: Calc[] = [
   // Battery & Energy
   { title: "Battery Degradation", description: "Estimate battery capacity over time", href: "/battery-degradation", icon: "🔋", category: "battery" },
   { title: "Carbon Footprint", description: "CO2 savings vs a gas car", href: "/carbon-footprint", icon: "🌱", category: "battery" },
-  { title: "Solar + EV", description: "Solar panel offset for EV charging", href: "/solar-ev", icon: "☀️", category: "battery" },
-  { title: "Solar Panel Sizing", description: "How many panels to charge your EV", href: "/solar-ev-sizing", icon: "🔢", category: "battery" },
+  { title: "Solar + EV", description: "Solar panel offset for EV charging", href: "/solar-ev", icon: "☀️", category: "solar" },
+  { title: "Solar Panel Sizing", description: "How many panels to charge your EV", href: "/solar-ev-sizing", icon: "🔢", category: "solar" },
+  { title: "Solar Payback", description: "Payback period with vs without an EV", href: "/solar-payback", icon: "📊", category: "solar" },
+  { title: "Solar + Battery", description: "Size a battery for overnight EV charging", href: "/solar-battery-ev", icon: "🔋", category: "solar" },
+  { title: "Solar vs Grid Cost", description: "Long-term solar vs grid EV cost comparison", href: "/solar-vs-grid-ev", icon: "⚡", category: "solar" },
   { title: "Fleet Calculator", description: "Fleet electrification ROI", href: "/fleet", icon: "🚐", category: "battery" },
 ];
 

@@ -46,12 +46,16 @@ const categories = [
     ],
   },
   {
-    label: "Battery & Energy",
-    icon: "🔋",
+    label: "Solar & Energy",
+    icon: "☀️",
     items: [
+      { title: "Solar + EV", href: "/solar-ev" },
+      { title: "Solar Panel Sizing", href: "/solar-ev-sizing" },
+      { title: "Solar Payback", href: "/solar-payback" },
+      { title: "Solar + Battery", href: "/solar-battery-ev" },
+      { title: "Solar vs Grid Cost", href: "/solar-vs-grid-ev" },
       { title: "Battery Degradation", href: "/battery-degradation" },
       { title: "Carbon Footprint", href: "/carbon-footprint" },
-      { title: "Solar + EV", href: "/solar-ev" },
       { title: "Fleet Calculator", href: "/fleet" },
     ],
   },
@@ -78,7 +82,7 @@ export default function HomePage() {
       {/* Hero */}
       <section className="px-4 pb-16 pt-20 text-center sm:px-6">
         <h1 className="text-4xl font-extrabold tracking-tight text-[var(--color-text)] sm:text-5xl lg:text-6xl">
-          22 Free{" "}
+          26 Free{" "}
           <span className="text-[var(--color-primary)]">EV Calculators</span>
         </h1>
         <p className="mx-auto mt-5 max-w-2xl text-lg text-[var(--color-text-muted)] sm:text-xl">

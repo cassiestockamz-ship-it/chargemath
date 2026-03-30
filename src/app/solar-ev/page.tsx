@@ -20,24 +20,7 @@ import {
   NATIONAL_AVERAGE_RATE,
 } from "@/data/electricity-rates";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
-
-/* ── Solar production by state (kWh per kW installed per year) ── */
-const SUNNY_STATES = new Set([
-  "AZ", "NV", "CA", "NM", "TX", "FL", "CO", "UT",
-]);
-const CLOUDY_STATES = new Set([
-  "WA", "OR", "OH", "MI", "PA", "NY", "CT", "MA", "VT", "NH", "ME",
-]);
-
-const SOLAR_PRODUCTION: Record<string, number> = Object.keys(ELECTRICITY_RATES).reduce(
-  (acc, code) => {
-    if (SUNNY_STATES.has(code)) acc[code] = 1600;
-    else if (CLOUDY_STATES.has(code)) acc[code] = 1000;
-    else acc[code] = 1300;
-    return acc;
-  },
-  {} as Record<string, number>
-);
+import { SOLAR_DATA, NATIONAL_AVG_SOLAR_PRODUCTION } from "@/data/solar-data";
 
 /* ── Formatters ── */
 const fmt = new Intl.NumberFormat("en-US", {
@@ -68,9 +51,9 @@ const solarEvFAQ = [
       "In most cases, yes. A typical 7 kW solar system produces 9,100-11,200 kWh per year, while the average EV driven 35 miles per day needs roughly 3,200 kWh annually. The surplus offsets your home electricity bill too. In cloudier states you may need a larger system or will cover a smaller share.",
   },
   {
-    question: "How does the 30% federal solar tax credit work?",
+    question: "What happened to the federal solar tax credit?",
     answer:
-      "The Investment Tax Credit (ITC) lets you deduct 30% of your total solar installation cost from your federal income taxes. For a $20,000 system, that is a $6,000 credit. The credit applies to equipment, labor, and permitting. It is available through 2032, then steps down to 26% in 2033 and 22% in 2034.",
+      "The residential solar Investment Tax Credit (Section 25D) was eliminated by the One Big Beautiful Bill Act, signed July 4, 2025. Homeowner-owned systems installed in 2026 and beyond no longer qualify for a federal tax credit. However, if you lease solar panels or use a Power Purchase Agreement (PPA), the installer may still claim the Section 48E commercial credit (30%) through 2027 and pass some savings to you. Many states also offer their own solar incentives, rebates, or property tax exemptions.",
   },
   {
     question: "Do I need a battery to charge my EV with solar?",
@@ -95,7 +78,7 @@ export default function SolarEVPage() {
   const [stateCode, setStateCode] = useState("CA");
   const [solarSizeKw, setSolarSizeKw] = useState(7);
   const [installCost, setInstallCost] = useState(20000);
-  const [taxCreditEnabled, setTaxCreditEnabled] = useState(true);
+  const [taxCreditEnabled, setTaxCreditEnabled] = useState(false);
   const [dailyMiles, setDailyMiles] = useState(35);
   const [monthlyBill, setMonthlyBill] = useState(150);
 
@@ -145,7 +128,7 @@ export default function SolarEVPage() {
     return (stateRate?.residential ?? NATIONAL_AVERAGE_RATE) / 100; // $/kWh
   }, [stateCode]);
 
-  const solarProductionPerKw = SOLAR_PRODUCTION[stateCode] ?? 1300;
+  const solarProductionPerKw = SOLAR_DATA[stateCode]?.kwhPerKwYear ?? NATIONAL_AVG_SOLAR_PRODUCTION;
 
   /* ── Calculations ── */
   const results = useMemo(() => {
@@ -250,7 +233,7 @@ export default function SolarEVPage() {
     <CalculatorLayout
       title="Solar + EV Calculator"
       description="Estimate how solar panels can offset your EV charging costs and home electricity bill."
-      intro="Pairing solar panels with an EV is one of the best financial moves for EV owners. A typical 7 kW system produces enough energy to cover all EV charging for an average driver and still offset a large portion of your home electricity. With the 30% federal tax credit, most solar systems pay for themselves in 6-10 years and then generate free electricity for another 15-19 years."
+      intro="Pairing solar panels with an EV is one of the best financial moves for EV owners. A typical 7 kW system produces enough energy to cover all EV charging for an average driver and still offset a large portion of your home electricity. Even without the federal residential tax credit (eliminated in 2025), most solar systems pay for themselves in 8-12 years and then generate free electricity for another 13-17 years."
       lastUpdated="March 2026"
     >
       <CalculatorSchema
@@ -280,7 +263,7 @@ export default function SolarEVPage() {
           value={stateCode}
           onChange={setStateCode}
           options={stateOptions}
-          helpText={`${solarProductionPerKw} kWh/kW/yr solar production \u2022 ${ELECTRICITY_RATES[stateCode]?.residential ?? NATIONAL_AVERAGE_RATE}\u00a2/kWh electricity`}
+          helpText={`${solarProductionPerKw.toLocaleString()} kWh/kW/yr solar \u2022 ${SOLAR_DATA[stateCode]?.peakSunHours ?? 4.5} peak sun hrs/day \u2022 ${ELECTRICITY_RATES[stateCode]?.residential ?? NATIONAL_AVERAGE_RATE}\u00a2/kWh`}
         />
 
         <div className="sm:col-span-2">
@@ -344,7 +327,7 @@ export default function SolarEVPage() {
             htmlFor="tax-credit-toggle"
             className="text-sm font-medium text-[var(--color-text)]"
           >
-            Apply 30% Federal Solar Tax Credit (ITC)
+            Apply 30% Tax Credit (lease/PPA via Section 48E, through 2027)
             {taxCreditEnabled && (
               <span className="ml-2 text-[var(--color-ev-green)]">
                 Saving {fmtShort.format(results.taxCredit)}
@@ -526,14 +509,17 @@ export default function SolarEVPage() {
           utility. Some states offer full retail credit, while others offer
           reduced rates. Check with your utility for specific terms.
         </p>
-        <h3>The 30% Federal Tax Credit</h3>
+        <h3>Solar Tax Credits in 2026</h3>
         <p>
-          The Inflation Reduction Act extended the Investment Tax Credit (ITC)
-          at 30% through 2032. This applies to the full cost of a residential
-          solar installation, including equipment, labor, and permitting. For a
-          $20,000 system, that is $6,000 off your federal tax bill. The credit
-          steps down to 26% in 2033 and 22% in 2034. Some states offer
-          additional incentives on top of the federal credit.
+          The residential solar tax credit (Section 25D) was eliminated by the
+          One Big Beautiful Bill Act signed in July 2025. If you buy and own
+          your solar system outright, there is no longer a federal tax credit
+          available. However, third-party-owned systems (leases and Power
+          Purchase Agreements) may still benefit from the Section 48E commercial
+          credit at 30% through the end of 2027. Many states also offer their
+          own incentives, including rebates, property tax exemptions, and
+          renewable energy credits. Check your state&apos;s energy office for
+          current programs.
         </p>
       </EducationalContent>
 

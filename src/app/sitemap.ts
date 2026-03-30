@@ -28,6 +28,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/battery-degradation',
     '/carbon-footprint',
     '/solar-ev',
+    '/solar-ev-sizing',
+    '/solar-payback',
+    '/solar-battery-ev',
+    '/solar-vs-grid-ev',
     '/fleet',
     '/used-ev-value',
   ]

@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "All EV Calculators",
   description:
-    "22 free EV calculators: charging costs, range estimates, battery health, total cost of ownership, lease vs buy, road trip planning, and more. Powered by real EPA data.",
+    "26 free EV calculators: charging costs, range estimates, solar sizing, battery storage, total cost of ownership, and more. Powered by real EPA data.",
   alternates: { canonical: "/calculators" },
 };
 
@@ -53,14 +53,18 @@ const categories = [
     ],
   },
   {
-    id: "battery",
-    label: "Battery & Energy",
-    icon: "🔋",
-    description: "Track battery health, environmental impact, and energy sources.",
+    id: "solar",
+    label: "Solar & Energy",
+    icon: "☀️",
+    description: "Solar panel sizing, payback analysis, battery storage, and environmental impact.",
     calculators: [
+      { title: "Solar + EV", description: "Solar panel offset for EV charging", href: "/solar-ev" },
+      { title: "Solar Panel Sizing", description: "How many panels to charge your EV", href: "/solar-ev-sizing" },
+      { title: "Solar Payback", description: "Payback period with vs without an EV", href: "/solar-payback" },
+      { title: "Solar + Battery", description: "Size a battery for overnight EV charging", href: "/solar-battery-ev" },
+      { title: "Solar vs Grid Cost", description: "Long-term solar vs grid EV cost comparison", href: "/solar-vs-grid-ev" },
       { title: "Battery Degradation", description: "Estimate battery capacity over time", href: "/battery-degradation" },
       { title: "Carbon Footprint", description: "CO2 savings vs a gas car", href: "/carbon-footprint" },
-      { title: "Solar + EV", description: "Solar panel offset for EV charging", href: "/solar-ev" },
       { title: "Fleet Calculator", description: "Fleet electrification ROI", href: "/fleet" },
     ],
   },

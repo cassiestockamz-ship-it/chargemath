@@ -38,11 +38,15 @@ const categories = [
     ],
   },
   {
-    label: "Battery & Energy",
+    label: "Solar & Energy",
     items: [
+      { title: "Solar + EV", href: "/solar-ev" },
+      { title: "Solar Panel Sizing", href: "/solar-ev-sizing" },
+      { title: "Solar Payback", href: "/solar-payback" },
+      { title: "Solar + Battery", href: "/solar-battery-ev" },
+      { title: "Solar vs Grid Cost", href: "/solar-vs-grid-ev" },
       { title: "Battery Degradation", href: "/battery-degradation" },
       { title: "Carbon Footprint", href: "/carbon-footprint" },
-      { title: "Solar + EV", href: "/solar-ev" },
       { title: "Fleet Calculator", href: "/fleet" },
     ],
   },
@@ -111,7 +115,7 @@ export default function NavDropdown() {
               onClick={() => setOpen(false)}
               className="text-xs font-medium text-[var(--color-primary)] hover:underline"
             >
-              View all 22 calculators &rarr;
+              View all 26 calculators &rarr;
             </Link>
           </div>
         </div>
