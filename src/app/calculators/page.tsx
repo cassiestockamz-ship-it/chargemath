@@ -90,19 +90,19 @@ export default function CalculatorsPage() {
             </h2>
           </div>
           <p className="mb-3 text-xs text-[var(--color-text-muted)]">{cat.description}</p>
-          <div className="grid gap-x-8 gap-y-2 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-x-8 gap-y-1 sm:grid-cols-2 lg:grid-cols-3">
             {cat.calculators.map((calc) => (
               <Link
                 key={calc.href}
                 href={calc.href}
-                className="group flex items-baseline gap-2 rounded-lg py-1.5 transition-colors hover:text-[var(--color-primary)]"
+                className="group rounded-lg py-2 transition-colors"
               >
-                <span className="text-sm font-medium text-[var(--color-text)] group-hover:text-[var(--color-primary)]">
+                <div className="text-sm font-medium text-[var(--color-text)] group-hover:text-[var(--color-primary)]">
                   {calc.title}
-                </span>
-                <span className="text-xs text-[var(--color-text-muted)] group-hover:text-[var(--color-primary)]/70">
+                </div>
+                <div className="text-xs text-[var(--color-text-muted)]">
                   {calc.description}
-                </span>
+                </div>
               </Link>
             ))}
           </div>
