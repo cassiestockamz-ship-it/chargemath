@@ -1,4 +1,5 @@
 import Link from "next/link";
+import CalculatorSearch from "@/components/CalculatorSearch";
 
 const featured = [
   { title: "EV Charging Cost Calculator", description: "Estimate your monthly and annual EV charging costs based on your vehicle, state, and driving habits.", href: "/ev-charging-cost", icon: "🔌" },
@@ -117,6 +118,11 @@ export default function HomePage() {
             </Link>
           ))}
         </div>
+      </section>
+
+      {/* Search */}
+      <section className="mx-auto max-w-6xl px-4 pb-12 sm:px-6">
+        <CalculatorSearch />
       </section>
 
       {/* All Calculators - compact directory */}

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import CalculatorSearch from "@/components/CalculatorSearch";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -15,15 +16,15 @@ const categories = [
     icon: "💰",
     description: "Compare ownership costs, find savings, and figure out when an EV pays for itself.",
     calculators: [
-      { title: "Charging Cost", description: "Monthly & annual charging estimates", href: "/ev-charging-cost", icon: "🔌" },
-      { title: "Gas vs Electric", description: "Side-by-side cost & CO2 comparison", href: "/gas-vs-electric", icon: "⚖️" },
-      { title: "EV vs Hybrid", description: "Three-way EV, hybrid & gas comparison", href: "/ev-vs-hybrid", icon: "🔄" },
-      { title: "Total Cost of Ownership", description: "Full cost: fuel, insurance, maintenance", href: "/total-cost", icon: "📋" },
-      { title: "Lease vs Buy", description: "Compare leasing vs buying an EV", href: "/lease-vs-buy", icon: "🔑" },
-      { title: "Payback Period", description: "When does your EV pay for itself?", href: "/payback-period", icon: "📊" },
-      { title: "Commute Cost", description: "Daily commute savings with an EV", href: "/commute-cost", icon: "🏢" },
-      { title: "Used EV Value", description: "Estimate used EV value & battery health", href: "/used-ev-value", icon: "🏷️" },
-      { title: "Tax Credits", description: "Federal & state EV incentives", href: "/tax-credits", icon: "🏛️" },
+      { title: "Charging Cost", description: "Monthly & annual charging estimates", href: "/ev-charging-cost" },
+      { title: "Gas vs Electric", description: "Side-by-side cost & CO2 comparison", href: "/gas-vs-electric" },
+      { title: "EV vs Hybrid", description: "Three-way EV, hybrid & gas comparison", href: "/ev-vs-hybrid" },
+      { title: "Total Cost of Ownership", description: "Full cost: fuel, insurance, maintenance", href: "/total-cost" },
+      { title: "Lease vs Buy", description: "Compare leasing vs buying an EV", href: "/lease-vs-buy" },
+      { title: "Payback Period", description: "When does your EV pay for itself?", href: "/payback-period" },
+      { title: "Commute Cost", description: "Daily commute savings with an EV", href: "/commute-cost" },
+      { title: "Used EV Value", description: "Estimate used EV value & battery health", href: "/used-ev-value" },
+      { title: "Tax Credits", description: "Federal & state EV incentives", href: "/tax-credits" },
     ],
   },
   {
@@ -32,11 +33,11 @@ const categories = [
     icon: "🔌",
     description: "Estimate charging time, costs, and find the cheapest way to charge.",
     calculators: [
-      { title: "Charging Time", description: "How long to charge at any level", href: "/charging-time", icon: "⏱️" },
-      { title: "Charger ROI", description: "Home charger payback calculator", href: "/charger-roi", icon: "🏠" },
-      { title: "Bill Impact", description: "How much your electric bill goes up", href: "/bill-impact", icon: "📄" },
-      { title: "Public Charging", description: "Public vs home charging costs", href: "/public-charging", icon: "⚡" },
-      { title: "TOU Optimizer", description: "Find the cheapest time to charge", href: "/tou-optimizer", icon: "🕐" },
+      { title: "Charging Time", description: "How long to charge at any level", href: "/charging-time" },
+      { title: "Charger ROI", description: "Home charger payback calculator", href: "/charger-roi" },
+      { title: "Bill Impact", description: "How much your electric bill goes up", href: "/bill-impact" },
+      { title: "Public Charging", description: "Public vs home charging costs", href: "/public-charging" },
+      { title: "TOU Optimizer", description: "Find the cheapest time to charge", href: "/tou-optimizer" },
     ],
   },
   {
@@ -45,10 +46,10 @@ const categories = [
     icon: "🗺️",
     description: "Plan trips and estimate real-world range in any conditions.",
     calculators: [
-      { title: "Range Calculator", description: "Real-world range by conditions", href: "/range", icon: "🗺️" },
-      { title: "Winter Range", description: "Cold weather range impact", href: "/winter-range", icon: "❄️" },
-      { title: "Towing Range", description: "Range while towing a trailer", href: "/towing-range", icon: "🚛" },
-      { title: "Road Trip Planner", description: "EV road trip cost & charging stops", href: "/road-trip", icon: "🛣️" },
+      { title: "Range Calculator", description: "Real-world range by conditions", href: "/range" },
+      { title: "Winter Range", description: "Cold weather range impact", href: "/winter-range" },
+      { title: "Towing Range", description: "Range while towing a trailer", href: "/towing-range" },
+      { title: "Road Trip Planner", description: "EV road trip cost & charging stops", href: "/road-trip" },
     ],
   },
   {
@@ -57,10 +58,10 @@ const categories = [
     icon: "🔋",
     description: "Track battery health, environmental impact, and energy sources.",
     calculators: [
-      { title: "Battery Degradation", description: "Estimate battery capacity over time", href: "/battery-degradation", icon: "🔋" },
-      { title: "Carbon Footprint", description: "CO2 savings vs a gas car", href: "/carbon-footprint", icon: "🌱" },
-      { title: "Solar + EV", description: "Solar panel offset for EV charging", href: "/solar-ev", icon: "☀️" },
-      { title: "Fleet Calculator", description: "Fleet electrification ROI", href: "/fleet", icon: "🚐" },
+      { title: "Battery Degradation", description: "Estimate battery capacity over time", href: "/battery-degradation" },
+      { title: "Carbon Footprint", description: "CO2 savings vs a gas car", href: "/carbon-footprint" },
+      { title: "Solar + EV", description: "Solar panel offset for EV charging", href: "/solar-ev" },
+      { title: "Fleet Calculator", description: "Fleet electrification ROI", href: "/fleet" },
     ],
   },
 ];
@@ -69,61 +70,44 @@ export default function CalculatorsPage() {
   const totalCalcs = categories.reduce((sum, c) => sum + c.calculators.length, 0);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-      <h1 className="text-3xl font-extrabold text-[var(--color-text)] sm:text-4xl">
+    <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
+      <h1 className="text-3xl font-extrabold text-[var(--color-text)]">
         All EV Calculators
       </h1>
-      <p className="mt-3 text-lg text-[var(--color-text-muted)]">
+      <p className="mt-2 text-[var(--color-text-muted)]">
         {totalCalcs} free calculators powered by real EPA data and state electricity rates.
       </p>
 
+      <div className="mt-6 mb-10">
+        <CalculatorSearch />
+      </div>
+
       {categories.map((cat) => (
-        <section key={cat.id} id={cat.id} className="mt-12">
-          <div className="mb-4">
-            <h2 className="text-xl font-bold text-[var(--color-text)]">
-              <span className="mr-2">{cat.icon}</span>
-              {cat.label}
+        <section key={cat.id} id={cat.id} className="mb-10">
+          <div className="mb-4 flex h-8 items-end border-b-2 border-[var(--color-primary)]/20 pb-2">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--color-primary)]">
+              <span className="mr-1.5">{cat.icon}</span>{cat.label}
             </h2>
-            <p className="mt-1 text-sm text-[var(--color-text-muted)]">{cat.description}</p>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <p className="mb-3 text-xs text-[var(--color-text-muted)]">{cat.description}</p>
+          <div className="grid gap-x-8 gap-y-2 sm:grid-cols-2 lg:grid-cols-3">
             {cat.calculators.map((calc) => (
               <Link
                 key={calc.href}
                 href={calc.href}
-                className="group rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 transition-all hover:border-[var(--color-primary)]/30 hover:shadow-md"
+                className="group flex items-baseline gap-2 rounded-lg py-1.5 transition-colors hover:text-[var(--color-primary)]"
               >
-                <span className="mb-2 block text-2xl">{calc.icon}</span>
-                <h3 className="text-sm font-semibold text-[var(--color-text)] group-hover:text-[var(--color-primary)]">
+                <span className="text-sm font-medium text-[var(--color-text)] group-hover:text-[var(--color-primary)]">
                   {calc.title}
-                </h3>
-                <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+                </span>
+                <span className="text-xs text-[var(--color-text-muted)] group-hover:text-[var(--color-primary)]/70">
                   {calc.description}
-                </p>
-                <span className="mt-3 inline-block text-xs font-medium text-[var(--color-primary)]">
-                  Try it &rarr;
                 </span>
               </Link>
             ))}
           </div>
         </section>
       ))}
-
-      {/* Quick nav */}
-      <div className="mt-16 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-6 text-center">
-        <h2 className="text-lg font-bold text-[var(--color-text)]">Quick Jump</h2>
-        <div className="mt-3 flex flex-wrap justify-center gap-3">
-          {categories.map((cat) => (
-            <a
-              key={cat.id}
-              href={`#${cat.id}`}
-              className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-sm font-medium text-[var(--color-text)] transition-colors hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
-            >
-              {cat.icon} {cat.label}
-            </a>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }
