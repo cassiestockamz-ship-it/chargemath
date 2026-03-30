@@ -56,6 +56,7 @@ src/
 │   ├── electricity-rates.ts   # 50 states + DC EIA rates
 │   ├── ev-vehicles.ts         # 22 EVs with EPA data
 │   ├── ev-incentives.ts       # Federal + state tax credits
+│   ├── solar-data.ts          # 50 states: peak sun hours, kWh/kW/yr, install $/W, home batteries
 │   └── faq-data.ts            # FAQ questions per calculator
 └── lib/
     ├── useDefaultState.ts     # Timezone → state code detection
@@ -63,16 +64,49 @@ src/
     └── ogImage.tsx            # Shared OG image generator
 ```
 
-## Calculators
-| # | Calculator | Path | Status |
-|---|-----------|------|--------|
-| 1 | EV Charging Cost | `/ev-charging-cost` | LIVE |
-| 2 | Gas vs Electric | `/gas-vs-electric` | LIVE |
-| 3 | Charging Time | `/charging-time` | LIVE |
-| 4 | Home Charger ROI | `/charger-roi` | LIVE |
-| 5 | Range Calculator | `/range` | LIVE |
-| 6 | Tax Credit Estimator | `/tax-credits` | LIVE |
-| 7 | Bill Impact | `/bill-impact` | LIVE |
+## Calculators (26 total)
+
+### Cost & Savings (9)
+| Calculator | Path |
+|-----------|------|
+| EV Charging Cost | `/ev-charging-cost` |
+| Gas vs Electric | `/gas-vs-electric` |
+| EV vs Hybrid | `/ev-vs-hybrid` |
+| Total Cost of Ownership | `/total-cost` |
+| Lease vs Buy | `/lease-vs-buy` |
+| Payback Period | `/payback-period` |
+| Commute Cost | `/commute-cost` |
+| Used EV Value | `/used-ev-value` |
+| Tax Credits | `/tax-credits` |
+
+### Charging (5)
+| Calculator | Path |
+|-----------|------|
+| Charging Time | `/charging-time` |
+| Charger ROI | `/charger-roi` |
+| Bill Impact | `/bill-impact` |
+| Public Charging | `/public-charging` |
+| TOU Optimizer | `/tou-optimizer` |
+
+### Range & Trips (4)
+| Calculator | Path |
+|-----------|------|
+| Range Calculator | `/range` |
+| Winter Range | `/winter-range` |
+| Towing Range | `/towing-range` |
+| Road Trip Planner | `/road-trip` |
+
+### Solar & Energy (8)
+| Calculator | Path |
+|-----------|------|
+| Solar + EV | `/solar-ev` |
+| Solar Panel Sizing | `/solar-ev-sizing` |
+| Solar Payback | `/solar-payback` |
+| Solar + Battery | `/solar-battery-ev` |
+| Solar vs Grid Cost | `/solar-vs-grid-ev` |
+| Battery Degradation | `/battery-degradation` |
+| Carbon Footprint | `/carbon-footprint` |
+| Fleet Calculator | `/fleet` |
 
 ## Monetization
 - **Amazon Associates** tag: `kawaiiguy0f-cm-20`
@@ -80,7 +114,15 @@ src/
 - Products: Level 2 chargers ($250-600), portable chargers, adapters, cable organizers, energy monitors
 - ROI calculator links to specific products: ChargePoint Home Flex, Emporia Smart, Grizzl-E Classic
 - Per-page tracking via `ascsubtag={slug}`
-- **Display ads:** Not yet — apply for Raptive/Mediavine at 50K sessions/month
+- **Google AdSense:** `ca-pub-7557739369186741` (added 2026-03-29, pending review)
+- **Display ads:** Apply for Raptive/Mediavine at 50K sessions/month
+- **Solar lead gen:** TODO: Sign up for Profitise (embeddable solar quote forms, pays per lead)
+
+## Important: Solar Tax Credit (2026)
+The residential solar ITC (Section 25D) was eliminated by the OBBBA (July 4, 2025).
+- Homeowner-owned systems: NO federal tax credit in 2026+
+- Lease/PPA (Section 48E): 30% credit available through 2027 (installer claims it)
+- All solar calculators reflect this change. The tax credit toggle defaults to OFF.
 
 ## Data Sources
 - **EPA FuelEconomy.gov:** Vehicle efficiency, range, battery capacity (no API key needed)
