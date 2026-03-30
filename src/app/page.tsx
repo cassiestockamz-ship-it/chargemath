@@ -126,7 +126,7 @@ export default function HomePage() {
           <div className="grid items-start gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {categories.map((cat) => (
               <div key={cat.label}>
-                <div className="mb-3 border-b-2 border-[var(--color-primary)]/20 pb-2">
+                <div className="mb-3 flex h-8 items-end border-b-2 border-[var(--color-primary)]/20 pb-2">
                   <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--color-primary)]">
                     <span className="mr-1.5">{cat.icon}</span>{cat.label}
                   </h3>

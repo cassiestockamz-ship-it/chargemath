@@ -84,7 +84,7 @@ export default function NavDropdown() {
           <div className="grid grid-cols-4 gap-5">
             {categories.map((cat) => (
               <div key={cat.label}>
-                <div className="mb-2.5 border-b-2 border-[var(--color-primary)]/20 pb-1.5">
+                <div className="mb-2.5 flex h-7 items-end border-b-2 border-[var(--color-primary)]/20 pb-1.5">
                   <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--color-primary)]">
                     {cat.label}
                   </h3>
