@@ -13,6 +13,7 @@ import FAQSection from "@/components/FAQSection";
 import ShareResults from "@/components/ShareResults";
 import EducationalContent from "@/components/EducationalContent";
 import EmailCapture from "@/components/EmailCapture";
+import EcoFlowCard, { ECOFLOW_PRODUCTS } from "@/components/EcoFlowCard";
 import { getDefaultStateCode } from "@/lib/useDefaultState";
 import { useUrlSync } from "@/lib/useUrlState";
 import {
@@ -477,6 +478,18 @@ export default function SolarEVPage() {
         title={`Solar + EV: ${formatPaybackYears(results.paybackYears)} payback`}
         text={`My ${solarSizeKw} kW solar system covers ${Math.round(results.solarCoversEvPct * 100)}% of EV charging and saves ${fmt.format(results.monthlySolarSavings)}/month. ${fmtShort.format(results.totalSavings25yr)} in total savings over 25 years!`}
       />
+
+      {/* EcoFlow Product Recommendations */}
+      <div className="mt-10">
+        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
+          Solar + Storage Products
+        </h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <EcoFlowCard product={ECOFLOW_PRODUCTS.solarPanel400W} sid="solar-ev" />
+          <EcoFlowCard product={ECOFLOW_PRODUCTS.deltaPro3} sid="solar-ev" />
+          <EcoFlowCard product={ECOFLOW_PRODUCTS.solarPanel220WBifacial} sid="solar-ev" />
+        </div>
+      </div>
 
       <EducationalContent>
         <h2>How the Solar + EV Calculation Works</h2>

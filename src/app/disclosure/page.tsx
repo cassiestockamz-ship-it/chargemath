@@ -23,6 +23,17 @@ export default function DisclosurePage() {
         </p>
 
         <h2 className="text-xl font-bold text-[var(--color-text)]">
+          EcoFlow Affiliate Program
+        </h2>
+        <p>
+          ChargeMath participates in the EcoFlow affiliate program through CJ
+          Affiliate. When you purchase EcoFlow products through our links, we
+          may earn a commission at no additional cost to you. EcoFlow is an
+          independent company and does not influence our calculator results or
+          product comparisons.
+        </p>
+
+        <h2 className="text-xl font-bold text-[var(--color-text)]">
           Editorial Independence
         </h2>
         <p>

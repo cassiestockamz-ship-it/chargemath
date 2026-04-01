@@ -78,4 +78,6 @@ export const HOME_BATTERIES = [
   { name: "Franklin WH aPower", capacityKwh: 13.6, roundTripEfficiency: 0.965, costEstimate: 11000 },
   { name: "SolarEdge Home Battery", capacityKwh: 10, roundTripEfficiency: 0.945, costEstimate: 9000 },
   { name: "Generac PWRcell", capacityKwh: 9, roundTripEfficiency: 0.967, costEstimate: 10000 },
+  { name: "EcoFlow DELTA Pro Ultra X", capacityKwh: 12, roundTripEfficiency: 0.95, costEstimate: 8000 },
+  { name: "EcoFlow DELTA Pro Ultra", capacityKwh: 6, roundTripEfficiency: 0.95, costEstimate: 5500 },
 ];

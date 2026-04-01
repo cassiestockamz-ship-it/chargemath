@@ -13,6 +13,7 @@ import FAQSection from "@/components/FAQSection";
 import ShareResults from "@/components/ShareResults";
 import EducationalContent from "@/components/EducationalContent";
 import EmailCapture from "@/components/EmailCapture";
+import EcoFlowCard, { ECOFLOW_PRODUCTS } from "@/components/EcoFlowCard";
 import { getDefaultStateCode } from "@/lib/useDefaultState";
 import { useUrlSync } from "@/lib/useUrlState";
 import {
@@ -574,6 +575,18 @@ export default function SolarVsGridEvPage() {
         title={`Solar vs Grid EV: ${breakEvenDisplay} break-even`}
         text={shareText}
       />
+
+      {/* EcoFlow Product Recommendations */}
+      <div className="mt-10">
+        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
+          Go Solar with Portable Power
+        </h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <EcoFlowCard product={ECOFLOW_PRODUCTS.solarPanel400W} sid="solar-vs-grid-ev" />
+          <EcoFlowCard product={ECOFLOW_PRODUCTS.deltaPro3} sid="solar-vs-grid-ev" />
+          <EcoFlowCard product={ECOFLOW_PRODUCTS.powerPulseEvCharger} sid="solar-vs-grid-ev" />
+        </div>
+      </div>
 
       <EducationalContent>
         <h2>How This Comparison Works</h2>

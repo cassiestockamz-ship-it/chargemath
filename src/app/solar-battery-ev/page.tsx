@@ -13,6 +13,7 @@ import FAQSection from "@/components/FAQSection";
 import ShareResults from "@/components/ShareResults";
 import EducationalContent from "@/components/EducationalContent";
 import EmailCapture from "@/components/EmailCapture";
+import EcoFlowCard, { ECOFLOW_PRODUCTS } from "@/components/EcoFlowCard";
 import { getDefaultStateCode } from "@/lib/useDefaultState";
 import { useUrlSync } from "@/lib/useUrlState";
 import {
@@ -510,6 +511,18 @@ export default function SolarBatteryEvPage() {
         title={`Battery sizing: ${results.nominalCapacity.toFixed(1)} kWh for EV charging`}
         text={`I need a ${results.nominalCapacity.toFixed(1)} kWh home battery and ${results.solarSizeNeeded.toFixed(1)} kW of solar to charge my ${vehicle.make} ${vehicle.model} overnight. System payback: ${formatPaybackYears(results.paybackYears)}.`}
       />
+
+      {/* EcoFlow Product Recommendations */}
+      <div className="mt-10">
+        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
+          Home Battery Systems Worth Considering
+        </h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <EcoFlowCard product={ECOFLOW_PRODUCTS.deltaProUltraX} sid="solar-battery-ev" />
+          <EcoFlowCard product={ECOFLOW_PRODUCTS.deltaProUltra} sid="solar-battery-ev" />
+          <EcoFlowCard product={ECOFLOW_PRODUCTS.deltaPro3} sid="solar-battery-ev" />
+        </div>
+      </div>
 
       <EducationalContent>
         <h2>Why Pair a Home Battery with Solar and an EV?</h2>

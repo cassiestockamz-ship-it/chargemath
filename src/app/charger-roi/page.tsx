@@ -7,6 +7,7 @@ import NumberInput from "@/components/NumberInput";
 import SliderInput from "@/components/SliderInput";
 import ResultCard from "@/components/ResultCard";
 import AffiliateCard from "@/components/AffiliateCard";
+import EcoFlowCard, { ECOFLOW_PRODUCTS } from "@/components/EcoFlowCard";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
@@ -419,6 +420,7 @@ export default function ChargerROIPage() {
             imageAlt="Grizzl-E Classic EV charger on Amazon"
             slug="charger-roi"
           />
+          <EcoFlowCard product={ECOFLOW_PRODUCTS.powerPulseEvCharger} sid="charger-roi" />
         </div>
       </div>
       <EducationalContent>
