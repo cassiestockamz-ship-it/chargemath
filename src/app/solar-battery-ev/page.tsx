@@ -27,18 +27,13 @@ import {
   HOME_BATTERIES,
 } from "@/data/solar-data";
 
-const AMAZON_TAG = "kawaiiguy0f-cm-20";
 const CJ_BASE = "https://www.tkqlhce.com/click-101714807-15735883";
 
-/** Build a product link: EcoFlow → CJ deep link, everything else → Amazon search */
-function batteryProductLink(name: string) {
-  if (name.startsWith("EcoFlow")) {
-    const slug = name.toLowerCase().replace(/\s+/g, "-");
-    const dest = encodeURIComponent(`https://us.ecoflow.com/pages/search-result?q=${encodeURIComponent(name)}`);
-    return `${CJ_BASE}?url=${dest}&sid=solar-battery-ev-table`;
-  }
-  return `https://www.amazon.com/s?k=${encodeURIComponent(name)}&tag=${AMAZON_TAG}&ascsubtag=solar-battery-ev-table`;
-}
+/** Only EcoFlow products have affiliate links — other batteries are installer-only (not sold online) */
+const BATTERY_LINKS: Record<string, string> = {
+  "EcoFlow DELTA Pro Ultra X": `${CJ_BASE}?url=${encodeURIComponent("https://us.ecoflow.com/products/delta-pro-ultra-x")}&sid=solar-battery-ev-table`,
+  "EcoFlow DELTA Pro Ultra": `${CJ_BASE}?url=${encodeURIComponent("https://us.ecoflow.com/products/delta-pro-ultra")}&sid=solar-battery-ev-table`,
+};
 
 /* ── Formatters ── */
 const fmtShort = new Intl.NumberFormat("en-US", {
@@ -419,18 +414,30 @@ export default function SolarBatteryEvPage() {
                     }
                   >
                     <td className="py-2 pr-4">
-                      <a
-                        href={batteryProductLink(battery.name)}
-                        target="_blank"
-                        rel="noopener noreferrer nofollow sponsored"
-                        className={`underline decoration-dotted underline-offset-2 hover:decoration-solid ${
-                          isRecommended
-                            ? "font-semibold text-[var(--color-ev-green)]"
-                            : "text-[var(--color-text)] hover:text-[var(--color-primary)]"
-                        }`}
-                      >
-                        {battery.name}
-                      </a>
+                      {BATTERY_LINKS[battery.name] ? (
+                        <a
+                          href={BATTERY_LINKS[battery.name]}
+                          target="_blank"
+                          rel="noopener noreferrer nofollow sponsored"
+                          className={`underline decoration-dotted underline-offset-2 hover:decoration-solid ${
+                            isRecommended
+                              ? "font-semibold text-[var(--color-ev-green)]"
+                              : "text-[var(--color-text)] hover:text-[var(--color-primary)]"
+                          }`}
+                        >
+                          {battery.name}
+                        </a>
+                      ) : (
+                        <span
+                          className={
+                            isRecommended
+                              ? "font-semibold text-[var(--color-ev-green)]"
+                              : "text-[var(--color-text)]"
+                          }
+                        >
+                          {battery.name}
+                        </span>
+                      )}
                       {isRecommended && (
                         <span className="ml-2 rounded-full bg-[var(--color-ev-green)] px-2 py-0.5 text-xs font-bold text-white">
                           Best Value
