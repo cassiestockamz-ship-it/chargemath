@@ -114,6 +114,13 @@ src/
 - Products: Level 2 chargers ($250-600), portable chargers, adapters, cable organizers, energy monitors
 - ROI calculator links to specific products: ChargePoint Home Flex, Emporia Smart, Grizzl-E Classic
 - Per-page tracking via `ascsubtag={slug}`
+- **EcoFlow via CJ Affiliate:** 5% commission, 7-day cookie. Publisher ID: 101714807, Link ID: 15735883
+  - Deep link format: `https://www.tkqlhce.com/click-101714807-15735883?url={encoded_url}&sid={page_slug}`
+  - Impression pixel: `https://www.lduhtrp.net/image-101714807-15735883`
+  - Products: DELTA Pro Ultra X, DELTA Pro Ultra, DELTA Pro 3, 400W Solar Panel, 220W Bifacial, PowerPulse EV Charger
+  - Component: `src/components/EcoFlowCard.tsx` (product catalog in ECOFLOW_PRODUCTS export)
+  - Pages: solar-battery-ev, solar-ev, solar-payback, solar-vs-grid-ev, charger-roi
+  - EcoFlow also in `HOME_BATTERIES` array in `src/data/solar-data.ts` (comparison table on solar-battery-ev)
 - **Google AdSense:** `ca-pub-7557739369186741` (added 2026-03-29, pending review)
 - **Display ads:** Apply for Raptive/Mediavine at 50K sessions/month
 - **Solar lead gen:** TODO: Sign up for Profitise (embeddable solar quote forms, pays per lead)
