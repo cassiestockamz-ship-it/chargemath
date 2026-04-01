@@ -13,6 +13,7 @@ import FAQSection from "@/components/FAQSection";
 import ShareResults from "@/components/ShareResults";
 import EducationalContent from "@/components/EducationalContent";
 import EmailCapture from "@/components/EmailCapture";
+import EcoFlowCard, { ECOFLOW_PRODUCTS } from "@/components/EcoFlowCard";
 import { getDefaultStateCode } from "@/lib/useDefaultState";
 import { useUrlSync } from "@/lib/useUrlState";
 import {
@@ -472,6 +473,18 @@ export default function SolarEvSizingPage() {
         title={`Solar sizing: ${results.numberOfPanels} panels to charge my EV`}
         text={`I need ${results.numberOfPanels} solar panels (${results.actualSystemKw.toFixed(1)} kW) to charge my EV in ${ELECTRICITY_RATES[stateCode]?.state ?? stateCode}. Estimated cost: ${fmtShort.format(results.estimatedCost)}, payback in ${formatPaybackYears(results.paybackYears)}.`}
       />
+
+      {/* EcoFlow Product Recommendations */}
+      <div className="mt-10">
+        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
+          Solar Panels for EV Charging
+        </h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <EcoFlowCard product={ECOFLOW_PRODUCTS.solarPanel400W} sid="solar-ev-sizing" />
+          <EcoFlowCard product={ECOFLOW_PRODUCTS.solarPanel220WBifacial} sid="solar-ev-sizing" />
+          <EcoFlowCard product={ECOFLOW_PRODUCTS.deltaPro3} sid="solar-ev-sizing" />
+        </div>
+      </div>
 
       <EducationalContent>
         <h2>How We Calculate Your Solar Panel Count</h2>

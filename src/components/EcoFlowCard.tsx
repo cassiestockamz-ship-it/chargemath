@@ -142,14 +142,14 @@ export const ECOFLOW_PRODUCTS = {
     title: "EcoFlow DELTA Pro Ultra X",
     description: "12-36 kW whole-home backup. 12-180 kWh expandable. Pairs with Smart Home Panel for seamless grid switching.",
     priceRange: "$6,499 - $10,597",
-    productPath: "/products/delta-pro-ultra-x-portable-power-station",
+    productPath: "/products/delta-pro-ultra-x",
     icon: "battery" as const,
   },
   deltaProUltra: {
     title: "EcoFlow DELTA Pro Ultra",
     description: "6-90 kWh modular home battery. 7.2-21.6 kW output. Works with Smart Home Panel 2 for whole-home backup.",
     priceRange: "$4,319 - $7,997",
-    productPath: "/products/delta-pro-ultra-portable-power-station",
+    productPath: "/products/delta-pro-ultra",
     icon: "battery" as const,
   },
   deltaPro3: {
@@ -177,7 +177,7 @@ export const ECOFLOW_PRODUCTS = {
     title: "EcoFlow PowerPulse EV Charger",
     description: "9.6 kW Level 2 charger. 40A, adds ~35 mi/hr. NEMA 14-50 plug-and-play. Includes NACS adapter for Tesla.",
     priceRange: "$695 - $899",
-    productPath: "/products/powerpulse-level-2-ev-charger",
+    productPath: "/products/powerpulse-ev-charger",
     icon: "charger" as const,
   },
 } satisfies Record<string, EcoFlowProduct>;
