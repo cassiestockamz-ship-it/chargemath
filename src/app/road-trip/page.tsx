@@ -448,7 +448,7 @@ export default function RoadTripPage() {
         </p>
         <h3>Charge at Home Before You Leave</h3>
         <p>
-          Home electricity costs 13 to 27 cents per kWh in most states, while DC fast chargers along highways typically cost 30 to 60 cents per kWh. Starting your trip with a full battery from home charging can save 50% or more on the first leg of your journey. Always plug in the night before a road trip.
+          Home electricity costs 13 to 27 cents per kWh in most states, while DC fast chargers along highways typically cost 30 to 60 cents per kWh. Starting your trip with a full battery from home charging can save 50% or more on the first leg of your trip. Always plug in the night before a road trip.
         </p>
         <h3>The 80% Rule for Fast Charging</h3>
         <p>

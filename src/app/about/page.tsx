@@ -35,7 +35,7 @@ export default function AboutPage() {
             <span className="mt-1 text-[var(--color-primary)]">&#9889;</span>
             <span>
               <strong className="text-[var(--color-text)]">EPA FuelEconomy.gov</strong>{" "}
-              &mdash; Official fuel economy and EV efficiency ratings for every
+              : Official fuel economy and EV efficiency ratings for every
               vehicle sold in the United States.
             </span>
           </li>
@@ -43,7 +43,7 @@ export default function AboutPage() {
             <span className="mt-1 text-[var(--color-primary)]">&#9889;</span>
             <span>
               <strong className="text-[var(--color-text)]">EIA (U.S. Energy Information Administration)</strong>{" "}
-              &mdash; State-by-state residential electricity rates updated
+              : State-by-state residential electricity rates updated
               regularly from official government data.
             </span>
           </li>
@@ -60,7 +60,7 @@ export default function AboutPage() {
             <span className="mt-1 text-green-500">&#10003;</span>
             <span>
               <strong className="text-[var(--color-text)]">Real government data</strong>{" "}
-              &mdash; Every calculation uses official EPA and EIA figures, not
+              : Every calculation uses official EPA and EIA figures, not
               estimates or averages pulled from thin air.
             </span>
           </li>
@@ -68,7 +68,7 @@ export default function AboutPage() {
             <span className="mt-1 text-green-500">&#10003;</span>
             <span>
               <strong className="text-[var(--color-text)]">Transparent methodology</strong>{" "}
-              &mdash; We show you the inputs and formulas so you can verify
+              : We show you the inputs and formulas so you can verify
               results yourself.
             </span>
           </li>
@@ -76,14 +76,14 @@ export default function AboutPage() {
             <span className="mt-1 text-green-500">&#10003;</span>
             <span>
               <strong className="text-[var(--color-text)]">No paywalls</strong>{" "}
-              &mdash; Every calculator is 100% free, no account required.
+              : Every calculator is 100% free, no account required.
             </span>
           </li>
           <li className="flex items-start gap-2">
             <span className="mt-1 text-green-500">&#10003;</span>
             <span>
               <strong className="text-[var(--color-text)]">Regularly updated</strong>{" "}
-              &mdash; Vehicle data and electricity rates are refreshed as new
+              : Vehicle data and electricity rates are refreshed as new
               government data becomes available.
             </span>
           </li>

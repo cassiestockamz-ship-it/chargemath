@@ -2,13 +2,24 @@ import Link from "next/link";
 import CalculatorSearch from "@/components/CalculatorSearch";
 
 const featured = [
-  { title: "EV Charging Cost Calculator", description: "Estimate your monthly and annual EV charging costs based on your vehicle, state, and driving habits.", href: "/ev-charging-cost", icon: "🔌" },
-  { title: "Gas vs Electric Comparison", description: "See how much you'd save switching from gas to electric with a side-by-side cost and CO2 comparison.", href: "/gas-vs-electric", icon: "⚖️" },
-  { title: "Total Cost of Ownership", description: "Compare the full cost of owning an EV vs gas car: purchase, fuel, insurance, and maintenance.", href: "/total-cost", icon: "📋" },
-  { title: "Range Calculator", description: "Calculate your real-world EV range based on speed, temperature, and terrain conditions.", href: "/range", icon: "🗺️" },
+  { title: "Will I Make It Home?", description: "EV panic calculator. Real-world arrival SOC with temperature, speed, and heat load. Traffic-light verdict in 10 seconds.", href: "/will-i-make-it-home", icon: "🚨" },
+  { title: "Charge Curve Simulator", description: "Real DCFC curves for 16 popular EVs. See the whole session in one chart for any charger speed and SOC window.", href: "/charge-curve", icon: "📈" },
+  { title: "Panel Load Check", description: "Free NEC 220.83 + 625.42 worksheet. Tells you if your panel can take an EV charger without a service upgrade.", href: "/panel-load-check", icon: "🔌" },
+  { title: "Winter Range Forecast", description: "Live 7-day range forecast by ZIP. Uses Open-Meteo weather plus Recurrent cold-weather retention data.", href: "/winter-range-forecast", icon: "❄️" },
 ];
 
 const categories = [
+  {
+    label: "Live Data + Unique Tools",
+    icon: "⚡",
+    items: [
+      { title: "Will I Make It Home?", href: "/will-i-make-it-home" },
+      { title: "Winter Range Forecast", href: "/winter-range-forecast" },
+      { title: "Charge Curve Simulator", href: "/charge-curve" },
+      { title: "Panel Load Check", href: "/panel-load-check" },
+      { title: "EV Tire Cost", href: "/ev-tire-cost" },
+    ],
+  },
   {
     label: "Cost & Savings",
     icon: "💰",
@@ -82,19 +93,20 @@ export default function HomePage() {
       {/* Hero */}
       <section className="px-4 pb-16 pt-20 text-center sm:px-6">
         <h1 className="text-4xl font-extrabold tracking-tight text-[var(--color-text)] sm:text-5xl lg:text-6xl">
-          26 Free{" "}
-          <span className="text-[var(--color-primary)]">EV Calculators</span>
+          EV math that{" "}
+          <span className="text-[var(--color-primary)]">actually answers the question</span>
         </h1>
         <p className="mx-auto mt-5 max-w-2xl text-lg text-[var(--color-text-muted)] sm:text-xl">
-          Charging costs, range estimates, total ownership, battery health, and more.
-          Powered by real EPA data and state electricity rates.
+          Real DCFC curves. NEC 220.83 permit worksheets. Live winter range forecasts by ZIP.
+          And the panic calculator that tells you if you&apos;ll make it home tonight.
+          Free. No signup. No ads.
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <Link href="/ev-charging-cost" className="rounded-xl bg-[var(--color-primary)] px-6 py-3 text-sm font-semibold text-white shadow-md transition-colors hover:bg-[var(--color-primary-dark)]">
-            Calculate Charging Cost
+          <Link href="/will-i-make-it-home" className="rounded-xl bg-[var(--color-primary)] px-6 py-3 text-sm font-semibold text-white shadow-md transition-colors hover:bg-[var(--color-primary-dark)]">
+            Will I make it home?
           </Link>
-          <Link href="/calculators" className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-3 text-sm font-semibold text-[var(--color-text)] shadow-sm transition-colors hover:bg-[var(--color-surface-alt)]">
-            Browse All Calculators
+          <Link href="/charge-curve" className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-3 text-sm font-semibold text-[var(--color-text)] shadow-sm transition-colors hover:bg-[var(--color-surface-alt)]">
+            Charge curve simulator
           </Link>
         </div>
       </section>

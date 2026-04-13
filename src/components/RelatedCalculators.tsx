@@ -22,16 +22,21 @@ const ALL_CALCULATORS: Calc[] = [
   // Charging
   { title: "Charging Time", description: "How long to charge at any level", href: "/charging-time", icon: "⏱️", category: "charging" },
   { title: "Charger ROI", description: "Home charger payback calculator", href: "/charger-roi", icon: "🏠", category: "charging" },
+  { title: "Panel Load Check", description: "NEC 220.83 permit worksheet", href: "/panel-load-check", icon: "🔌", category: "charging" },
+  { title: "Charge Curve Simulator", description: "Real DCFC curves for 16 EVs", href: "/charge-curve", icon: "📈", category: "charging" },
   { title: "Bill Impact", description: "How much your electric bill goes up", href: "/bill-impact", icon: "📄", category: "charging" },
   { title: "Public Charging", description: "Public vs home charging costs", href: "/public-charging", icon: "⚡", category: "charging" },
   { title: "TOU Optimizer", description: "Find the cheapest time to charge", href: "/tou-optimizer", icon: "🕐", category: "charging" },
   // Range & Trips
+  { title: "Will I Make It Home?", description: "EV panic calculator, real-world arrival SOC", href: "/will-i-make-it-home", icon: "🚨", category: "range" },
+  { title: "Winter Range Forecast", description: "Live 7-day range forecast by ZIP", href: "/winter-range-forecast", icon: "🌨️", category: "range" },
   { title: "Range Calculator", description: "Real-world range by conditions", href: "/range", icon: "🗺️", category: "range" },
   { title: "Winter Range", description: "Cold weather range impact", href: "/winter-range", icon: "❄️", category: "range" },
   { title: "Towing Range", description: "Range while towing a trailer", href: "/towing-range", icon: "🚛", category: "range" },
   { title: "Road Trip Planner", description: "EV road trip cost & charging stops", href: "/road-trip", icon: "🛣️", category: "range" },
   // Battery & Energy
   { title: "Battery Degradation", description: "Estimate battery capacity over time", href: "/battery-degradation", icon: "🔋", category: "battery" },
+  { title: "EV Tire Cost", description: "The hidden tire tax nobody told you about", href: "/ev-tire-cost", icon: "🛞", category: "cost" },
   { title: "Carbon Footprint", description: "CO2 savings vs a gas car", href: "/carbon-footprint", icon: "🌱", category: "battery" },
   { title: "Solar + EV", description: "Solar panel offset for EV charging", href: "/solar-ev", icon: "☀️", category: "solar" },
   { title: "Solar Panel Sizing", description: "How many panels to charge your EV", href: "/solar-ev-sizing", icon: "🔢", category: "solar" },

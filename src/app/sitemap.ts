@@ -3,11 +3,16 @@ import { getStateSlugs } from '@/data/state-guides'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://chargemath.com'
-  const now = '2026-03-29'
+  const now = new Date().toISOString().split('T')[0]
 
   const stateSlugs = getStateSlugs()
 
   const calculatorPaths = [
+    '/will-i-make-it-home',
+    '/winter-range-forecast',
+    '/charge-curve',
+    '/panel-load-check',
+    '/ev-tire-cost',
     '/ev-charging-cost',
     '/gas-vs-electric',
     '/charging-time',
@@ -54,6 +59,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
     { url: `${baseUrl}/embed`, lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
     { url: `${baseUrl}/about`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${baseUrl}/disclosure`, lastModified: now, changeFrequency: 'monthly', priority: 0.3 },
+    { url: `${baseUrl}/methodology`, lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
   ]
 }

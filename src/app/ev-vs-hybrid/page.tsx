@@ -7,7 +7,6 @@ import SelectInput from "@/components/SelectInput";
 import NumberInput from "@/components/NumberInput";
 import SliderInput from "@/components/SliderInput";
 import ResultCard from "@/components/ResultCard";
-import AffiliateCard from "@/components/AffiliateCard";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
@@ -23,7 +22,6 @@ import {
 } from "@/data/electricity-rates";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
 
-const AMAZON_TAG = "kawaiiguy0f-cm-20";
 const CO2_GRAMS_PER_GALLON = 8887;
 const CO2_LBS_PER_KWH = 0.86;
 const LBS_CO2_PER_TREE_PER_YEAR = 48;
@@ -527,33 +525,6 @@ export default function EvVsHybridPage() {
         title={`EV vs Hybrid vs Gas: Save ${fmtWhole.format(results.evVsGasSavings)}/year with an EV`}
         text={`Comparing fuel costs: my ${vehicle.year} ${vehicle.make} ${vehicle.model} costs ${fmt.format(results.evCostPerMile)}/mile, a hybrid at ${hybridMpg} MPG costs ${fmt.format(results.hybridCostPerMile)}/mile, and gas at ${gasMpg} MPG costs ${fmt.format(results.gasCostPerMile)}/mile. EV saves ${fmtWhole.format(results.evVsGasSavings * periodYears)} over ${periodYears} years vs gas!`}
       />
-
-      {/* Affiliate Cards */}
-      <div className="mt-10">
-        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
-          Recommended Products
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <AffiliateCard
-            title="Level 2 EV Home Charger"
-            description="Charge your EV overnight at home with a fast Level 2 charger. Smart WiFi features included."
-            priceRange="$250 - $600"
-            amazonTag={AMAZON_TAG}
-            searchQuery="level 2 ev home charger"
-            imageAlt="Level 2 EV home charger on Amazon"
-            slug="ev-vs-hybrid"
-          />
-          <AffiliateCard
-            title="Portable EV Charger"
-            description="Take a portable Level 1/Level 2 charger on road trips. Plug into any standard or NEMA 14-50 outlet."
-            priceRange="$150 - $400"
-            amazonTag={AMAZON_TAG}
-            searchQuery="portable ev charger level 2"
-            imageAlt="Portable EV charger on Amazon"
-            slug="ev-vs-hybrid"
-          />
-        </div>
-      </div>
 
       <EducationalContent>
         <h2>How the EV vs Hybrid vs Gas Comparison Works</h2>

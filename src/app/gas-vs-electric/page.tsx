@@ -7,7 +7,6 @@ import SelectInput from "@/components/SelectInput";
 import NumberInput from "@/components/NumberInput";
 import SliderInput from "@/components/SliderInput";
 import ResultCard from "@/components/ResultCard";
-import AffiliateCard from "@/components/AffiliateCard";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
@@ -24,7 +23,6 @@ import {
 } from "@/data/electricity-rates";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
 
-const AMAZON_TAG = "kawaiiguy0f-cm-20";
 const CO2_GRAMS_PER_GALLON = 8887;
 const CO2_LBS_PER_KWH = 0.86;
 const LBS_CO2_PER_TREE_PER_YEAR = 48;
@@ -357,35 +355,9 @@ export default function GasVsElectricPage() {
 
       <ShareResults
         title={`Gas vs Electric: Save ${fmtWhole.format(results.annualSavings)}/year`}
-        text={`Switching from gas to electric saves me ${fmtWhole.format(results.annualSavings)}/year on fuel. My ${vehicle.year} ${vehicle.make} ${vehicle.model} costs ${fmt.format(results.evCostPerMile)}/mile vs ${fmt.format(results.gasCostPerMile)}/mile for gas — ${fmtWhole.format(results.totalSavings)} total savings over ${periodYears} years!`}
+        text={`Switching from gas to electric saves me ${fmtWhole.format(results.annualSavings)}/year on fuel. My ${vehicle.year} ${vehicle.make} ${vehicle.model} costs ${fmt.format(results.evCostPerMile)}/mile vs ${fmt.format(results.gasCostPerMile)}/mile for gas. That's ${fmtWhole.format(results.totalSavings)} total savings over ${periodYears} years!`}
       />
 
-      {/* Affiliate Cards */}
-      <div className="mt-10">
-        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
-          Recommended Products
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <AffiliateCard
-            title="Level 2 EV Home Charger"
-            description="Charge your EV overnight at home with a fast Level 2 charger. Smart WiFi features included."
-            priceRange="$250 - $600"
-            amazonTag={AMAZON_TAG}
-            searchQuery="level 2 ev home charger"
-            imageAlt="Level 2 EV home charger on Amazon"
-            slug="gas-vs-electric"
-          />
-          <AffiliateCard
-            title="Smart Energy Monitor"
-            description="Track your home electricity usage in real time to optimize your EV charging schedule and save money."
-            priceRange="$30 - $80"
-            amazonTag={AMAZON_TAG}
-            searchQuery="home energy monitor electricity usage"
-            imageAlt="Smart home energy monitor on Amazon"
-            slug="gas-vs-electric"
-          />
-        </div>
-      </div>
       <EducationalContent>
         <h2>How the Gas vs Electric Comparison Works</h2>
         <p>
@@ -397,10 +369,10 @@ export default function GasVsElectricPage() {
         </p>
         <h3>What This Comparison Doesn&apos;t Include</h3>
         <ul>
-          <li>Maintenance savings — EVs have no oil changes, fewer brake replacements (regenerative braking), and no transmission service. This adds $500-1,000/year in savings.</li>
-          <li>Purchase price difference — the upfront cost gap is narrowing, and tax credits can close it further.</li>
-          <li>Insurance differences — EV insurance typically costs 10-15% more due to higher repair costs.</li>
-          <li>Battery degradation — most EV batteries retain 90%+ capacity after 200,000 miles, but replacement costs $5,000-15,000 if needed.</li>
+          <li>Maintenance savings: EVs have no oil changes, fewer brake replacements (regenerative braking), and no transmission service. This adds $500-1,000/year in savings.</li>
+          <li>Purchase price difference: the upfront cost gap is narrowing, and tax credits can close it further.</li>
+          <li>Insurance differences: EV insurance typically costs 10-15% more due to higher repair costs.</li>
+          <li>Battery degradation: most EV batteries retain 90%+ capacity after 200,000 miles, but replacement costs $5,000-15,000 if needed.</li>
         </ul>
       </EducationalContent>
       <FAQSection questions={gasVsElectricFAQ} />

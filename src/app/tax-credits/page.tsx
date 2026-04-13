@@ -5,7 +5,6 @@ import Link from "next/link";
 import CalculatorLayout from "@/components/CalculatorLayout";
 import SelectInput from "@/components/SelectInput";
 import NumberInput from "@/components/NumberInput";
-import AffiliateCard from "@/components/AffiliateCard";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
@@ -18,8 +17,6 @@ import { useUrlSync } from "@/lib/useUrlState";
 import { taxCreditFAQ } from "@/data/faq-data";
 import { ELECTRICITY_RATES } from "@/data/electricity-rates";
 import { STATE_INCENTIVES, FEDERAL_CREDITS } from "@/data/ev-incentives";
-
-const AMAZON_TAG = "kawaiiguy0f-cm-20";
 
 type VehicleType = "new" | "used";
 type FilingStatus = "single" | "headOfHousehold" | "married";
@@ -414,39 +411,10 @@ export default function TaxCreditsPage() {
         text={`I may qualify for ${fmt.format(totalEstimate)} in EV tax credits for a ${vehicleType === "new" ? "new" : "used"} EV in ${ELECTRICITY_RATES[stateCode]?.state ?? stateCode}.${wantsCharger === "yes" ? ` Plus a charger installation credit!` : ""}`}
       />
 
-      {/* Affiliate Cards */}
-      <div className="mt-10">
-        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
-          Recommended Products
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2">
-          {wantsCharger === "yes" && (
-            <AffiliateCard
-              title="ChargePoint Home Flex"
-              description="Adjustable amperage (16-50A), works with all EVs, WiFi-enabled with app control and energy tracking."
-              priceRange="$399 - $549"
-              amazonTag={AMAZON_TAG}
-              searchQuery="ChargePoint Home Flex ev charger"
-              imageAlt="ChargePoint Home Flex EV charger on Amazon"
-              slug="tax-credits"
-            />
-          )}
-          <AffiliateCard
-            title="EV Tax Preparation Guide"
-            description="Step-by-step guide to claiming EV tax credits, checking eligibility, and getting the most back at tax time."
-            priceRange="$10 - $25"
-            amazonTag={AMAZON_TAG}
-            searchQuery="electric vehicle tax credit guide book"
-            imageAlt="EV tax credit guide book on Amazon"
-            slug="tax-credits"
-          />
-        </div>
-      </div>
-
       <EducationalContent>
         <h2>How EV Tax Credits Work</h2>
         <p>
-          Federal EV tax credits reduce your federal income tax liability dollar-for-dollar — a $4,000 credit means $4,000 less in taxes owed. These are nonrefundable credits, meaning they can reduce your tax bill to zero but won&apos;t generate a refund beyond that. Credits are claimed when you file your annual tax return using IRS Form 8936.
+          Federal EV tax credits reduce your federal income tax liability dollar-for-dollar. A $4,000 credit means $4,000 less in taxes owed. These are nonrefundable credits, meaning they can reduce your tax bill to zero but won&apos;t generate a refund beyond that. Credits are claimed when you file your annual tax return using IRS Form 8936.
         </p>
         <h3>Current Federal Credit Status (2026)</h3>
         <p>
@@ -457,7 +425,7 @@ export default function TaxCreditsPage() {
           <li>California offers rebates up to $7,500 through CVRP for lower-income buyers, plus utility-specific programs worth $500-1,000.</li>
           <li>Colorado provides $5,000 state tax credits for new EVs, one of the most generous state programs.</li>
           <li>Some states (Connecticut, Delaware, Maine) offer point-of-sale rebates that reduce the purchase price directly, rather than tax credits claimed later.</li>
-          <li>State programs change frequently — check your state&apos;s energy office website for the most current information before purchasing.</li>
+          <li>State programs change frequently. Check your state&apos;s energy office website for the most current information before purchasing.</li>
         </ul>
       </EducationalContent>
       <FAQSection questions={taxCreditFAQ} />

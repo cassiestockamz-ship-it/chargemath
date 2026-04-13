@@ -7,7 +7,6 @@ import SelectInput from "@/components/SelectInput";
 import NumberInput from "@/components/NumberInput";
 import SliderInput from "@/components/SliderInput";
 import ResultCard from "@/components/ResultCard";
-import AffiliateCard from "@/components/AffiliateCard";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
@@ -25,8 +24,6 @@ import {
 import { EV_VEHICLES } from "@/data/ev-vehicles";
 
 type ChargingLevel = "level1" | "level2" | "dcfast";
-
-const AMAZON_TAG = "kawaiiguy0f-cm-20";
 
 const fmt = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -154,7 +151,7 @@ export default function EVChargingCostPage() {
       title="EV Charging Cost Calculator"
       description="Estimate your monthly and annual EV charging costs based on your vehicle, electricity rate, and daily driving."
       lastUpdated="March 2026"
-      intro="The average EV costs $50-80 per month to charge at home, depending on your vehicle efficiency and local electricity rate. At the national average of 16.11¢/kWh, a Tesla Model 3 costs about $9.67 for a full charge providing 272 miles of range — roughly $0.04 per mile compared to $0.13 per mile for a gas car."
+      intro="The average EV costs $50-80 per month to charge at home, depending on your vehicle efficiency and local electricity rate. At the national average of 16.11¢/kWh, a Tesla Model 3 costs about $9.67 for a full charge providing 272 miles of range, roughly $0.04 per mile compared to $0.13 per mile for a gas car."
     >
       <CalculatorSchema name="EV Charging Cost Calculator" description="Calculate your monthly and annual EV charging costs based on your vehicle, state electricity rates, and daily driving habits." url="https://chargemath.com/ev-charging-cost" />
       <BreadcrumbSchema items={[{name: "Home", url: "https://chargemath.com"}, {name: "EV Charging Cost Calculator", url: "https://chargemath.com/ev-charging-cost"}]} />
@@ -351,45 +348,6 @@ export default function EVChargingCostPage() {
         />
       </div>
 
-      {/* Affiliate Cards */}
-      <div className="mt-10">
-        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
-          Recommended Products
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2">
-          {chargingLevel === "level2" && (
-            <AffiliateCard
-              title="Level 2 EV Home Charger"
-              description="Charge your EV up to 10x faster than a standard outlet. Smart features, NEMA 14-50 compatible."
-              priceRange="$250 - $600"
-              amazonTag={AMAZON_TAG}
-              searchQuery="level 2 ev home charger"
-              imageAlt="Level 2 EV home charger on Amazon"
-              slug="ev-charging-cost"
-            />
-          )}
-          {chargingLevel === "level1" && (
-            <AffiliateCard
-              title="Portable EV Charger"
-              description="Versatile portable charger that works with standard 120V outlets and can upgrade to 240V."
-              priceRange="$150 - $350"
-              amazonTag={AMAZON_TAG}
-              searchQuery="portable ev charger level 1 level 2"
-              imageAlt="Portable EV charger on Amazon"
-              slug="ev-charging-cost"
-            />
-          )}
-          <AffiliateCard
-            title="EV Charging Cable Organizer"
-            description="Keep your charging cable tidy and off the ground with a wall-mounted organizer."
-            priceRange="$15 - $40"
-            amazonTag={AMAZON_TAG}
-            searchQuery="ev charging cable organizer wall mount"
-            imageAlt="EV charging cable wall mount organizer on Amazon"
-            slug="ev-charging-cost"
-          />
-        </div>
-      </div>
       <EducationalContent>
         <h2>How We Calculate EV Charging Costs</h2>
         <p>
@@ -401,7 +359,7 @@ export default function EVChargingCostPage() {
         </p>
         <h3>Tips for Accuracy</h3>
         <ul>
-          <li>Check your actual electricity rate on your utility bill — it may differ from the state average, especially if you have a time-of-use plan.</li>
+          <li>Check your actual electricity rate on your utility bill. It may differ from the state average, especially if you have a time-of-use plan.</li>
           <li>DC Fast charging rates vary widely by network ($0.25-0.60/kWh). Check your preferred network&apos;s pricing.</li>
           <li>Cold weather can increase energy consumption by 30-40%, so winter costs may be noticeably higher.</li>
           <li>Most EV owners charge to 80% daily, not 100%. A full charge estimate assumes you occasionally need maximum range.</li>

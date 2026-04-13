@@ -77,7 +77,7 @@ export default function EmbedShowcasePage() {
         </h2>
         <ul className="space-y-2 text-sm text-[var(--color-text-muted)]">
           <li>
-            Embeds are free for any website — commercial, educational, or personal.
+            Embeds are free for any website: commercial, educational, or personal.
           </li>
           <li>
             The &quot;Powered by ChargeMath&quot; attribution must remain visible. This is our

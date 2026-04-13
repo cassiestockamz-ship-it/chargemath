@@ -4,12 +4,12 @@ import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import { getAllStateGuides } from "@/data/state-guides";
 
 export const metadata: Metadata = {
-  title: "EV Charging Cost by State — Complete 2026 Guide",
+  title: "EV Charging Cost by State: Complete 2026 Guide",
   description:
     "Compare EV charging costs across all 50 states. See monthly costs, electricity rates, gas savings, and cost per mile for every state with real EIA and EPA data.",
   alternates: { canonical: "/guides" },
   openGraph: {
-    title: "EV Charging Cost by State — 2026 Guide",
+    title: "EV Charging Cost by State: 2026 Guide",
     description:
       "Compare EV charging costs across all 50 states with real EIA electricity rates and EPA vehicle data.",
   },
@@ -56,7 +56,7 @@ export default function GuidesHubPage() {
           EV Charging Cost by State
         </h1>
         <p className="mx-auto mt-3 max-w-2xl text-lg text-[var(--color-text-muted)]">
-          Electricity rates vary by more than 3x across the U.S. — from 10.58¢/kWh
+          Electricity rates vary by more than 3x across the U.S., from 10.58¢/kWh
           in Idaho to 38.57¢/kWh in Hawaii. See exactly what EV charging costs in
           your state.
         </p>
@@ -181,8 +181,8 @@ export default function GuidesHubPage() {
         </p>
         <p>
           Despite this variation, EV charging is cheaper than gasoline in every
-          single U.S. state. Even in Hawaii — the most expensive state for
-          electricity — an EV costs roughly $0.10/mile compared to $0.13/mile for
+          single U.S. state. Even in Hawaii, the most expensive state for
+          electricity, an EV costs roughly $0.10/mile compared to $0.13/mile for
           a 28 MPG gas car at $3.50/gallon. In cheap-electricity states like
           Idaho, Washington, and Utah, EV fuel costs drop below $0.03/mile.
         </p>

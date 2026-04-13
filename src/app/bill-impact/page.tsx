@@ -6,7 +6,6 @@ import SelectInput from "@/components/SelectInput";
 import NumberInput from "@/components/NumberInput";
 import SliderInput from "@/components/SliderInput";
 import ResultCard from "@/components/ResultCard";
-import AffiliateCard from "@/components/AffiliateCard";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
@@ -23,8 +22,6 @@ import {
   NATIONAL_AVERAGE_RATE,
 } from "@/data/electricity-rates";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
-
-const AMAZON_TAG = "kawaiiguy0f-cm-20";
 
 const fmt = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -125,8 +122,8 @@ export default function BillImpactPage() {
     }));
 
   const touOptions = [
-    { value: "no", label: "No — flat rate" },
-    { value: "yes", label: "Yes — time-of-use plan" },
+    { value: "no", label: "No (flat rate)" },
+    { value: "yes", label: "Yes (time-of-use plan)" },
   ];
 
   // Bill breakdown bar chart
@@ -137,7 +134,7 @@ export default function BillImpactPage() {
     <CalculatorLayout
       title="EV Electricity Bill Impact Calculator"
       description="See exactly how much your monthly electricity bill will increase when you start charging an EV at home."
-      intro="Charging an EV at home typically adds $30-60 per month to your electricity bill, depending on how far you drive and your local rates. The average EV uses 25-35 kWh per 100 miles — at the national average of 16¢/kWh, that's about $4-6 per 100 miles added to your bill."
+      intro="Charging an EV at home typically adds $30-60 per month to your electricity bill, depending on how far you drive and your local rates. The average EV uses 25-35 kWh per 100 miles. At the national average of 16¢/kWh, that's about $4-6 per 100 miles added to your bill."
       lastUpdated="March 2026"
     >
       <CalculatorSchema
@@ -209,7 +206,7 @@ export default function BillImpactPage() {
           value={hasTOU}
           onChange={setHasTOU}
           options={touOptions}
-          helpText="TOU plans offer cheaper overnight rates — great for EV charging"
+          helpText="TOU plans offer cheaper overnight rates, great for EV charging"
         />
 
         {hasTOU === "yes" && (
@@ -325,12 +322,12 @@ export default function BillImpactPage() {
           </div>
 
           <p className="mt-4 text-center text-sm text-[var(--color-text-muted)]">
-            Your bill increases by <span className="font-semibold text-[var(--color-text)]">{fmt.format(results.monthlyEvCost)}</span> ({fmtPct(results.percentIncrease)}) —
+            Your bill increases by <span className="font-semibold text-[var(--color-text)]">{fmt.format(results.monthlyEvCost)}</span> ({fmtPct(results.percentIncrease)}).
             {results.percentIncrease < 30
-              ? " a modest increase for most households."
+              ? " A modest increase for most households."
               : results.percentIncrease < 60
-                ? " a noticeable but manageable increase."
-                : " significant — consider a TOU rate plan to reduce costs."}
+                ? " A noticeable but manageable increase."
+                : " Significant. Consider a TOU rate plan to reduce costs."}
           </p>
         </div>
 
@@ -353,33 +350,6 @@ export default function BillImpactPage() {
         />
       </div>
 
-      {/* Affiliate Cards */}
-      <div className="mt-10">
-        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
-          Recommended Products
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <AffiliateCard
-            title="Smart Energy Monitor"
-            description="Track your whole-home and EV electricity usage in real-time. See exactly how much your EV costs per charge."
-            priceRange="$100 - $300"
-            amazonTag={AMAZON_TAG}
-            searchQuery="smart home energy monitor electricity"
-            imageAlt="Smart home energy monitor on Amazon"
-            slug="bill-impact"
-          />
-          <AffiliateCard
-            title="Smart EV Charger with Energy Tracking"
-            description="Level 2 chargers with built-in energy monitoring, scheduling for off-peak hours, and app control."
-            priceRange="$300 - $600"
-            amazonTag={AMAZON_TAG}
-            searchQuery="smart ev charger energy monitoring wifi"
-            imageAlt="Smart EV charger with energy monitoring on Amazon"
-            slug="bill-impact"
-          />
-        </div>
-      </div>
-
       <EducationalContent>
         <h2>How We Estimate Your Bill Impact</h2>
         <p>
@@ -387,12 +357,12 @@ export default function BillImpactPage() {
         </p>
         <h3>Time-of-Use Plans Can Cut EV Costs 30-50%</h3>
         <p>
-          Many utilities offer time-of-use (TOU) rate plans with heavily discounted overnight rates — exactly when most people charge their EVs. In California, PG&amp;E&apos;s EV rate charges 25¢/kWh off-peak versus 55¢/kWh peak. Most smart EV chargers can schedule charging to start automatically when off-peak rates begin.
+          Many utilities offer time-of-use (TOU) rate plans with heavily discounted overnight rates, exactly when most people charge their EVs. In California, PG&amp;E&apos;s EV rate charges 25¢/kWh off-peak versus 55¢/kWh peak. Most smart EV chargers can schedule charging to start automatically when off-peak rates begin.
         </p>
         <h3>Reducing Your EV&apos;s Impact on Your Bill</h3>
         <ul>
-          <li>Switch to a TOU plan — this is the single biggest cost reduction available to most EV owners. Contact your utility to compare plan options.</li>
-          <li>Charge during off-peak hours (typically 9pm-6am) — even without a formal TOU plan, avoiding peak demand helps grid stability and may qualify for utility incentives.</li>
+          <li>Switch to a TOU plan. This is the single biggest cost reduction available to most EV owners. Contact your utility to compare plan options.</li>
+          <li>Charge during off-peak hours (typically 9pm-6am). Even without a formal TOU plan, avoiding peak demand helps grid stability and may qualify for utility incentives.</li>
           <li>A whole-home energy monitor ($100-300) can track exactly what your EV costs per charge and identify other energy savings opportunities.</li>
           <li>Solar panels can offset 100% of EV charging costs for homeowners, with typical payback periods of 5-8 years depending on your state&apos;s solar resources.</li>
         </ul>

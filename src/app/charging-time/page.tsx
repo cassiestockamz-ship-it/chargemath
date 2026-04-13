@@ -5,7 +5,6 @@ import CalculatorLayout from "@/components/CalculatorLayout";
 import SelectInput from "@/components/SelectInput";
 import SliderInput from "@/components/SliderInput";
 import ResultCard from "@/components/ResultCard";
-import AffiliateCard from "@/components/AffiliateCard";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
@@ -20,8 +19,6 @@ import { NATIONAL_AVERAGE_RATE } from "@/data/electricity-rates";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
 
 type ChargingLevel = "level1" | "level2" | "dcfast";
-
-const AMAZON_TAG = "kawaiiguy0f-cm-20";
 
 const fmt = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -170,7 +167,7 @@ export default function ChargingTimePage() {
     <CalculatorLayout
       title="EV Charging Time Calculator"
       description="See how long it takes to charge your EV from any battery level, at Level 1, Level 2, or DC Fast speeds."
-      intro="A Level 2 home charger (240V) charges most EVs from 20% to 80% in 4-6 hours — perfect for overnight charging. Level 1 (120V wall outlet) takes 24-40+ hours for a full charge, while DC Fast chargers can reach 80% in 20-45 minutes depending on your vehicle's max charging rate."
+      intro="A Level 2 home charger (240V) charges most EVs from 20% to 80% in 4-6 hours, perfect for overnight charging. Level 1 (120V wall outlet) takes 24-40+ hours for a full charge, while DC Fast chargers can reach 80% in 20-45 minutes depending on your vehicle's max charging rate."
       lastUpdated="March 2026"
     >
       <CalculatorSchema name="EV Charging Time Calculator" description="Calculate how long it takes to charge your EV from any battery level at Level 1, Level 2, or DC Fast charging speeds." url="https://chargemath.com/charging-time" />
@@ -437,56 +434,6 @@ export default function ChargingTimePage() {
         text={`My ${vehicle.year} ${vehicle.make} ${vehicle.model} takes ${formatTime(results.chargeTimeHours)} to charge from ${startPercent}% to ${effectiveTarget}% on ${chargingLevel === "level1" ? "Level 1" : chargingLevel === "level2" ? "Level 2" : "DC Fast"} (${results.power} kW). That adds ${Math.round(results.milesAdded)} miles of range for ${fmt.format(results.cost)}.`}
       />
 
-      {/* Affiliate Cards */}
-      <div className="mt-10">
-        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
-          Recommended Products
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2">
-          {chargingLevel === "level1" && (
-            <AffiliateCard
-              title="Portable EV Charger"
-              description="Versatile portable charger that works with standard 120V outlets and can upgrade to 240V. Perfect for home and travel charging."
-              priceRange="$150 - $350"
-              amazonTag={AMAZON_TAG}
-              searchQuery="portable ev charger level 1 level 2"
-              imageAlt="Portable EV charger on Amazon"
-              slug="charging-time"
-            />
-          )}
-          {chargingLevel === "level2" && (
-            <AffiliateCard
-              title="Level 2 EV Home Charger"
-              description="Charge your EV up to 10x faster than a standard outlet. Smart features, NEMA 14-50 compatible."
-              priceRange="$250 - $600"
-              amazonTag={AMAZON_TAG}
-              searchQuery="level 2 ev home charger"
-              imageAlt="Level 2 EV home charger on Amazon"
-              slug="charging-time"
-            />
-          )}
-          {chargingLevel === "dcfast" && (
-            <AffiliateCard
-              title="EV Charging Adapter"
-              description="Ensure compatibility at any charging station with a CCS, NACS, or J1772 adapter for your EV."
-              priceRange="$20 - $150"
-              amazonTag={AMAZON_TAG}
-              searchQuery="ev charging adapter ccs nacs j1772"
-              imageAlt="EV charging adapter on Amazon"
-              slug="charging-time"
-            />
-          )}
-          <AffiliateCard
-            title="EV Cable Organizer"
-            description="Keep your charging cable tidy and off the ground with a wall-mounted organizer."
-            priceRange="$15 - $40"
-            amazonTag={AMAZON_TAG}
-            searchQuery="ev charging cable organizer wall mount"
-            imageAlt="EV charging cable wall mount organizer on Amazon"
-            slug="charging-time"
-          />
-        </div>
-      </div>
       <EducationalContent>
         <h2>How EV Charging Time Is Calculated</h2>
         <p>
@@ -494,14 +441,14 @@ export default function ChargingTimePage() {
         </p>
         <h3>Why DC Fast Charging Slows Above 80%</h3>
         <p>
-          Lithium-ion batteries accept charge more slowly as they approach full capacity — a physical limitation of the chemistry, not a software restriction. Between 80-100%, the battery management system reduces charging power by roughly 50% to prevent overheating and degradation. This is why most charging networks price sessions by the minute above 80%, and why daily charging to 80% is standard practice.
+          Lithium-ion batteries accept charge more slowly as they approach full capacity. This is a physical limitation of the chemistry, not a software restriction. Between 80-100%, the battery management system reduces charging power by roughly 50% to prevent overheating and degradation. This is why most charging networks price sessions by the minute above 80%, and why daily charging to 80% is standard practice.
         </p>
         <h3>Real-World Factors That Affect Charging Speed</h3>
         <ul>
-          <li>Battery temperature — cold batteries charge 20-40% slower until they warm up. Many EVs now pre-condition the battery when navigating to a fast charger.</li>
-          <li>State of charge — the 10-80% window is the fastest charging zone. Below 10%, some vehicles also reduce charging speed.</li>
-          <li>Charger sharing — if another vehicle is using the same power cabinet, both may receive reduced power (common at older Tesla Supercharger sites).</li>
-          <li>Home circuit capacity — Level 2 charging speed depends on your circuit amperage. A 50A circuit delivers 40A continuous (9.6 kW), while a 30A circuit delivers only 24A (5.7 kW).</li>
+          <li>Battery temperature: cold batteries charge 20-40% slower until they warm up. Many EVs now pre-condition the battery when navigating to a fast charger.</li>
+          <li>State of charge: the 10-80% window is the fastest charging zone. Below 10%, some vehicles also reduce charging speed.</li>
+          <li>Charger sharing: if another vehicle is using the same power cabinet, both may receive reduced power (common at older Tesla Supercharger sites).</li>
+          <li>Home circuit capacity: Level 2 charging speed depends on your circuit amperage. A 50A circuit delivers 40A continuous (9.6 kW), while a 30A circuit delivers only 24A (5.7 kW).</li>
         </ul>
       </EducationalContent>
       <FAQSection questions={chargingTimeFAQ} />

@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (res.status === 409 || res.status === 23505) {
-      // Duplicate — treat as success
+      // Duplicate, treat as success
       return NextResponse.json({ ok: true, message: "Already subscribed" });
     }
 

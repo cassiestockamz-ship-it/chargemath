@@ -1,7 +1,7 @@
 import { makeOgImage, ogSize } from "@/lib/ogImage";
 
 export const runtime = "edge";
-export const alt = "EV Charging Time Calculator — ChargeMath";
+export const alt = "EV Charging Time Calculator | ChargeMath";
 export const size = ogSize;
 export const contentType = "image/png";
 

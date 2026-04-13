@@ -6,8 +6,6 @@ import SelectInput from "@/components/SelectInput";
 import NumberInput from "@/components/NumberInput";
 import SliderInput from "@/components/SliderInput";
 import ResultCard from "@/components/ResultCard";
-import AffiliateCard from "@/components/AffiliateCard";
-import EcoFlowCard, { ECOFLOW_PRODUCTS } from "@/components/EcoFlowCard";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
@@ -26,8 +24,6 @@ import {
 import { EV_VEHICLES } from "@/data/ev-vehicles";
 
 type PublicSplit = "100" | "75_25" | "50_50";
-
-const AMAZON_TAG = "kawaiiguy0f-cm-20";
 
 const fmt = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -172,7 +168,7 @@ export default function ChargerROIPage() {
     <CalculatorLayout
       title="Home EV Charger ROI Calculator"
       description="Find out how quickly a Level 2 home charger pays for itself compared to public charging or Level 1 charging."
-      intro="A Level 2 home EV charger costs $500-2,000 installed but typically pays for itself in 12-24 months through savings versus public charging. Home electricity costs 12-16¢/kWh on average, while public DC fast chargers run 30-60¢/kWh — saving $50-150+ per month for daily drivers."
+      intro="A Level 2 home EV charger costs $500-2,000 installed but typically pays for itself in 12-24 months through savings versus public charging. Home electricity costs 12-16¢/kWh on average, while public DC fast chargers run 30-60¢/kWh, saving $50-150+ per month for daily drivers."
       lastUpdated="March 2026"
     >
       <CalculatorSchema name="Home EV Charger ROI Calculator" description="Calculate the payback period for installing a Level 2 home EV charger compared to public charging or Level 1 charging." url="https://chargemath.com/charger-roi" />
@@ -387,42 +383,6 @@ export default function ChargerROIPage() {
         text={`A home charger pays for itself in ${formatPayback(results.paybackMonths)} with ${fmt.format(results.monthlySavings)}/month in savings vs public charging. ${fmtShort.format(results.totalUpfront)} upfront → ${fmtShort.format(results.fiveYearNet)} net savings over 5 years!`}
       />
 
-      {/* Affiliate Cards */}
-      <div className="mt-10">
-        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
-          Top-Rated Home EV Chargers
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <AffiliateCard
-            title="ChargePoint Home Flex"
-            description="Adjustable amperage (16-50A), works with all EVs, WiFi-enabled with app control and energy tracking."
-            priceRange="$399 - $549"
-            amazonTag={AMAZON_TAG}
-            searchQuery="ChargePoint Home Flex ev charger"
-            imageAlt="ChargePoint Home Flex EV charger on Amazon"
-            slug="charger-roi"
-          />
-          <AffiliateCard
-            title="Emporia Smart Level 2 Charger"
-            description="Smart energy management, WiFi-connected, 48A output, works with Emporia Vue energy monitor."
-            priceRange="$449 - $549"
-            amazonTag={AMAZON_TAG}
-            searchQuery="Emporia smart ev charger level 2"
-            imageAlt="Emporia Smart Level 2 EV charger on Amazon"
-            slug="charger-roi"
-          />
-          <AffiliateCard
-            title="Grizzl-E Classic"
-            description="Rugged, weather-resistant design rated for extreme temperatures. 40A, NEMA 14-50, no-fuss reliability."
-            priceRange="$399 - $459"
-            amazonTag={AMAZON_TAG}
-            searchQuery="Grizzl-E classic ev charger"
-            imageAlt="Grizzl-E Classic EV charger on Amazon"
-            slug="charger-roi"
-          />
-          <EcoFlowCard product={ECOFLOW_PRODUCTS.powerPulseEvCharger} sid="charger-roi" />
-        </div>
-      </div>
       <EducationalContent>
         <h2>How the Charger ROI Calculation Works</h2>
         <p>
@@ -430,14 +390,14 @@ export default function ChargerROIPage() {
         </p>
         <h3>Installation Costs: What to Expect</h3>
         <p>
-          The charger unit itself typically costs $300-600. Installation costs vary more: a simple NEMA 14-50 outlet install runs $200-500 if your panel is nearby and has capacity. Panel upgrades add $1,000-3,000. Running new wire from a distant panel adds $500-1,500. Get three quotes from licensed electricians — prices vary significantly by region.
+          The charger unit itself typically costs $300-600. Installation costs vary more: a simple NEMA 14-50 outlet install runs $200-500 if your panel is nearby and has capacity. Panel upgrades add $1,000-3,000. Running new wire from a distant panel adds $500-1,500. Get three quotes from licensed electricians. Prices vary significantly by region.
         </p>
         <h3>Factors That Improve Your ROI</h3>
         <ul>
-          <li>High daily mileage — the more you drive, the faster a home charger pays off. Commuters driving 50+ miles/day typically break even in under a year.</li>
-          <li>Time-of-use electricity plans — many utilities offer overnight rates 30-50% below standard rates, making home charging even cheaper.</li>
+          <li>High daily mileage: the more you drive, the faster a home charger pays off. Commuters driving 50+ miles/day typically break even in under a year.</li>
+          <li>Time-of-use electricity plans: many utilities offer overnight rates 30-50% below standard rates, making home charging even cheaper.</li>
           <li>The federal 30C charger tax credit covers 30% of equipment and installation costs (up to $1,000), effectively reducing your payback period by nearly a third.</li>
-          <li>Home chargers increase property value — a 2024 Zillow study found homes with EV chargers sold for 3.3% more on average.</li>
+          <li>Home chargers increase property value: a 2024 Zillow study found homes with EV chargers sold for 3.3% more on average.</li>
         </ul>
       </EducationalContent>
       <FAQSection questions={chargerRoiFAQ} />

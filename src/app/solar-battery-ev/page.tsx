@@ -13,7 +13,6 @@ import FAQSection from "@/components/FAQSection";
 import ShareResults from "@/components/ShareResults";
 import EducationalContent from "@/components/EducationalContent";
 import EmailCapture from "@/components/EmailCapture";
-import EcoFlowCard, { ECOFLOW_PRODUCTS } from "@/components/EcoFlowCard";
 import { getDefaultStateCode } from "@/lib/useDefaultState";
 import { useUrlSync } from "@/lib/useUrlState";
 import {
@@ -26,14 +25,6 @@ import {
   NATIONAL_AVG_SOLAR_PRODUCTION,
   HOME_BATTERIES,
 } from "@/data/solar-data";
-
-const CJ_BASE = "https://www.tkqlhce.com/click-101714807-15735883";
-
-/** Only EcoFlow products have affiliate links — other batteries are installer-only (not sold online) */
-const BATTERY_LINKS: Record<string, string> = {
-  "EcoFlow DELTA Pro Ultra X": `${CJ_BASE}?url=${encodeURIComponent("https://us.ecoflow.com/products/delta-pro-ultra-x")}&sid=solar-battery-ev-table`,
-  "EcoFlow DELTA Pro Ultra": `${CJ_BASE}?url=${encodeURIComponent("https://us.ecoflow.com/products/delta-pro-ultra")}&sid=solar-battery-ev-table`,
-};
 
 /* ── Formatters ── */
 const fmtShort = new Intl.NumberFormat("en-US", {
@@ -414,30 +405,15 @@ export default function SolarBatteryEvPage() {
                     }
                   >
                     <td className="py-2 pr-4">
-                      {BATTERY_LINKS[battery.name] ? (
-                        <a
-                          href={BATTERY_LINKS[battery.name]}
-                          target="_blank"
-                          rel="noopener noreferrer nofollow sponsored"
-                          className={`underline decoration-dotted underline-offset-2 hover:decoration-solid ${
-                            isRecommended
-                              ? "font-semibold text-[var(--color-ev-green)]"
-                              : "text-[var(--color-text)] hover:text-[var(--color-primary)]"
-                          }`}
-                        >
-                          {battery.name}
-                        </a>
-                      ) : (
-                        <span
-                          className={
-                            isRecommended
-                              ? "font-semibold text-[var(--color-ev-green)]"
-                              : "text-[var(--color-text)]"
-                          }
-                        >
-                          {battery.name}
-                        </span>
-                      )}
+                      <span
+                        className={
+                          isRecommended
+                            ? "font-semibold text-[var(--color-ev-green)]"
+                            : "text-[var(--color-text)]"
+                        }
+                      >
+                        {battery.name}
+                      </span>
                       {isRecommended && (
                         <span className="ml-2 rounded-full bg-[var(--color-ev-green)] px-2 py-0.5 text-xs font-bold text-white">
                           Best Value
@@ -534,18 +510,6 @@ export default function SolarBatteryEvPage() {
         title={`Battery sizing: ${results.nominalCapacity.toFixed(1)} kWh for EV charging`}
         text={`I need a ${results.nominalCapacity.toFixed(1)} kWh home battery and ${results.solarSizeNeeded.toFixed(1)} kW of solar to charge my ${vehicle.make} ${vehicle.model} overnight. System payback: ${formatPaybackYears(results.paybackYears)}.`}
       />
-
-      {/* EcoFlow Product Recommendations */}
-      <div className="mt-10">
-        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
-          Home Battery Systems Worth Considering
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <EcoFlowCard product={ECOFLOW_PRODUCTS.deltaProUltraX} sid="solar-battery-ev" />
-          <EcoFlowCard product={ECOFLOW_PRODUCTS.deltaProUltra} sid="solar-battery-ev" />
-          <EcoFlowCard product={ECOFLOW_PRODUCTS.deltaPro3} sid="solar-battery-ev" />
-        </div>
-      </div>
 
       <EducationalContent>
         <h2>Why Pair a Home Battery with Solar and an EV?</h2>

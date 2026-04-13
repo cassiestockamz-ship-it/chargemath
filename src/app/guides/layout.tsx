@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: {
-    template: "%s — ChargeMath",
-    default: "EV Charging Cost by State — ChargeMath",
+    template: "%s | ChargeMath",
+    default: "EV Charging Cost by State | ChargeMath",
   },
 };
 

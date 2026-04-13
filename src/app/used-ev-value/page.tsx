@@ -210,7 +210,7 @@ export default function UsedEvValuePage() {
       title="Used EV Value Estimator"
       description="Estimate the current market value of a used electric vehicle based on age, mileage, battery health, and condition."
       lastUpdated="March 2026"
-      intro="Used EV prices depend heavily on battery health, which is something traditional car valuation tools often miss. This calculator factors in depreciation curves, mileage, charging habits, and battery degradation to give you a realistic estimate. Whether you are buying or selling, understanding these factors helps you negotiate a fair price."
+      intro="Used EV prices depend heavily on battery health, which is something traditional car valuation tools often miss. This calculator factors in depreciation curves, mileage, charging habits, and battery degradation to give you a realistic estimate. If you are buying or selling, understanding these factors helps you negotiate a fair price."
     >
       <CalculatorSchema
         name="Used EV Value Estimator"

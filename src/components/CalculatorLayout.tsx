@@ -1,5 +1,4 @@
 import { ReactNode } from "react";
-import AffiliateDisclosure from "./AffiliateDisclosure";
 
 interface CalculatorLayoutProps {
   title: string;
@@ -7,6 +6,7 @@ interface CalculatorLayoutProps {
   children: ReactNode;
   lastUpdated?: string;
   intro?: string;
+  answerBlock?: ReactNode;
 }
 
 export default function CalculatorLayout({
@@ -15,11 +15,17 @@ export default function CalculatorLayout({
   children,
   lastUpdated,
   intro,
+  answerBlock,
 }: CalculatorLayoutProps) {
+  // Auto-upgrade intro text into AIO-optimized answer block if no
+  // custom answerBlock was passed. This gives every existing calculator
+  // a plain-English answer above the widget without per-page edits.
+  const effectiveAnswer = answerBlock ?? (intro ? <p>{intro}</p> : null);
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
       {/* Hero */}
-      <div className="mb-8 text-center">
+      <div className="mb-6 text-center">
         <h1 className="text-3xl font-extrabold tracking-tight text-[var(--color-text)] sm:text-4xl">
           {title}
         </h1>
@@ -31,17 +37,26 @@ export default function CalculatorLayout({
             Data last updated: {lastUpdated}
           </p>
         )}
-        {intro && (
-          <p className="mx-auto mt-4 max-w-2xl text-base text-[var(--color-text-muted)]">
-            {intro}
-          </p>
-        )}
       </div>
+
+      {/* Answer block above the widget — AIO citation target */}
+      {effectiveAnswer && (
+        <div
+          className="mb-6 rounded-2xl border-l-4 border-[var(--color-primary)] bg-[var(--color-surface-alt)] p-5 sm:p-6"
+          data-speakable="true"
+        >
+          <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--color-primary)]">
+            Quick answer
+          </div>
+          <div className="prose prose-sm max-w-none text-[var(--color-text)] [&>p]:my-0">
+            {effectiveAnswer}
+          </div>
+        </div>
+      )}
 
       {/* Calculator content */}
       <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-sm sm:p-8">
         {children}
-        <AffiliateDisclosure />
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 interface ResultCardProps {
   label: string;
   value: string;
-  unit: string;
+  unit?: string;
   highlight?: boolean;
   icon?: string;
 }

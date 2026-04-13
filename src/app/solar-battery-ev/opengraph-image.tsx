@@ -1,7 +1,7 @@
 import { makeOgImage, ogSize } from "@/lib/ogImage";
 
 export const runtime = "edge";
-export const alt = "Solar Battery Size Calculator for EV Charging — ChargeMath";
+export const alt = "Solar Battery Size Calculator for EV Charging | ChargeMath";
 export const size = ogSize;
 export const contentType = "image/png";
 

@@ -13,7 +13,6 @@ import FAQSection from "@/components/FAQSection";
 import ShareResults from "@/components/ShareResults";
 import EducationalContent from "@/components/EducationalContent";
 import EmailCapture from "@/components/EmailCapture";
-import EcoFlowCard, { ECOFLOW_PRODUCTS } from "@/components/EcoFlowCard";
 import { getDefaultStateCode } from "@/lib/useDefaultState";
 import { useUrlSync } from "@/lib/useUrlState";
 import {
@@ -598,17 +597,6 @@ export default function SolarPaybackPage() {
         title={`Solar payback ${formatPaybackYears(results.paybackWithEv)} with EV vs ${formatPaybackYears(results.paybackWithoutEv)} without`}
         text={`My ${systemSizeKw} kW solar system pays off in ${formatPaybackYears(results.paybackWithEv)} with an EV, vs ${formatPaybackYears(results.paybackWithoutEv)} without. That is ${results.yearsSaved.toFixed(1)} years saved and ${fmtShort.format(results.extraSavingsWithEv)} in extra profit over 25 years.`}
       />
-
-      {/* EcoFlow Product Recommendations */}
-      <div className="mt-10">
-        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
-          Solar + Battery Solutions
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <EcoFlowCard product={ECOFLOW_PRODUCTS.deltaProUltraX} sid="solar-payback" />
-          <EcoFlowCard product={ECOFLOW_PRODUCTS.solarPanel400W} sid="solar-payback" />
-        </div>
-      </div>
 
       <EducationalContent>
         <h2>Why EVs Accelerate Solar Payback</h2>

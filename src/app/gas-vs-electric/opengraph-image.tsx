@@ -1,7 +1,7 @@
 import { makeOgImage, ogSize } from "@/lib/ogImage";
 
 export const runtime = "edge";
-export const alt = "Gas vs Electric Cost Comparison — ChargeMath";
+export const alt = "Gas vs Electric Cost Comparison | ChargeMath";
 export const size = ogSize;
 export const contentType = "image/png";
 

@@ -11,6 +11,11 @@ interface Calc {
 }
 
 const ALL_CALCULATORS: Calc[] = [
+  { title: "Will I Make It Home?", description: "EV panic calculator, real-world arrival SOC", href: "/will-i-make-it-home", icon: "🚨" },
+  { title: "Winter Range Forecast", description: "Live 7-day range forecast by ZIP", href: "/winter-range-forecast", icon: "🌨️" },
+  { title: "Charge Curve Simulator", description: "Real DCFC curves for 16 EVs", href: "/charge-curve", icon: "📈" },
+  { title: "Panel Load Check", description: "NEC 220.83 permit worksheet", href: "/panel-load-check", icon: "🔌" },
+  { title: "EV Tire Cost", description: "The hidden tire tax nobody told you about", href: "/ev-tire-cost", icon: "🛞" },
   { title: "Charging Cost", description: "Monthly & annual charging estimates", href: "/ev-charging-cost", icon: "🔌" },
   { title: "Gas vs Electric", description: "Side-by-side cost & CO2 comparison", href: "/gas-vs-electric", icon: "⚖️" },
   { title: "EV vs Hybrid", description: "Three-way EV, hybrid & gas comparison", href: "/ev-vs-hybrid", icon: "🔄" },

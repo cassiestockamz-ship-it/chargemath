@@ -16,21 +16,21 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   title: {
-    default: "ChargeMath — EV Calculators & Charging Cost Tools",
-    template: "%s — ChargeMath",
+    default: "ChargeMath: EV Calculators & Charging Cost Tools",
+    template: "%s | ChargeMath",
   },
   description:
     "Free EV charging cost calculators. Compare gas vs electric costs, estimate monthly charging expenses, and find savings with real EPA vehicle data and state electricity rates.",
   openGraph: {
     type: "website",
     siteName: "ChargeMath",
-    title: "ChargeMath — Free EV Charging Calculators",
+    title: "ChargeMath: Free EV Charging Calculators",
     description: "Calculate EV charging costs, compare gas vs electric, estimate range, and find tax credits. Powered by real EPA data and state electricity rates.",
     url: "https://chargemath.com",
   },
   twitter: {
     card: "summary_large_image",
-    title: "ChargeMath — Free EV Charging Calculators",
+    title: "ChargeMath: Free EV Charging Calculators",
     description: "Calculate EV charging costs, compare gas vs electric, estimate range, and find tax credits.",
   },
   robots: {
@@ -72,7 +72,7 @@ export default function RootLayout({
             },
           ],
         }) }} />
-        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var s=sessionStorage.getItem('_sid');if(!s){s=Math.random().toString(36).slice(2)+Date.now().toString(36);sessionStorage.setItem('_sid',s)}var d=screen.width<768?'mobile':screen.width<1024?'tablet':'desktop';fetch('https://project-dash-psi.vercel.app/api/track',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({site_id:'4f06f8f8-19b6-4d60-9e14-8b539e38bb4a',path:location.pathname,referrer:document.referrer||null,device_type:d,session_id:s}),keepalive:true}).catch(function(){})}catch(e){}})();` }} />
+        <script dangerouslySetInnerHTML={{ __html: `(function(){try{if(new URLSearchParams(location.search).has('notrack')){localStorage.setItem('_no_track','1')}if(localStorage.getItem('_no_track')==='1')return;var s=sessionStorage.getItem('_sid');if(!s){s=Math.random().toString(36).slice(2)+Date.now().toString(36);sessionStorage.setItem('_sid',s)}var d=screen.width<768?'mobile':screen.width<1024?'tablet':'desktop';fetch('https://project-dash-psi.vercel.app/api/track',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({site_id:'4f06f8f8-19b6-4d60-9e14-8b539e38bb4a',path:location.pathname,referrer:document.referrer||null,device_type:d,session_id:s}),keepalive:true}).catch(function(){})}catch(e){}})();` }} />
         <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-white focus:text-blue-600 focus:rounded focus:shadow-lg">
           Skip to content
         </a>
@@ -117,16 +117,11 @@ export default function RootLayout({
                 may vary based on your utility plan, charging habits, climate,
                 and driving conditions.
               </p>
-              <p className="text-xs text-[var(--color-text-muted)]">
-                Some links are affiliate links. See our{" "}
-                <Link href="/disclosure" className="underline hover:text-[var(--color-text)] transition-colors">disclosure</Link>.
-              </p>
               <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-[var(--color-text-muted)]">
                 <Link href="/guides" className="hover:text-[var(--color-text)] transition-colors">State Guides</Link>
                 <Link href="/embed" className="hover:text-[var(--color-text)] transition-colors">Embed</Link>
                 <Link href="/about" className="hover:text-[var(--color-text)] transition-colors">About</Link>
-                <Link href="/disclosure" className="hover:text-[var(--color-text)] transition-colors">Disclosure</Link>
-                <Link href="/dashboard" className="hover:text-[var(--color-text)] transition-colors">Analytics</Link>
+                <Link href="/methodology" className="hover:text-[var(--color-text)] transition-colors">Methodology</Link>
               </div>
               <p className="text-xs text-[var(--color-text-muted)]">
                 &copy; {new Date().getFullYear()} ChargeMath. All rights

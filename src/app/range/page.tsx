@@ -6,7 +6,6 @@ import CalculatorLayout from "@/components/CalculatorLayout";
 import SelectInput from "@/components/SelectInput";
 import SliderInput from "@/components/SliderInput";
 import ResultCard from "@/components/ResultCard";
-import AffiliateCard from "@/components/AffiliateCard";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
@@ -17,8 +16,6 @@ import EmailCapture from "@/components/EmailCapture";
 import { useUrlSync } from "@/lib/useUrlState";
 import { rangeFAQ } from "@/data/faq-data";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
-
-const AMAZON_TAG = "kawaiiguy0f-cm-20";
 
 type ClimateControl = "off" | "ac" | "heat" | "heat_seats";
 type Terrain = "flat" | "hilly" | "mountainous";
@@ -393,55 +390,6 @@ export default function RangePage() {
         text={`My ${vehicle.year} ${vehicle.make} ${vehicle.model} gets ${Math.round(results.adjustedRange)} miles real-world range vs ${Math.round(results.baseRange)} miles EPA at ${startPercent}% battery. That's ${results.percentOfEpa.toFixed(0)}% of EPA range at ${speed} mph and ${temperature}°F.`}
       />
 
-      {/* Affiliate Cards */}
-      <div className="mt-10">
-        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
-          Recommended Products
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2">
-          {temperature < 40 && (
-            <AffiliateCard
-              title="EV Winter Kit"
-              description="Stay warm and protect your range in cold weather with insulated covers, battery warmers, and winter accessories designed for EVs."
-              priceRange="$25 - $60"
-              amazonTag={AMAZON_TAG}
-              searchQuery="electric car winter accessories kit"
-              imageAlt="EV winter accessories kit on Amazon"
-              slug="range"
-            />
-          )}
-          {cargo === "towing" && (
-            <AffiliateCard
-              title="EV Towing Accessories"
-              description="Hitch accessories, wiring harnesses, and towing gear designed for electric vehicles. Tow safely and maximize your range."
-              priceRange="$50 - $200"
-              amazonTag={AMAZON_TAG}
-              searchQuery="electric vehicle towing hitch accessories"
-              imageAlt="EV towing hitch accessories on Amazon"
-              slug="range"
-            />
-          )}
-          <AffiliateCard
-            title="Tire Pressure Gauge"
-            description="Proper tire pressure can improve your EV range by up to 3%. A quality digital gauge ensures accuracy every time."
-            priceRange="$8 - $20"
-            amazonTag={AMAZON_TAG}
-            searchQuery="digital tire pressure gauge accurate"
-            imageAlt="Digital tire pressure gauge on Amazon"
-            slug="range"
-          />
-          <AffiliateCard
-            title="EV Charging Cable Bag"
-            description="Keep your charging cables organized and protected. Durable bags with compartments for adapters, cables, and accessories."
-            priceRange="$15 - $35"
-            amazonTag={AMAZON_TAG}
-            searchQuery="ev charging cable bag organizer"
-            imageAlt="EV charging cable bag organizer on Amazon"
-            slug="range"
-          />
-        </div>
-      </div>
-
       <EducationalContent>
         <h2>How Real-World EV Range Is Calculated</h2>
         <p>
@@ -449,14 +397,14 @@ export default function RangePage() {
         </p>
         <h3>Why EPA Range Doesn&apos;t Match Reality</h3>
         <p>
-          The EPA tests vehicles on a dynamometer at 73°F with no climate control, no wind, and a standardized drive cycle averaging about 48 mph. Real driving includes highway speeds, temperature extremes, hills, and passenger weight — all of which reduce efficiency. Most drivers see 10-20% less range than the EPA rating under normal conditions, and up to 40% less in extreme cold.
+          The EPA tests vehicles on a dynamometer at 73°F with no climate control, no wind, and a standardized drive cycle averaging about 48 mph. Real driving includes highway speeds, temperature extremes, hills, and passenger weight, all of which reduce efficiency. Most drivers see 10-20% less range than the EPA rating under normal conditions, and up to 40% less in extreme cold.
         </p>
         <h3>Maximizing Your Range</h3>
         <ul>
-          <li>Tire pressure matters — under-inflated tires can reduce range by 3-5%. Check monthly and inflate to the door placard spec, not the tire sidewall maximum.</li>
-          <li>Pre-condition while plugged in — heating or cooling the cabin while still connected to the charger preserves battery energy for driving.</li>
-          <li>Use seat heaters instead of cabin heat — heated seats and steering wheel use 75% less energy than the climate system.</li>
-          <li>Slow down on highways — aerodynamic drag increases with the square of speed. Driving 65 mph instead of 75 mph can recover 10-15% of range.</li>
+          <li>Tire pressure matters. Under-inflated tires can reduce range by 3-5%. Check monthly and inflate to the door placard spec, not the tire sidewall maximum.</li>
+          <li>Pre-condition while plugged in. Heating or cooling the cabin while still connected to the charger preserves battery energy for driving.</li>
+          <li>Use seat heaters instead of cabin heat. Heated seats and steering wheel use 75% less energy than the climate system.</li>
+          <li>Slow down on highways. Aerodynamic drag increases with the square of speed. Driving 65 mph instead of 75 mph can recover 10-15% of range.</li>
         </ul>
       </EducationalContent>
       <FAQSection questions={rangeFAQ} />

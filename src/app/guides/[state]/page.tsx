@@ -205,7 +205,7 @@ export default async function StateGuidePage({
         </h2>
         <p className="mb-5 text-sm text-[var(--color-text-muted)]">
           These links open our calculators with {guide.state}&apos;s electricity rate
-          pre-selected — customize with your actual vehicle and driving habits.
+          pre-selected. Customize with your actual vehicle and driving habits.
         </p>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {[
@@ -343,7 +343,7 @@ export default async function StateGuidePage({
           {guide.state}&apos;s residential electricity rate of {guide.rate}¢/kWh is{" "}
           {rateLabel}. For a typical EV owner driving 35 miles per day, this
           translates to about {fmt.format(guide.monthlyCharging)} per month in
-          charging costs — or {fmt.format(guide.annualCharging)} annually. Compared
+          charging costs, or {fmt.format(guide.annualCharging)} annually. Compared
           to fueling a 28 MPG gas car at $3.50/gallon, you save{" "}
           {fmtShort.format(guide.annualGasSavings)} per year.
         </p>
@@ -352,7 +352,7 @@ export default async function StateGuidePage({
           per mile for gas, driving electric in {guide.state} costs{" "}
           {((1 - guide.costPerMile / 0.125) * 100).toFixed(0)}% less per mile. Over
           5 years of typical driving (12,775 miles/year), that adds up to{" "}
-          {fmtShort.format(guide.annualGasSavings * 5)} in fuel savings alone —
+          {fmtShort.format(guide.annualGasSavings * 5)} in fuel savings alone,
           before accounting for reduced maintenance costs.
         </p>
         <p>
