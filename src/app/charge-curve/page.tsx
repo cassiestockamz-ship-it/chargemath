@@ -126,7 +126,7 @@ export default function ChargeCurvePage() {
           <strong>Quick answer:</strong> Charge curves collapse after about 60% SOC on
           most EVs. A 2024 Hyundai Ioniq 5 at a 350 kW charger holds 235 kW from 5% to
           about 50%, then steps down to 150 kW, then falls off a cliff at 80%. That is why
-          real road-trip advice is &ldquo;10% to 60% and go&rdquo; — you add ~40 kWh in 12
+          real road-trip advice is &ldquo;10% to 60% and go&rdquo;. You add ~40 kWh in 12
           minutes, and the next 20% takes almost as long. This tool runs the exact session
           for your specific car and charger.
         </p>
@@ -387,7 +387,7 @@ export default function ChargeCurvePage() {
         card={{
           headline: `${fmt(session.totalMinutes, 0)} min`,
           label: `${startSoc}% → ${endSoc}% session time`,
-          sub: `${car.year} ${car.make} ${car.model} at ${chargerKw} kW — ${fmt(session.kwhAdded, 0)} kWh added`,
+          sub: `${car.year} ${car.make} ${car.model} at ${chargerKw} kW, ${fmt(session.kwhAdded, 0)} kWh added`,
           calc: "charge-curve",
         }}
       />
@@ -399,7 +399,7 @@ export default function ChargeCurvePage() {
           high. The reason is electrochemical: as the battery fills, the lithium-ion
           concentration gradient inside each cell flattens out and the battery
           management system (BMS) has to reduce current to avoid plating metallic lithium
-          on the anode — which would permanently kill capacity. Every EV has a
+          on the anode, which would permanently kill capacity. Every EV has a
           manufacturer-programmed curve that trades peak power for long-term battery
           health, and that&apos;s what you see charted here.
         </p>
@@ -425,7 +425,7 @@ export default function ChargeCurvePage() {
         <h3>What The Charger Cap Does</h3>
         <p>
           If your car&apos;s peak is 270 kW and the charger is 150 kW, you see 150 kW for
-          most of the session — until the car&apos;s natural taper drops below 150 kW,
+          most of the session, until the car&apos;s natural taper drops below 150 kW,
           after which the charger stops being the bottleneck. You can see this on the
           chart as the point where the green line separates from the orange dashed cap
           line. For 400V cars paired with 350 kW chargers, most of the session is
@@ -456,7 +456,7 @@ const curveFAQ = [
   {
     question: "Why does my Tesla stop charging at 250 kW after just a few minutes?",
     answer:
-      "The 250 kW peak is real but brief. Model 3 and Model Y Long Range curves hold 250 kW from about 10% to 20% SOC, then step down to roughly 180 kW by 30%, 140 kW by 50%, and under 100 kW by 60%. The 'I saw 250 kW for 30 seconds' experience is normal — that's how the curve is shaped. This calculator plots the whole shape so you know what to expect.",
+      "The 250 kW peak is real but brief. Model 3 and Model Y Long Range curves hold 250 kW from about 10% to 20% SOC, then step down to roughly 180 kW by 30%, 140 kW by 50%, and under 100 kW by 60%. The 'I saw 250 kW for 30 seconds' experience is normal. That's how the curve is shaped. This calculator plots the whole shape so you know what to expect.",
   },
   {
     question: "Why do Ioniq 5 and EV6 charge so much faster than other EVs?",

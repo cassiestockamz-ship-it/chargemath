@@ -1,166 +1,138 @@
 import Link from "next/link";
+import HomeLiveHero from "@/components/HomeLiveHero";
 import CalculatorSearch from "@/components/CalculatorSearch";
-
-const featured = [
-  { title: "Will I Make It Home?", description: "EV panic calculator. Real-world arrival SOC with temperature, speed, and heat load. Traffic-light verdict in 10 seconds.", href: "/will-i-make-it-home", icon: "🚨" },
-  { title: "Charge Curve Simulator", description: "Real DCFC curves for 16 popular EVs. See the whole session in one chart for any charger speed and SOC window.", href: "/charge-curve", icon: "📈" },
-  { title: "Panel Load Check", description: "Free NEC 220.83 + 625.42 worksheet. Tells you if your panel can take an EV charger without a service upgrade.", href: "/panel-load-check", icon: "🔌" },
-  { title: "Winter Range Forecast", description: "Live 7-day range forecast by ZIP. Uses Open-Meteo weather plus Recurrent cold-weather retention data.", href: "/winter-range-forecast", icon: "❄️" },
-];
 
 const categories = [
   {
     label: "Live Data + Unique Tools",
-    icon: "⚡",
+    eyebrow: "Only on ChargeMath",
     items: [
-      { title: "Will I Make It Home?", href: "/will-i-make-it-home" },
-      { title: "Winter Range Forecast", href: "/winter-range-forecast" },
-      { title: "Charge Curve Simulator", href: "/charge-curve" },
-      { title: "Panel Load Check", href: "/panel-load-check" },
-      { title: "EV Tire Cost", href: "/ev-tire-cost" },
+      { title: "Will I Make It Home?", href: "/will-i-make-it-home", blurb: "Real-world arrival SOC with temperature, speed, and heat load." },
+      { title: "Winter Range Forecast", href: "/winter-range-forecast", blurb: "7-day range forecast by ZIP with cold-weather retention data." },
+      { title: "Charge Curve Simulator", href: "/charge-curve", blurb: "Real DCFC curves for 16 popular EVs, full-session chart." },
+      { title: "Panel Load Check", href: "/panel-load-check", blurb: "NEC 220.83 + 625.42 worksheet. Can your panel take a Level 2?" },
+      { title: "EV Tire Cost", href: "/ev-tire-cost", blurb: "The hidden line item on the EV ledger nobody tells you about." },
     ],
   },
   {
     label: "Cost & Savings",
-    icon: "💰",
+    eyebrow: "Money in, money out",
     items: [
-      { title: "Charging Cost", href: "/ev-charging-cost" },
-      { title: "Gas vs Electric", href: "/gas-vs-electric" },
-      { title: "EV vs Hybrid", href: "/ev-vs-hybrid" },
-      { title: "Total Cost of Ownership", href: "/total-cost" },
-      { title: "Lease vs Buy", href: "/lease-vs-buy" },
-      { title: "Payback Period", href: "/payback-period" },
-      { title: "Commute Cost", href: "/commute-cost" },
-      { title: "Used EV Value", href: "/used-ev-value" },
-      { title: "Tax Credits", href: "/tax-credits" },
+      { title: "Charging Cost", href: "/ev-charging-cost", blurb: "Your monthly bill impact by car, state, and habits." },
+      { title: "Gas vs Electric", href: "/gas-vs-electric", blurb: "The fuel savings number, side by side." },
+      { title: "EV vs Hybrid", href: "/ev-vs-hybrid", blurb: "The middle-ground math nobody runs." },
+      { title: "Total Cost of Ownership", href: "/total-cost", blurb: "5 years, purchase to resale, every line." },
+      { title: "Lease vs Buy", href: "/lease-vs-buy", blurb: "Break even month, cash flow, depreciation risk." },
+      { title: "Payback Period", href: "/payback-period", blurb: "When the EV premium pays for itself." },
+      { title: "Commute Cost", href: "/commute-cost", blurb: "Per-trip fuel and wear math for your route." },
+      { title: "Used EV Value", href: "/used-ev-value", blurb: "Residual, battery health, and fair-price math." },
+      { title: "Tax Credits", href: "/tax-credits", blurb: "Federal and state credits, post-September 2025 rules." },
     ],
   },
   {
     label: "Charging",
-    icon: "🔌",
+    eyebrow: "Plug in the math",
     items: [
-      { title: "Charging Time", href: "/charging-time" },
-      { title: "Charger ROI", href: "/charger-roi" },
-      { title: "Bill Impact", href: "/bill-impact" },
-      { title: "Public Charging", href: "/public-charging" },
-      { title: "TOU Optimizer", href: "/tou-optimizer" },
+      { title: "Charging Time", href: "/charging-time", blurb: "Level 1, Level 2, DC fast. From X% to Y%." },
+      { title: "Charger ROI", href: "/charger-roi", blurb: "How fast a home Level 2 pays off vs public charging." },
+      { title: "Bill Impact", href: "/bill-impact", blurb: "What the EV adds to your monthly utility bill." },
+      { title: "Public Charging", href: "/public-charging", blurb: "Tesla, EA, ChargePoint, EVgo pricing per session." },
+      { title: "TOU Optimizer", href: "/tou-optimizer", blurb: "When to plug in. When not to plug in." },
     ],
   },
   {
     label: "Range & Trips",
-    icon: "🗺️",
+    eyebrow: "Can you make it?",
     items: [
-      { title: "Range Calculator", href: "/range" },
-      { title: "Winter Range", href: "/winter-range" },
-      { title: "Towing Range", href: "/towing-range" },
-      { title: "Road Trip Planner", href: "/road-trip" },
+      { title: "Range Calculator", href: "/range", blurb: "Real-world range by speed, temp, terrain." },
+      { title: "Winter Range", href: "/winter-range", blurb: "Cold-weather retention curves." },
+      { title: "Towing Range", href: "/towing-range", blurb: "Drag penalty math for trailers." },
+      { title: "Road Trip Planner", href: "/road-trip", blurb: "Session count, DCFC stop length, total drive time." },
     ],
   },
   {
     label: "Solar & Energy",
-    icon: "☀️",
+    eyebrow: "Make the grid work",
     items: [
-      { title: "Solar + EV", href: "/solar-ev" },
-      { title: "Solar Panel Sizing", href: "/solar-ev-sizing" },
-      { title: "Solar Payback", href: "/solar-payback" },
-      { title: "Solar + Battery", href: "/solar-battery-ev" },
-      { title: "Solar vs Grid Cost", href: "/solar-vs-grid-ev" },
-      { title: "Battery Degradation", href: "/battery-degradation" },
-      { title: "Carbon Footprint", href: "/carbon-footprint" },
-      { title: "Fleet Calculator", href: "/fleet" },
+      { title: "Solar + EV", href: "/solar-ev", blurb: "How much panel for how many EV miles." },
+      { title: "Solar Panel Sizing", href: "/solar-ev-sizing", blurb: "kW from roof, peak sun hours, annual yield." },
+      { title: "Solar Payback", href: "/solar-payback", blurb: "Post-ITC repeal math for homeowners." },
+      { title: "Solar + Battery", href: "/solar-battery-ev", blurb: "Storage sizing, self-consumption ratio." },
+      { title: "Solar vs Grid Cost", href: "/solar-vs-grid-ev", blurb: "Levelized cost, head to head." },
+      { title: "Battery Degradation", href: "/battery-degradation", blurb: "Calendar + cycle aging over a decade." },
+      { title: "Carbon Footprint", href: "/carbon-footprint", blurb: "Grid mix vs gas, lbs of CO2 per year." },
+      { title: "Fleet Calculator", href: "/fleet", blurb: "Depot charging math for small business fleets." },
     ],
   },
-];
-
-const features = [
-  { icon: "📊", title: "Real EPA Data", description: "Vehicle efficiency and range data sourced directly from fueleconomy.gov for 20+ popular EVs." },
-  { icon: "🗺️", title: "State-Specific Rates", description: "Electricity rates for all 50 states plus DC, sourced from EIA residential averages." },
-  { icon: "💵", title: "Save Money", description: "Find out exactly how much you'll save per month and per year by switching from gas to electric." },
 ];
 
 export default function HomePage() {
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "ChargeMath",
-        "url": "https://chargemath.com",
-        "description": "Free EV calculators powered by real EPA vehicle data and state-specific electricity rates.",
-        "publisher": { "@type": "Organization", "name": "ChargeMath", "url": "https://chargemath.com/about" }
-      })}} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: "ChargeMath",
+            url: "https://chargemath.com",
+            description:
+              "Free EV calculators powered by real EPA vehicle data and state electricity rates.",
+            publisher: {
+              "@type": "Organization",
+              name: "ChargeMath",
+              url: "https://chargemath.com/about",
+            },
+            potentialAction: {
+              "@type": "SearchAction",
+              target: {
+                "@type": "EntryPoint",
+                urlTemplate: "https://chargemath.com/calculators?q={search_term_string}",
+              },
+              "query-input": "required name=search_term_string",
+            },
+          }),
+        }}
+      />
 
-      {/* Hero */}
-      <section className="px-4 pb-16 pt-20 text-center sm:px-6">
-        <h1 className="text-4xl font-extrabold tracking-tight text-[var(--color-text)] sm:text-5xl lg:text-6xl">
-          EV math that{" "}
-          <span className="text-[var(--color-primary)]">actually answers the question</span>
-        </h1>
-        <p className="mx-auto mt-5 max-w-2xl text-lg text-[var(--color-text-muted)] sm:text-xl">
-          Real DCFC curves. NEC 220.83 permit worksheets. Live winter range forecasts by ZIP.
-          And the panic calculator that tells you if you&apos;ll make it home tonight.
-          Free. No signup. No ads.
-        </p>
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <Link href="/will-i-make-it-home" className="rounded-xl bg-[var(--color-primary)] px-6 py-3 text-sm font-semibold text-white shadow-md transition-colors hover:bg-[var(--color-primary-dark)]">
-            Will I make it home?
-          </Link>
-          <Link href="/charge-curve" className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-3 text-sm font-semibold text-[var(--color-text)] shadow-sm transition-colors hover:bg-[var(--color-surface-alt)]">
-            Charge curve simulator
-          </Link>
-        </div>
-      </section>
+      {/* Live hero — the answer is already on screen before the user does anything */}
+      <HomeLiveHero />
 
-      {/* Featured Calculators (top 4 as cards) */}
-      <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
-        <h2 className="mb-6 text-center text-xl font-bold text-[var(--color-text)]">Most Popular</h2>
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {featured.map((calc) => (
-            <Link
-              key={calc.href}
-              href={calc.href}
-              className="group rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-sm transition-all hover:border-[var(--color-primary)]/30 hover:shadow-md"
-            >
-              <span className="mb-2 block text-2xl">{calc.icon}</span>
-              <h3 className="text-sm font-semibold text-[var(--color-text)] group-hover:text-[var(--color-primary)]">
-                {calc.title}
-              </h3>
-              <p className="mt-1.5 text-xs text-[var(--color-text-muted)]">
-                {calc.description}
-              </p>
-              <span className="mt-3 inline-block text-xs font-medium text-[var(--color-primary)]">
-                Try it &rarr;
-              </span>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* Search */}
-      <section className="mx-auto max-w-6xl px-4 pb-12 sm:px-6">
+      {/* Calculator search */}
+      <section className="mx-auto max-w-5xl px-4 pb-10 sm:px-6">
         <CalculatorSearch />
       </section>
 
-      {/* All Calculators - compact directory */}
+      {/* Directory — every tool on one page, no burial */}
       <section className="border-t border-[var(--color-border)] bg-[var(--color-surface-alt)]">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-          <h2 className="mb-8 text-center text-xl font-bold text-[var(--color-text)]">All Calculators</h2>
-          <div className="grid items-start gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
+          <div className="mb-8 flex flex-col gap-1">
+            <span className="cm-eyebrow">All calculators</span>
+            <h2 className="text-2xl font-extrabold tracking-tight text-[var(--color-ink)] sm:text-3xl">
+              Every EV question, one tool each.
+            </h2>
+          </div>
+          <div className="grid items-start gap-10 md:grid-cols-2 lg:grid-cols-3">
             {categories.map((cat) => (
-              <div key={cat.label}>
-                <div className="mb-3 flex h-8 items-end border-b-2 border-[var(--color-primary)]/20 pb-2">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--color-primary)]">
-                    <span className="mr-1.5">{cat.icon}</span>{cat.label}
-                  </h3>
+              <div key={cat.label} className="flex flex-col gap-3">
+                <div className="flex flex-col gap-0.5 border-l-2 border-[var(--color-brand)] pl-3">
+                  <span className="cm-eyebrow" style={{ color: "var(--color-brand)" }}>
+                    {cat.eyebrow}
+                  </span>
+                  <h3 className="text-lg font-bold text-[var(--color-ink)]">{cat.label}</h3>
                 </div>
-                <ul className="space-y-1.5">
+                <ul className="flex flex-col gap-2.5">
                   {cat.items.map((item) => (
                     <li key={item.href}>
                       <Link
                         href={item.href}
-                        className="block text-sm text-[var(--color-text)] transition-colors hover:text-[var(--color-primary)]"
+                        className="group flex flex-col gap-0.5 rounded-lg border border-transparent bg-white/60 px-3 py-2 transition-colors hover:border-[var(--color-border)] hover:bg-white"
                       >
-                        {item.title}
+                        <span className="text-sm font-semibold text-[var(--color-ink)] group-hover:text-[var(--color-brand)]">
+                          {item.title}
+                        </span>
+                        <span className="text-xs text-[var(--color-ink-3)]">{item.blurb}</span>
                       </Link>
                     </li>
                   ))}
@@ -168,39 +140,26 @@ export default function HomePage() {
               </div>
             ))}
           </div>
-          <div className="mt-8 text-center">
-            <Link href="/calculators" className="text-sm font-medium text-[var(--color-primary)] hover:underline">
-              View all with descriptions &rarr;
-            </Link>
-          </div>
         </div>
       </section>
 
-      {/* Why ChargeMath */}
-      <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-        <h2 className="mb-10 text-center text-2xl font-bold text-[var(--color-text)]">
-          Why ChargeMath?
-        </h2>
-        <div className="grid gap-8 sm:grid-cols-3">
-          {features.map((f) => (
-            <div key={f.title} className="text-center">
-              <span className="mb-3 inline-block text-3xl">{f.icon}</span>
-              <h3 className="text-lg font-semibold text-[var(--color-text)]">{f.title}</h3>
-              <p className="mt-2 text-sm text-[var(--color-text-muted)]">{f.description}</p>
-            </div>
-          ))}
+      {/* State guides CTA */}
+      <section className="border-t border-[var(--color-border)] bg-white">
+        <div className="mx-auto max-w-5xl px-4 py-16 text-center sm:px-6">
+          <span className="cm-eyebrow">State guides</span>
+          <h2 className="mt-1 text-2xl font-extrabold tracking-tight text-[var(--color-ink)] sm:text-3xl">
+            EV charging cost, state by state.
+          </h2>
+          <p className="mx-auto mt-3 max-w-xl text-sm text-[var(--color-ink-3)] sm:text-base">
+            Electricity rates vary by 3x across the country. Your state decides how fast the math works in your favor.
+          </p>
+          <Link
+            href="/guides"
+            className="mt-6 inline-block rounded-xl bg-[var(--color-brand)] px-6 py-3 text-sm font-semibold text-white shadow-md transition-colors hover:bg-[var(--color-brand-hi)]"
+          >
+            View all 51 state guides
+          </Link>
         </div>
-      </section>
-
-      {/* State Guides CTA */}
-      <section className="border-t border-[var(--color-border)] px-4 py-16 sm:px-6 text-center">
-        <h2 className="text-2xl font-bold text-[var(--color-text)]">EV Charging by State</h2>
-        <p className="mt-3 text-[var(--color-text-muted)]">
-          See charging costs, savings, and incentives for all 50 states.
-        </p>
-        <Link href="/guides" className="mt-6 inline-block rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-3 text-sm font-semibold text-[var(--color-text)] shadow-sm transition-colors hover:bg-[var(--color-surface-alt)]">
-          View State Guides &rarr;
-        </Link>
       </section>
     </>
   );

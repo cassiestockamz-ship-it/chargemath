@@ -11,7 +11,7 @@ export const runtime = "edge";
  */
 export function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const headline = (searchParams.get("headline") ?? "—").slice(0, 40);
+  const headline = (searchParams.get("headline") ?? "").slice(0, 40);
   const label = (searchParams.get("label") ?? "Result").slice(0, 80);
   const sub = (searchParams.get("sub") ?? "").slice(0, 140);
   const calc = (searchParams.get("calc") ?? "chargemath").slice(0, 60);

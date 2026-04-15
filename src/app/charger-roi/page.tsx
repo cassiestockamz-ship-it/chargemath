@@ -1,19 +1,20 @@
 "use client";
 
 import { useState, useMemo, useEffect, useCallback } from "react";
-import CalculatorLayout from "@/components/CalculatorLayout";
+import Link from "next/link";
+import CalculatorShell from "@/components/CalculatorShell";
+import SavingsVerdict from "@/components/SavingsVerdict";
+import SavingsMeter from "@/components/SavingsMeter";
+import SavingsTile from "@/components/SavingsTile";
 import SelectInput from "@/components/SelectInput";
 import NumberInput from "@/components/NumberInput";
 import SliderInput from "@/components/SliderInput";
-import ResultCard from "@/components/ResultCard";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import FAQSection from "@/components/FAQSection";
-import ShareResults from "@/components/ShareResults";
 import EducationalContent from "@/components/EducationalContent";
 import EmailCapture from "@/components/EmailCapture";
-import Link from "next/link";
 import { getDefaultStateCode } from "@/lib/useDefaultState";
 import { useUrlSync } from "@/lib/useUrlState";
 import { chargerRoiFAQ } from "@/data/faq-data";
@@ -24,20 +25,6 @@ import {
 import { EV_VEHICLES } from "@/data/ev-vehicles";
 
 type PublicSplit = "100" | "75_25" | "50_50";
-
-const fmt = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
-
-const fmtShort = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
 
 export default function ChargerROIPage() {
   const [vehicleId, setVehicleId] = useState(EV_VEHICLES[0].id);
@@ -82,26 +69,35 @@ export default function ChargerROIPage() {
   const results = useMemo(() => {
     const dailyKwh = (dailyMiles / 100) * vehicle.kwhPer100Miles;
     const monthlyKwh = dailyKwh * 30;
+    const annualKwh = dailyKwh * 365;
 
     const totalUpfront = chargerCost + installCost;
     const monthlyHomeCost = monthlyKwh * homeRate;
+    const homeAnnualCost = annualKwh * homeRate;
 
     // Monthly cost without a home charger (public + Level 1 mix)
     let monthlyWithoutHome: number;
+    let publicAnnualCost: number;
     if (publicSplit === "100") {
       monthlyWithoutHome = monthlyKwh * publicRate;
+      publicAnnualCost = annualKwh * publicRate;
     } else if (publicSplit === "75_25") {
       monthlyWithoutHome =
         0.75 * monthlyKwh * publicRate + 0.25 * monthlyKwh * homeRate;
+      publicAnnualCost =
+        0.75 * annualKwh * publicRate + 0.25 * annualKwh * homeRate;
     } else {
       monthlyWithoutHome =
         0.5 * monthlyKwh * publicRate + 0.5 * monthlyKwh * homeRate;
+      publicAnnualCost =
+        0.5 * annualKwh * publicRate + 0.5 * annualKwh * homeRate;
     }
 
     const monthlySavings = monthlyWithoutHome - monthlyHomeCost;
     const paybackMonths =
       monthlySavings > 0 ? totalUpfront / monthlySavings : Infinity;
     const fiveYearNet = monthlySavings * 60 - totalUpfront;
+    const lifetimeSavings = Math.max(0, fiveYearNet);
 
     // Time savings: Level 2 ~30 mi/hr vs Level 1 ~4 mi/hr
     const weeklyMiles = dailyMiles * 7;
@@ -113,11 +109,14 @@ export default function ChargerROIPage() {
       monthlyKwh,
       totalUpfront,
       monthlyHomeCost,
+      homeAnnualCost,
       monthlyWithoutHome,
+      publicAnnualCost,
       monthlySavings,
       annualSavings: monthlySavings * 12,
       paybackMonths,
       fiveYearNet,
+      lifetimeSavings,
       weeklyTimeSaved,
     };
   }, [
@@ -139,7 +138,7 @@ export default function ChargerROIPage() {
     .sort((a, b) => a[1].state.localeCompare(b[1].state))
     .map(([code, data]) => ({
       value: code,
-      label: `${data.state} (${data.residential}¢/kWh)`,
+      label: `${data.state} (${data.residential}\u00A2/kWh)`,
     }));
 
   const publicSplitOptions: { value: PublicSplit; label: string }[] = [
@@ -148,60 +147,28 @@ export default function ChargerROIPage() {
     { value: "50_50", label: "50% public / 50% Level 1" },
   ];
 
-  const formatPayback = (months: number): string => {
-    if (!isFinite(months) || months <= 0) return "N/A";
-    const roundedMonths = Math.ceil(months);
-    if (roundedMonths < 12) return `${roundedMonths} months`;
-    const years = Math.floor(roundedMonths / 12);
-    const remaining = roundedMonths % 12;
-    if (remaining === 0) return `${years} year${years > 1 ? "s" : ""}`;
-    return `${years} year${years > 1 ? "s" : ""}, ${remaining} month${remaining > 1 ? "s" : ""}`;
-  };
+  // For the dial: return percentage, capped at 100
+  const totalInvestment = Math.max(1, chargerCost + installCost);
+  const returnPct = Math.min(
+    100,
+    Math.max(0, Math.round((results.lifetimeSavings / totalInvestment) * 100))
+  );
 
-  // Break-even timeline calculations
-  const paybackCapped = Math.min(results.paybackMonths, 60);
-  const paybackPct = isFinite(results.paybackMonths)
-    ? (paybackCapped / 60) * 100
-    : 100;
+  // Payback amount shown in the hero: integer months, or 999 if never
+  const paybackDisplay = isFinite(results.paybackMonths)
+    ? Math.ceil(results.paybackMonths)
+    : 0;
 
-  return (
-    <CalculatorLayout
-      title="Home EV Charger ROI Calculator"
-      description="Find out how quickly a Level 2 home charger pays for itself compared to public charging or Level 1 charging."
-      intro="A Level 2 home EV charger costs $500-2,000 installed but typically pays for itself in 12-24 months through savings versus public charging. Home electricity costs 12-16¢/kWh on average, while public DC fast chargers run 30-60¢/kWh, saving $50-150+ per month for daily drivers."
-      lastUpdated="March 2026"
-    >
-      <CalculatorSchema name="Home EV Charger ROI Calculator" description="Calculate the payback period for installing a Level 2 home EV charger compared to public charging or Level 1 charging." url="https://chargemath.com/charger-roi" />
-      <BreadcrumbSchema items={[{name: "Home", url: "https://chargemath.com"}, {name: "Home Charger ROI", url: "https://chargemath.com/charger-roi"}]} />
-      {/* Inputs */}
-      <div className="grid gap-6 sm:grid-cols-2">
+  const inputs = (
+    <div className="flex flex-col gap-4">
+      <div className="grid gap-4 sm:grid-cols-3">
         <SelectInput
-          label="Select Your EV"
+          label="Your EV"
           value={vehicleId}
           onChange={setVehicleId}
           options={vehicleOptions}
-          helpText={`${vehicle.batteryCapacityKwh} kWh battery \u2022 ${vehicle.epaRangeMiles} mi EPA range \u2022 ${vehicle.kwhPer100Miles} kWh/100mi`}
+          helpText={`${vehicle.batteryCapacityKwh} kWh, ${vehicle.epaRangeMiles} mi range`}
         />
-
-        <SelectInput
-          label="Your State"
-          value={stateCode}
-          onChange={setStateCode}
-          options={stateOptions}
-          helpText="Average residential electricity rate from EIA"
-        />
-
-        <NumberInput
-          label="Custom Electricity Rate (optional)"
-          value={customRate ?? 0}
-          onChange={(v) => setCustomRate(v > 0 ? v : null)}
-          min={0}
-          max={100}
-          step={0.1}
-          unit={"¢/kWh"}
-          helpText="Leave at 0 to use your state's average rate"
-        />
-
         <NumberInput
           label="Home Charger Cost"
           value={chargerCost}
@@ -209,200 +176,187 @@ export default function ChargerROIPage() {
           min={0}
           max={5000}
           step={50}
-          unit={"$"}
+          unit="$"
         />
-
-        <NumberInput
-          label="Installation Cost"
-          value={installCost}
-          onChange={setInstallCost}
-          min={0}
-          max={10000}
-          step={50}
-          unit={"$"}
-          helpText="Includes electrician + panel upgrade if needed"
+        <SliderInput
+          label="Daily Miles"
+          value={dailyMiles}
+          onChange={setDailyMiles}
+          min={10}
+          max={150}
+          step={5}
+          unit="mi"
+          showValue
         />
-
-        <NumberInput
-          label="Public Charging Rate"
-          value={publicRate}
-          onChange={setPublicRate}
-          min={0}
-          max={2}
-          step={0.01}
-          unit={"$/kWh"}
-          helpText="Average DC fast charging rate"
-        />
-
-        <SelectInput
-          label="Without Home Charger, You'd Use..."
-          value={publicSplit}
-          onChange={(v) => setPublicSplit(v as PublicSplit)}
-          options={publicSplitOptions}
-        />
-
-        <div className="sm:col-span-2">
-          <SliderInput
-            label="Daily Miles Driven"
-            value={dailyMiles}
-            onChange={setDailyMiles}
-            min={10}
-            max={150}
-            step={5}
-            unit="miles"
-            showValue
-          />
-        </div>
       </div>
-
-      {/* Results */}
-      <div className="mt-10">
-        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
-          Your ROI Breakdown
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <ResultCard
-            label="Payback Period"
-            value={formatPayback(results.paybackMonths)}
-            unit=""
-            highlight
-            icon="📅"
+      <details className="group rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-3">
+        <summary className="cursor-pointer text-sm font-medium text-[var(--color-text)]">
+          Advanced inputs
+        </summary>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <NumberInput
+            label="Installation cost"
+            value={installCost}
+            onChange={setInstallCost}
+            min={0}
+            max={10000}
+            step={50}
+            unit="$"
+            helpText="Electrician and panel upgrade if needed"
           />
-          <ResultCard
-            label="Monthly Savings"
-            value={fmt.format(results.monthlySavings)}
-            unit="/month"
-            icon="💰"
+          <NumberInput
+            label="Public charging rate"
+            value={publicRate}
+            onChange={setPublicRate}
+            min={0}
+            max={2}
+            step={0.01}
+            unit="$/kWh"
+            helpText="Average DC fast charging rate"
           />
-          <ResultCard
-            label="Annual Savings"
-            value={fmtShort.format(results.annualSavings)}
-            unit="/year"
-            icon="📈"
+          <SelectInput
+            label="State"
+            value={stateCode}
+            onChange={setStateCode}
+            options={stateOptions}
+            helpText="Sets your home electricity rate"
           />
-          <ResultCard
-            label="5-Year Net Savings"
-            value={fmtShort.format(results.fiveYearNet)}
-            unit="after equipment cost"
-            highlight
-            icon="🏆"
+          <NumberInput
+            label="Custom home rate (optional)"
+            value={customRate ?? 0}
+            onChange={(v) => setCustomRate(v > 0 ? v : null)}
+            min={0}
+            max={100}
+            step={0.1}
+            unit={"\u00A2/kWh"}
+            helpText="Leave at 0 to use state average"
           />
-          <ResultCard
-            label="Weekly Time Saved vs Level 1"
-            value={`${results.weeklyTimeSaved.toFixed(1)}`}
-            unit="hours"
-            icon="⏱️"
-          />
-          <ResultCard
-            label="Total Investment"
-            value={fmtShort.format(results.totalUpfront)}
-            unit="upfront"
-            icon="🔌"
+          <SelectInput
+            label="Without a home charger, you would use"
+            value={publicSplit}
+            onChange={(v) => setPublicSplit(v as PublicSplit)}
+            options={publicSplitOptions}
           />
         </div>
+      </details>
+    </div>
+  );
 
-        {/* Break-Even Timeline */}
-        <div className="mt-8 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-5">
-          <h3 className="mb-4 text-sm font-semibold text-[var(--color-text)]">
-            Break-Even Timeline
-          </h3>
-          <div className="relative">
-            {/* Track */}
-            <div className="h-6 w-full overflow-hidden rounded-full bg-[var(--color-border)]">
-              {/* Payback segment */}
-              <div
-                className="h-full rounded-full bg-[var(--color-primary)] transition-all duration-500"
-                style={{ width: `${paybackPct}%` }}
-              />
-            </div>
+  const hero = (
+    <SavingsVerdict
+      eyebrow="Home charger ROI"
+      headline="PAYS OFF IN"
+      amount={paybackDisplay}
+      amountUnit=" months"
+      sub="Versus using public fast chargers at $0.40 to $0.60 per kWh"
+      dialPercent={returnPct}
+      dialLabel="RETURN"
+    >
+      <>
+        <SavingsTile
+          label="MONTHLY SAVINGS"
+          value={Math.max(0, results.monthlySavings)}
+          prefix="$"
+          unit="/mo"
+          tier="good"
+        />
+        <SavingsTile
+          label="LIFETIME SAVINGS"
+          value={results.lifetimeSavings}
+          prefix="$"
+          unit=" total"
+          tier="volt"
+        />
+        <SavingsTile
+          label="PUBLIC CHARGING"
+          value={results.publicAnnualCost}
+          prefix="$"
+          unit="/yr"
+          tier="warn"
+        />
+        <SavingsTile
+          label="HOME CHARGING"
+          value={results.homeAnnualCost}
+          prefix="$"
+          unit="/yr"
+          tier="brand"
+        />
+      </>
+    </SavingsVerdict>
+  );
 
-            {/* Labels */}
-            <div className="mt-3 flex items-start justify-between text-xs">
-              <div className="text-[var(--color-text-muted)]">
-                <span className="block font-semibold">Today</span>
-                <span>{fmtShort.format(results.totalUpfront)} invested</span>
-              </div>
-
-              {isFinite(results.paybackMonths) && results.paybackMonths <= 60 && (
-                <div
-                  className="absolute text-center"
-                  style={{
-                    left: `${paybackPct}%`,
-                    transform: "translateX(-50%)",
-                    top: "2.25rem",
-                  }}
-                >
-                  <span className="block font-semibold text-[var(--color-ev-green)]">
-                    Break Even
-                  </span>
-                  <span className="text-[var(--color-text-muted)]">
-                    Month {Math.ceil(results.paybackMonths)}
-                  </span>
-                </div>
-              )}
-
-              <div className="text-right text-[var(--color-text-muted)]">
-                <span className="block font-semibold">5 Years</span>
-                <span className="font-semibold text-[var(--color-ev-green)]">
-                  {fmtShort.format(results.fiveYearNet)} saved
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {!isFinite(results.paybackMonths) && (
-            <p className="mt-4 text-center text-sm text-[var(--color-text-muted)]">
-              Home charging is not cheaper with current settings. Adjust your
-              public charging rate or electricity rate.
-            </p>
-          )}
-
-          {isFinite(results.paybackMonths) && results.paybackMonths > 60 && (
-            <p className="mt-4 text-center text-sm text-[var(--color-text-muted)]">
-              Payback period exceeds 5 years ({formatPayback(results.paybackMonths)}).
-              Consider a lower-cost charger or higher public charging rate.
-            </p>
-          )}
-        </div>
-        {/* Contextual Cross-Links */}
-        <div className="mt-6 flex flex-wrap gap-3 text-sm">
-          <Link href="/charging-time" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
-            Check your charging time →
-          </Link>
-          <Link href="/ev-charging-cost" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
-            Calculate monthly charging cost →
-          </Link>
-          <Link href="/tax-credits" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
-            Get a charger installation credit →
-          </Link>
-        </div>
-      </div>
-
-      <ShareResults
-        title={`Charger ROI: ${formatPayback(results.paybackMonths)} payback`}
-        text={`A home charger pays for itself in ${formatPayback(results.paybackMonths)} with ${fmt.format(results.monthlySavings)}/month in savings vs public charging. ${fmtShort.format(results.totalUpfront)} upfront → ${fmtShort.format(results.fiveYearNet)} net savings over 5 years!`}
+  return (
+    <>
+      <CalculatorSchema
+        name="Home EV Charger ROI Calculator"
+        description="Calculate the payback period for installing a Level 2 home EV charger compared to public charging or Level 1 charging."
+        url="https://chargemath.com/charger-roi"
       />
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: "https://chargemath.com" },
+          { name: "Home Charger ROI", url: "https://chargemath.com/charger-roi" },
+        ]}
+      />
+      <CalculatorShell
+        eyebrow="Home charger"
+        title="Home Charger ROI"
+        quickAnswer="A Level 2 home charger typically pays for itself in 1 to 3 years versus public fast charging."
+        inputs={inputs}
+        hero={hero}
+      >
+        <div className="mb-8">
+          <SavingsMeter
+            leftLabel="PUBLIC"
+            leftValue={results.publicAnnualCost}
+            rightLabel="HOME"
+            rightValue={results.homeAnnualCost}
+          />
+        </div>
 
-      <EducationalContent>
-        <h2>How the Charger ROI Calculation Works</h2>
-        <p>
-          The payback period divides your total upfront cost (charger + installation) by the monthly savings from charging at home versus your current mix of public and Level 1 charging. Home electricity rates come from EIA state averages. Public charging rates default to $0.35/kWh, which reflects the 2026 average across major networks like Electrify America and ChargePoint.
-        </p>
-        <h3>Installation Costs: What to Expect</h3>
-        <p>
-          The charger unit itself typically costs $300-600. Installation costs vary more: a simple NEMA 14-50 outlet install runs $200-500 if your panel is nearby and has capacity. Panel upgrades add $1,000-3,000. Running new wire from a distant panel adds $500-1,500. Get three quotes from licensed electricians. Prices vary significantly by region.
-        </p>
-        <h3>Factors That Improve Your ROI</h3>
-        <ul>
-          <li>High daily mileage: the more you drive, the faster a home charger pays off. Commuters driving 50+ miles/day typically break even in under a year.</li>
-          <li>Time-of-use electricity plans: many utilities offer overnight rates 30-50% below standard rates, making home charging even cheaper.</li>
-          <li>The federal 30C charger tax credit covers 30% of equipment and installation costs (up to $1,000), effectively reducing your payback period by nearly a third.</li>
-          <li>Home chargers increase property value: a 2024 Zillow study found homes with EV chargers sold for 3.3% more on average.</li>
-        </ul>
-      </EducationalContent>
-      <FAQSection questions={chargerRoiFAQ} />
-      <EmailCapture source="charger-roi" />
-      <RelatedCalculators currentPath="/charger-roi" />
-    </CalculatorLayout>
+        {/* Contextual cross-links */}
+        <div className="mb-8 flex flex-wrap gap-3 text-sm">
+          <Link
+            href="/charging-time"
+            className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5"
+          >
+            Check your charging time
+          </Link>
+          <Link
+            href="/ev-charging-cost"
+            className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5"
+          >
+            Calculate monthly charging cost
+          </Link>
+          <Link
+            href="/tax-credits"
+            className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5"
+          >
+            Get a charger installation credit
+          </Link>
+        </div>
+
+        <EducationalContent>
+          <h2>How the Charger ROI Calculation Works</h2>
+          <p>
+            The payback period divides your total upfront cost (charger plus installation) by the monthly savings from charging at home versus your current mix of public and Level 1 charging. Home electricity rates come from EIA state averages. Public charging rates default to $0.35 per kWh, which reflects the 2026 average across major networks like Electrify America and ChargePoint.
+          </p>
+          <h3>Installation Costs: What to Expect</h3>
+          <p>
+            The charger unit itself typically costs $300 to $600. Installation costs vary more: a simple NEMA 14-50 outlet install runs $200 to $500 if your panel is nearby and has capacity. Panel upgrades add $1,000 to $3,000. Running new wire from a distant panel adds $500 to $1,500. Get three quotes from licensed electricians. Prices vary significantly by region.
+          </p>
+          <h3>Factors That Improve Your ROI</h3>
+          <ul>
+            <li>High daily mileage: the more you drive, the faster a home charger pays off. Commuters driving 50+ miles per day typically break even in under a year.</li>
+            <li>Time-of-use electricity plans: many utilities offer overnight rates 30 to 50% below standard rates, making home charging even cheaper.</li>
+            <li>The federal 30C charger tax credit covers 30% of equipment and installation costs (up to $1,000), reducing your payback period by nearly a third.</li>
+            <li>Home chargers can increase property value. A 2024 Zillow study found homes with EV chargers sold for 3.3% more on average.</li>
+          </ul>
+        </EducationalContent>
+        <FAQSection questions={chargerRoiFAQ} />
+        <EmailCapture source="charger-roi" />
+        <RelatedCalculators currentPath="/charger-roi" />
+      </CalculatorShell>
+    </>
   );
 }

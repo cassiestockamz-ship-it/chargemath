@@ -2,11 +2,13 @@
 
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
-import CalculatorLayout from "@/components/CalculatorLayout";
+import CalculatorShell from "@/components/CalculatorShell";
+import SavingsVerdict from "@/components/SavingsVerdict";
+import SavingsMeter from "@/components/SavingsMeter";
+import SavingsTile from "@/components/SavingsTile";
 import SelectInput from "@/components/SelectInput";
 import NumberInput from "@/components/NumberInput";
 import SliderInput from "@/components/SliderInput";
-import ResultCard from "@/components/ResultCard";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
@@ -38,10 +40,6 @@ const fmtWhole = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
   minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
-
-const fmtNum = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 0,
 });
 
@@ -139,223 +137,222 @@ export default function GasVsElectricPage() {
     { value: "10", label: "10 Years" },
   ];
 
-  return (
-    <CalculatorLayout
-      title="Gas vs Electric Cost Comparison"
-      description="Compare the true fuel costs of driving electric vs gas, and see your potential savings and environmental impact."
-      lastUpdated="March 2026"
-      intro="Electric vehicles cost 60-70% less to fuel than gas cars. The average EV driver saves $800-1,200 per year on fuel, with additional savings on maintenance. Use this calculator to see your exact savings based on your specific vehicles and local rates."
+  const stateName = ELECTRICITY_RATES[stateCode]?.state ?? stateCode;
+  const dialPercent =
+    results.gasAnnualCost > 0
+      ? Math.max(0, Math.min(100, (results.annualSavings / results.gasAnnualCost) * 100))
+      : 0;
+
+  // Compact primary input strip (3 inputs: vehicle, state, daily miles)
+  const inputs = (
+    <div className="grid gap-4 sm:grid-cols-3">
+      <SelectInput
+        label="Your EV"
+        value={vehicleId}
+        onChange={setVehicleId}
+        options={vehicleOptions}
+        helpText={`${vehicle.kwhPer100Miles} kWh/100mi, ${vehicle.epaRangeMiles} mi range`}
+      />
+      <SelectInput
+        label="Your state"
+        value={stateCode}
+        onChange={setStateCode}
+        options={stateOptions}
+      />
+      <SliderInput
+        label="Daily miles driven"
+        value={dailyMiles}
+        onChange={setDailyMiles}
+        min={10}
+        max={150}
+        step={5}
+        unit="mi"
+        showValue
+      />
+    </div>
+  );
+
+  // The hero: one-screen SavingsVerdict with 4 SavingsTile children
+  const hero = (
+    <SavingsVerdict
+      headline="YOU SAVE"
+      amount={Math.max(0, results.annualSavings)}
+      amountUnit="/year"
+      sub={
+        <>
+          On fuel vs a {gasMpg} MPG gas car in {stateName}. Over {periodYears} years
+          that adds up to {fmtWhole.format(Math.max(0, results.totalSavings))}.
+        </>
+      }
+      dialPercent={dialPercent}
+      dialLabel="FUEL CUT"
     >
-      <CalculatorSchema name="Gas vs Electric Cost Comparison" description="Compare the true fuel costs of driving electric vs gas with side-by-side savings and CO2 analysis." url="https://chargemath.com/gas-vs-electric" />
-      <BreadcrumbSchema items={[{name: "Home", url: "https://chargemath.com"}, {name: "Gas vs Electric Comparison", url: "https://chargemath.com/gas-vs-electric"}]} />
-      {/* Inputs */}
-      <div className="grid gap-6 sm:grid-cols-2">
-        <SelectInput
-          label="Select an EV"
-          value={vehicleId}
-          onChange={setVehicleId}
-          options={vehicleOptions}
-          helpText={`${vehicle.kwhPer100Miles} kWh/100mi \u2022 ${vehicle.epaRangeMiles} mi range`}
-        />
+      <SavingsTile
+        label="ANNUAL SAVINGS"
+        value={Math.max(0, results.annualSavings)}
+        prefix="$"
+        unit="/yr"
+        tier="good"
+        animate
+      />
+      <SavingsTile
+        label="COST PER MILE"
+        value={results.evCostPerMile}
+        prefix="$"
+        decimals={3}
+        unit="EV"
+        tier="brand"
+        compareBars={[
+          { label: "GAS", value: results.gasCostPerMile, color: "var(--color-warn)" },
+          { label: "EV", value: results.evCostPerMile, color: "var(--color-teal)" },
+        ]}
+      />
+      <SavingsTile
+        label="5 YEAR SAVINGS"
+        value={Math.max(0, results.annualSavings * 5)}
+        prefix="$"
+        unit=" total"
+        tier="volt"
+        animate
+      />
+      <SavingsTile
+        label="CO2 CUT"
+        value={Math.round(results.co2SavingsLbsPerYear)}
+        unit=" lbs/yr"
+        tier="good"
+        animate
+      />
+    </SavingsVerdict>
+  );
 
-        <SelectInput
-          label="Your State"
-          value={stateCode}
-          onChange={setStateCode}
-          options={stateOptions}
-        />
+  return (
+    <CalculatorShell
+      eyebrow="Cost comparison"
+      title="Gas vs Electric"
+      quickAnswer="EV fuel costs run 60-70% below gas. Typical savings: $800 to $1,200 per year."
+      inputs={inputs}
+      hero={hero}
+    >
+      <CalculatorSchema
+        name="Gas vs Electric Cost Comparison"
+        description="Compare the true fuel costs of driving electric vs gas with side-by-side savings and CO2 analysis."
+        url="https://chargemath.com/gas-vs-electric"
+      />
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: "https://chargemath.com" },
+          { name: "Gas vs Electric Comparison", url: "https://chargemath.com/gas-vs-electric" },
+        ]}
+      />
 
-        <NumberInput
-          label="Custom Electricity Rate (optional)"
-          value={customRate ?? 0}
-          onChange={(v) => setCustomRate(v > 0 ? v : null)}
-          min={0}
-          max={100}
-          step={0.1}
-          unit={"¢/kWh"}
-          helpText="Leave at 0 to use state average"
-        />
-
-        <SelectInput
-          label="Comparison Period"
-          value={years}
-          onChange={setYears}
-          options={periodOptions}
-        />
-
-        <NumberInput
-          label="Current Gas Price"
-          value={gasPrice}
-          onChange={setGasPrice}
-          min={1}
-          max={10}
-          step={0.1}
-          unit="$/gal"
-        />
-
-        <NumberInput
-          label="Current Gas Car MPG"
-          value={gasMpg}
-          onChange={setGasMpg}
-          min={10}
-          max={60}
-          step={1}
-          unit="MPG"
-          helpText="Average US car: 28 MPG"
-        />
-
-        <div className="sm:col-span-2">
-          <SliderInput
-            label="Daily Miles Driven"
-            value={dailyMiles}
-            onChange={setDailyMiles}
+      {/* Advanced inputs (collapsed by default) */}
+      <details className="mb-6 rounded-2xl border border-[var(--color-border)] bg-white p-4 sm:p-5">
+        <summary className="cursor-pointer select-none text-sm font-semibold text-[var(--color-ink)]">
+          Advanced inputs
+        </summary>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <NumberInput
+            label="Custom electricity rate (optional)"
+            value={customRate ?? 0}
+            onChange={(v) => setCustomRate(v > 0 ? v : null)}
+            min={0}
+            max={100}
+            step={0.1}
+            unit={"\u00A2/kWh"}
+            helpText="Leave at 0 to use state average"
+          />
+          <SelectInput
+            label="Comparison period"
+            value={years}
+            onChange={setYears}
+            options={periodOptions}
+          />
+          <NumberInput
+            label="Current gas price"
+            value={gasPrice}
+            onChange={setGasPrice}
+            min={1}
+            max={10}
+            step={0.1}
+            unit="$/gal"
+          />
+          <NumberInput
+            label="Current gas car MPG"
+            value={gasMpg}
+            onChange={setGasMpg}
             min={10}
-            max={150}
-            step={5}
-            unit="miles"
-            showValue
+            max={60}
+            step={1}
+            unit="MPG"
+            helpText="Average US car: 28 MPG"
           />
         </div>
+      </details>
+
+      {/* Signature split-column live meter */}
+      <SavingsMeter
+        leftLabel="GAS"
+        leftValue={results.gasAnnualCost}
+        rightLabel="EV"
+        rightValue={results.evAnnualCost}
+      />
+
+      <h2 className="cm-eyebrow mt-8 mb-3">Cost breakdown</h2>
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <SavingsTile
+          label={`${periodYears} YEAR EV COST`}
+          value={Math.round(results.evAnnualCost * periodYears)}
+          prefix="$"
+          unit=" fuel"
+          tier="brand"
+        />
+        <SavingsTile
+          label={`${periodYears} YEAR GAS COST`}
+          value={Math.round(results.gasAnnualCost * periodYears)}
+          prefix="$"
+          unit=" fuel"
+          tier="warn"
+        />
+        <SavingsTile
+          label="GAS CO2/YEAR"
+          value={Math.round(results.gasCO2LbsPerYear)}
+          unit=" lbs"
+          tier="warn"
+        />
+        <SavingsTile
+          label="TREES EQUIVALENT"
+          value={Math.round(results.equivalentTrees)}
+          unit=" trees/yr"
+          tier="good"
+        />
       </div>
 
-      {/* Results */}
-      <div className="mt-10">
-        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
-          Cost Comparison
-        </h2>
-
-        {/* Side-by-side */}
-        <div className="grid gap-4 sm:grid-cols-2">
-          {/* EV Column */}
-          <div className="rounded-xl border-2 border-[var(--color-ev-green)]/30 bg-[var(--color-ev-green)]/5 p-5">
-            <h3 className="mb-4 flex items-center gap-2 text-base font-bold text-[var(--color-ev-green)]">
-              <span>🔋</span> Electric (EV)
-            </h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-[var(--color-text-muted)]">
-                  Annual Fuel Cost
-                </span>
-                <span className="text-lg font-bold text-[var(--color-text)]">
-                  {fmt.format(results.evAnnualCost)}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-[var(--color-text-muted)]">
-                  Cost Per Mile
-                </span>
-                <span className="text-base font-semibold text-[var(--color-text)]">
-                  ${results.evCostPerMile.toFixed(3)}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-[var(--color-text-muted)]">
-                  CO2/Year
-                </span>
-                <span className="text-base font-semibold text-[var(--color-text)]">
-                  {fmtNum.format(results.evCO2LbsPerYear)} lbs
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-[var(--color-text-muted)]">
-                  {periodYears}-Year Fuel Cost
-                </span>
-                <span className="text-base font-semibold text-[var(--color-text)]">
-                  {fmtWhole.format(results.evAnnualCost * periodYears)}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Gas Column */}
-          <div className="rounded-xl border-2 border-[var(--color-gas-red)]/30 bg-[var(--color-gas-red)]/5 p-5">
-            <h3 className="mb-4 flex items-center gap-2 text-base font-bold text-[var(--color-gas-red)]">
-              <span>⛽</span> Gas
-            </h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-[var(--color-text-muted)]">
-                  Annual Fuel Cost
-                </span>
-                <span className="text-lg font-bold text-[var(--color-text)]">
-                  {fmt.format(results.gasAnnualCost)}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-[var(--color-text-muted)]">
-                  Cost Per Mile
-                </span>
-                <span className="text-base font-semibold text-[var(--color-text)]">
-                  ${results.gasCostPerMile.toFixed(3)}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-[var(--color-text-muted)]">
-                  CO2/Year
-                </span>
-                <span className="text-base font-semibold text-[var(--color-text)]">
-                  {fmtNum.format(results.gasCO2LbsPerYear)} lbs
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-[var(--color-text-muted)]">
-                  {periodYears}-Year Fuel Cost
-                </span>
-                <span className="text-base font-semibold text-[var(--color-text)]">
-                  {fmtWhole.format(results.gasAnnualCost * periodYears)}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Big savings number */}
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <ResultCard
-            label={`Total Savings (${periodYears} yr)`}
-            value={fmtWhole.format(results.totalSavings)}
-            unit="saved"
-            highlight
-            icon="💰"
-          />
-          <ResultCard
-            label="Annual Savings"
-            value={fmtWhole.format(results.annualSavings)}
-            unit="/year"
-            highlight
-            icon="📅"
-          />
-          <ResultCard
-            label="CO2 Savings"
-            value={fmtNum.format(results.co2SavingsLbsPerYear)}
-            unit="lbs/year"
-            icon="🌍"
-          />
-          <ResultCard
-            label="Equivalent Trees Planted"
-            value={fmtNum.format(results.equivalentTrees)}
-            unit="trees/year"
-            icon="🌳"
-          />
-        </div>
-      </div>
-
-      {/* Contextual Cross-Links */}
-      <div className="mt-6 flex flex-wrap gap-3 text-sm">
-        <Link href="/ev-charging-cost" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
-          Calculate your exact charging cost →
+      {/* Contextual cross-links */}
+      <div className="mt-8 flex flex-wrap gap-3 text-sm">
+        <Link
+          href="/ev-charging-cost"
+          className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
+        >
+          Calculate your exact charging cost
         </Link>
-        <Link href="/charger-roi" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
-          Calculate home charger ROI →
+        <Link
+          href="/charger-roi"
+          className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
+        >
+          Calculate home charger ROI
         </Link>
-        <Link href="/tax-credits" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
-          Check your EV tax credits →
+        <Link
+          href="/tax-credits"
+          className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
+        >
+          Check your EV tax credits
         </Link>
       </div>
 
       <ShareResults
         title={`Gas vs Electric: Save ${fmtWhole.format(results.annualSavings)}/year`}
-        text={`Switching from gas to electric saves me ${fmtWhole.format(results.annualSavings)}/year on fuel. My ${vehicle.year} ${vehicle.make} ${vehicle.model} costs ${fmt.format(results.evCostPerMile)}/mile vs ${fmt.format(results.gasCostPerMile)}/mile for gas. That's ${fmtWhole.format(results.totalSavings)} total savings over ${periodYears} years!`}
+        text={`Switching from gas to electric saves me ${fmtWhole.format(results.annualSavings)}/year on fuel. My ${vehicle.year} ${vehicle.make} ${vehicle.model} costs ${fmt.format(results.evCostPerMile)}/mile vs ${fmt.format(results.gasCostPerMile)}/mile for gas. That adds up to ${fmtWhole.format(results.totalSavings)} in total savings over ${periodYears} years.`}
       />
 
       <EducationalContent>
@@ -365,19 +362,19 @@ export default function GasVsElectricPage() {
         </p>
         <h3>Why EV Fuel Costs Are Lower</h3>
         <p>
-          Electric motors convert 85-90% of electrical energy to motion, while internal combustion engines convert only 20-35% of gasoline energy. This fundamental efficiency gap means EVs travel 3-4 miles per kWh equivalent, compared to gas cars at roughly 1 mile per kWh equivalent. Home electricity at 12-16¢/kWh is also far cheaper per unit of energy than gasoline.
+          Electric motors convert 85 to 90% of electrical energy into motion, while internal combustion engines convert only 20 to 35% of gasoline energy. This efficiency gap means EVs travel 3 to 4 miles per kWh equivalent, compared to gas cars at roughly 1 mile per kWh equivalent. Home electricity at 12 to 16 cents per kWh is also far cheaper per unit of energy than gasoline.
         </p>
-        <h3>What This Comparison Doesn&apos;t Include</h3>
+        <h3>What This Comparison Does Not Include</h3>
         <ul>
-          <li>Maintenance savings: EVs have no oil changes, fewer brake replacements (regenerative braking), and no transmission service. This adds $500-1,000/year in savings.</li>
+          <li>Maintenance savings: EVs have no oil changes, fewer brake replacements thanks to regenerative braking, and no transmission service. This adds $500 to $1,000 per year in savings.</li>
           <li>Purchase price difference: the upfront cost gap is narrowing, and tax credits can close it further.</li>
-          <li>Insurance differences: EV insurance typically costs 10-15% more due to higher repair costs.</li>
-          <li>Battery degradation: most EV batteries retain 90%+ capacity after 200,000 miles, but replacement costs $5,000-15,000 if needed.</li>
+          <li>Insurance differences: EV insurance typically costs 10 to 15% more due to higher repair costs.</li>
+          <li>Battery degradation: most EV batteries retain 90% or more capacity after 200,000 miles, but replacement costs $5,000 to $15,000 if needed.</li>
         </ul>
       </EducationalContent>
       <FAQSection questions={gasVsElectricFAQ} />
       <EmailCapture source="gas-vs-electric" />
       <RelatedCalculators currentPath="/gas-vs-electric" />
-    </CalculatorLayout>
+    </CalculatorShell>
   );
 }

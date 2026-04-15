@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import Link from "next/link";
 import MobileMenu from "@/components/MobileMenu";
 import NavDropdown from "@/components/NavDropdown";
@@ -8,6 +8,21 @@ import "./globals.css";
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
+  variable: "--font-inter",
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["500", "700"],
+  variable: "--font-space-grotesk",
+});
+
+const jetbrains = JetBrains_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["500", "700"],
+  variable: "--font-jetbrains",
 });
 
 export const metadata: Metadata = {
@@ -48,7 +63,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.className}>
+    <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrains.variable}`}>
       <head>
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7557739369186741" crossOrigin="anonymous" />
       </head>
@@ -77,20 +92,23 @@ export default function RootLayout({
           Skip to content
         </a>
         {/* Header */}
-        <header className="sticky top-0 z-50 border-b border-[var(--color-border)] bg-[var(--color-surface)]/95 backdrop-blur-sm">
+        <header className="vt-header sticky top-0 z-50 border-b border-[var(--color-border)] bg-[var(--color-surface)]/95 backdrop-blur-sm">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
             <Link
               href="/"
-              className="flex items-center gap-1.5 text-xl font-extrabold tracking-tight text-[var(--color-text)]"
+              className="vt-header-logo flex items-center gap-2 text-xl font-extrabold tracking-tight text-[var(--color-ink)]"
             >
-              <span className="text-2xl" aria-hidden="true">
-                &#9889;
+              <span
+                className="grid h-7 w-7 place-items-center rounded-md bg-[var(--color-brand)] text-white shadow-sm"
+                aria-hidden="true"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z" /></svg>
               </span>
               ChargeMath
             </Link>
-            <nav className="hidden items-center gap-1 md:flex">
+            <nav className="vt-nav hidden items-center gap-1 md:flex">
               <NavDropdown />
-              <Link href="/guides" className="whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-alt)] hover:text-[var(--color-text)]">
+              <Link href="/guides" className="whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium text-[var(--color-ink-3)] transition-colors hover:bg-[var(--color-surface-alt)] hover:text-[var(--color-ink)]">
                 State Guides
               </Link>
             </nav>
@@ -102,7 +120,7 @@ export default function RootLayout({
         <main id="main-content" className="flex-1">{children}</main>
 
         {/* Footer */}
-        <footer className="border-t border-[var(--color-border)] bg-[var(--color-surface)]">
+        <footer className="vt-footer border-t border-[var(--color-border)] bg-[var(--color-surface)]">
           <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
             <div className="flex flex-col items-center gap-3 text-center">
               <p className="text-sm font-medium text-[var(--color-text)]">

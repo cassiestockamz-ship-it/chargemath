@@ -428,7 +428,7 @@ export default function WinterRangeForecastPage() {
             text={`${vehicle.year} ${vehicle.make} ${vehicle.model} in ${location?.place}: worst day this week is ${worstDay.effectiveRangeMi.toFixed(0)} mi (${(worstDay.retention * 100).toFixed(0)}% retention at ${worstDay.tempAvgF.toFixed(0)}°F).`}
             card={{
               headline: `${fmt(worstDay.effectiveRangeMi, 0)} mi`,
-              label: `Worst day this week — ${location?.place ?? ""}`,
+              label: `Worst day this week, ${location?.place ?? ""}`,
               sub: `${vehicle.year} ${vehicle.make} ${vehicle.model} · ${fmt(worstDay.retention * 100, 0)}% retention at ${fmt(worstDay.tempAvgF, 0)}°F avg`,
               calc: "winter-range-forecast",
             }}
@@ -528,12 +528,12 @@ const wrfFAQ = [
   {
     question: "Does it work for Canada or Mexico?",
     answer:
-      "Right now only US ZIPs because the ZIP lookup uses a US-only database. If you'd like Canadian postal code support, that's a planned addition — Open-Meteo already covers Canada fine, the only missing piece is the postal code geocoder.",
+      "Right now only US ZIPs because the ZIP lookup uses a US-only database. If you'd like Canadian postal code support, that's a planned addition. Open-Meteo already covers Canada fine, the only missing piece is the postal code geocoder.",
   },
   {
     question: "Is the worst-day number always the coldest day?",
     answer:
-      "Yes, in this tool. The retention curve is a function of daily average temperature only. In real life, high winds, freezing rain, and unplowed snow can all make a warmer day worse than a colder one. Treat the table as a floor, not a ceiling — pad another 5-10% on ugly-weather days.",
+      "Yes, in this tool. The retention curve is a function of daily average temperature only. In real life, high winds, freezing rain, and unplowed snow can all make a warmer day worse than a colder one. Treat the table as a floor, not a ceiling, and pad another 5-10% on ugly-weather days.",
   },
   {
     question: "What should I do if my worst-day range is below my commute?",

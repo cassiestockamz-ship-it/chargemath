@@ -1,16 +1,18 @@
 "use client";
 
 import { useState, useMemo, useEffect, useCallback } from "react";
-import CalculatorLayout from "@/components/CalculatorLayout";
+import Link from "next/link";
+import CalculatorShell from "@/components/CalculatorShell";
+import SavingsVerdict from "@/components/SavingsVerdict";
+import SavingsTile from "@/components/SavingsTile";
+import SavingsMeter from "@/components/SavingsMeter";
 import SelectInput from "@/components/SelectInput";
 import NumberInput from "@/components/NumberInput";
 import SliderInput from "@/components/SliderInput";
-import ResultCard from "@/components/ResultCard";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import FAQSection from "@/components/FAQSection";
-import ShareResults from "@/components/ShareResults";
 import EducationalContent from "@/components/EducationalContent";
 import EmailCapture from "@/components/EmailCapture";
 import { getDefaultStateCode } from "@/lib/useDefaultState";
@@ -22,28 +24,7 @@ import {
 import { EV_VEHICLES } from "@/data/ev-vehicles";
 import { SOLAR_DATA, NATIONAL_AVG_SOLAR_PRODUCTION } from "@/data/solar-data";
 
-/* ── Formatters ── */
-const fmt = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
-
-const fmtShort = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
-
-const fmtPct = new Intl.NumberFormat("en-US", {
-  style: "percent",
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
-
-/* ── FAQ data (inline) ── */
+/* FAQ data (inline) */
 const solarEvFAQ = [
   {
     question: "Can solar panels fully cover my EV charging?",
@@ -73,7 +54,7 @@ const solarEvFAQ = [
 ];
 
 export default function SolarEVPage() {
-  /* ── State ── */
+  /* State */
   const [vehicleId, setVehicleId] = useState(EV_VEHICLES[0].id);
   const [stateCode, setStateCode] = useState("CA");
   const [solarSizeKw, setSolarSizeKw] = useState(7);
@@ -82,7 +63,7 @@ export default function SolarEVPage() {
   const [dailyMiles, setDailyMiles] = useState(35);
   const [monthlyBill, setMonthlyBill] = useState(150);
 
-  /* ── Auto-detect state ── */
+  /* Auto-detect state */
   const [stateDetected, setStateDetected] = useState(false);
   useEffect(() => {
     if (!stateDetected) {
@@ -91,7 +72,7 @@ export default function SolarEVPage() {
     }
   }, [stateDetected]);
 
-  /* ── URL sync ── */
+  /* URL sync */
   useUrlSync(
     {
       vehicle: vehicleId,
@@ -117,7 +98,7 @@ export default function SolarEVPage() {
     )
   );
 
-  /* ── Derived ── */
+  /* Derived */
   const vehicle = useMemo(
     () => EV_VEHICLES.find((v) => v.id === vehicleId) ?? EV_VEHICLES[0],
     [vehicleId]
@@ -130,7 +111,7 @@ export default function SolarEVPage() {
 
   const solarProductionPerKw = SOLAR_DATA[stateCode]?.kwhPerKwYear ?? NATIONAL_AVG_SOLAR_PRODUCTION;
 
-  /* ── Calculations ── */
+  /* Calculations */
   const results = useMemo(() => {
     // Solar production
     const annualSolarKwh = solarSizeKw * solarProductionPerKw;
@@ -174,6 +155,19 @@ export default function SolarEVPage() {
     // 25-year total savings (solar panel lifetime)
     const totalSavings25yr = annualElectricitySavings * 25 - netSolarCost;
 
+    // Miles powered per day by solar (for hero amount)
+    const solarKwhPerDay = annualSolarKwh / 365;
+    const milesPerKwh =
+      vehicle.kwhPer100Miles > 0 ? 100 / vehicle.kwhPer100Miles : 0;
+    const milesPoweredPerDay = solarKwhPerDay * milesPerKwh;
+
+    // Annual grid vs solar totals for the savings meter
+    const gridAnnual = totalAnnualKwh * electricityRate;
+    const solarAnnualCost = Math.max(
+      0,
+      gridAnnual - annualElectricitySavings
+    );
+
     return {
       annualSolarKwh,
       annualEvKwh,
@@ -188,6 +182,9 @@ export default function SolarEVPage() {
       monthlyWithSolar,
       monthlySolarSavings,
       totalSavings25yr,
+      milesPoweredPerDay,
+      gridAnnual,
+      solarAnnualCost,
     };
   }, [
     solarSizeKw,
@@ -200,7 +197,7 @@ export default function SolarEVPage() {
     installCost,
   ]);
 
-  /* ── Options ── */
+  /* Options */
   const vehicleOptions = EV_VEHICLES.map((v) => ({
     value: v.id,
     label: `${v.year} ${v.make} ${v.model}`,
@@ -213,29 +210,135 @@ export default function SolarEVPage() {
       label: `${data.state} (${data.residential}\u00a2/kWh)`,
     }));
 
-  const formatPaybackYears = (years: number): string => {
-    if (!isFinite(years) || years <= 0) return "N/A";
-    if (years < 1) {
-      const months = Math.ceil(years * 12);
-      return `${months} month${months > 1 ? "s" : ""}`;
-    }
-    const wholeYears = Math.floor(years);
-    const remainingMonths = Math.round((years - wholeYears) * 12);
-    if (remainingMonths === 0)
-      return `${wholeYears} year${wholeYears > 1 ? "s" : ""}`;
-    return `${wholeYears} yr${wholeYears > 1 ? "s" : ""}, ${remainingMonths} mo`;
-  };
+  const stateName = ELECTRICITY_RATES[stateCode]?.state ?? stateCode;
+  const solarCoveragePct = Math.round(results.solarCoversEvPct * 100);
+  const annualSavingsRounded = Math.round(results.annualElectricitySavings);
+  const paybackYears = isFinite(results.paybackYears) ? results.paybackYears : 0;
+  const totalSavings25yrRounded = Math.round(results.totalSavings25yr);
 
-  /* ── Solar coverage bar ── */
-  const coveragePct = Math.min(results.solarCoversEvPct * 100, 100);
+  const inputs = (
+    <div className="grid gap-4 sm:grid-cols-3">
+      <SelectInput
+        label="Your EV"
+        value={vehicleId}
+        onChange={setVehicleId}
+        options={vehicleOptions}
+        helpText={`${vehicle.kwhPer100Miles} kWh/100mi`}
+      />
+      <SelectInput
+        label="Your state"
+        value={stateCode}
+        onChange={setStateCode}
+        options={stateOptions}
+      />
+      <SliderInput
+        label="Daily miles driven"
+        value={dailyMiles}
+        onChange={setDailyMiles}
+        min={10}
+        max={150}
+        step={5}
+        unit="mi"
+        showValue
+      />
+      <details className="sm:col-span-3">
+        <summary className="cursor-pointer text-sm font-medium text-[var(--color-ink-2)]">
+          Advanced inputs
+        </summary>
+        <div className="mt-3 grid gap-4 sm:grid-cols-2">
+          <SliderInput
+            label="Solar system size"
+            value={solarSizeKw}
+            onChange={setSolarSizeKw}
+            min={3}
+            max={15}
+            step={1}
+            unit="kW"
+            showValue
+          />
+          <NumberInput
+            label="Install cost"
+            value={installCost}
+            onChange={setInstallCost}
+            min={5000}
+            max={60000}
+            step={500}
+            unit="$"
+            helpText="Total system cost before credits"
+          />
+          <NumberInput
+            label="Current monthly electric bill"
+            value={monthlyBill}
+            onChange={setMonthlyBill}
+            min={0}
+            max={1000}
+            step={10}
+            unit="$"
+            helpText="Home bill before adding EV charging"
+          />
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="tax-credit-toggle"
+              checked={taxCreditEnabled}
+              onChange={(e) => setTaxCreditEnabled(e.target.checked)}
+              className="h-5 w-5 rounded border-[var(--color-border)] text-[var(--color-primary)] accent-[var(--color-primary)]"
+            />
+            <label
+              htmlFor="tax-credit-toggle"
+              className="text-sm font-medium text-[var(--color-text)]"
+            >
+              Apply 30% tax credit (lease or PPA via Section 48E through 2027)
+            </label>
+          </div>
+        </div>
+      </details>
+    </div>
+  );
+
+  const hero = (
+    <SavingsVerdict
+      eyebrow="Solar + EV"
+      headline="SOLAR POWERS"
+      amount={Math.round(results.milesPoweredPerDay)}
+      amountUnit=" miles/day"
+      sub={`From a ${solarSizeKw} kW array in ${stateName}. That is about $${annualSavingsRounded.toLocaleString()} saved versus grid charging each year.`}
+      dialPercent={Math.min(100, Math.max(0, solarCoveragePct))}
+      dialLabel="COVERED"
+      morphHero={false}
+    >
+      <SavingsTile
+        label="ANNUAL SAVINGS VS GRID"
+        value={annualSavingsRounded}
+        prefix="$"
+        unit="/yr"
+        tier="good"
+      />
+      <SavingsTile
+        label="SOLAR COVERAGE"
+        value={solarCoveragePct}
+        unit="% of driving"
+        tier="brand"
+      />
+      <SavingsTile
+        label="PAYBACK"
+        value={paybackYears}
+        decimals={1}
+        unit=" yr"
+        tier="mid"
+      />
+      <SavingsTile
+        label="25 YR SAVINGS"
+        value={totalSavings25yrRounded}
+        prefix="$"
+        unit=" total"
+        tier="volt"
+      />
+    </SavingsVerdict>
+  );
 
   return (
-    <CalculatorLayout
-      title="Solar + EV Calculator"
-      description="Estimate how solar panels can offset your EV charging costs and home electricity bill."
-      intro="Pairing solar panels with an EV is one of the best financial moves for EV owners. A typical 7 kW system produces enough energy to cover all EV charging for an average driver and still offset a large portion of your home electricity. Even without the federal residential tax credit (eliminated in 2025), most solar systems pay for themselves in 8-12 years and then generate free electricity for another 13-17 years."
-      lastUpdated="March 2026"
-    >
+    <>
       <CalculatorSchema
         name="Solar + EV Calculator"
         description="Calculate how solar panels offset EV charging costs. See solar coverage, payback period, monthly savings, and 25-year total savings."
@@ -247,285 +350,94 @@ export default function SolarEVPage() {
           { name: "Solar + EV Calculator", url: "https://chargemath.com/solar-ev" },
         ]}
       />
-
-      {/* ── Inputs ── */}
-      <div className="grid gap-6 sm:grid-cols-2">
-        <SelectInput
-          label="Select Your EV"
-          value={vehicleId}
-          onChange={setVehicleId}
-          options={vehicleOptions}
-          helpText={`${vehicle.batteryCapacityKwh} kWh battery \u2022 ${vehicle.epaRangeMiles} mi EPA range \u2022 ${vehicle.kwhPer100Miles} kWh/100mi`}
-        />
-
-        <SelectInput
-          label="Your State"
-          value={stateCode}
-          onChange={setStateCode}
-          options={stateOptions}
-          helpText={`${solarProductionPerKw.toLocaleString()} kWh/kW/yr solar \u2022 ${SOLAR_DATA[stateCode]?.peakSunHours ?? 4.5} peak sun hrs/day \u2022 ${ELECTRICITY_RATES[stateCode]?.residential ?? NATIONAL_AVERAGE_RATE}\u00a2/kWh`}
-        />
-
-        <div className="sm:col-span-2">
-          <SliderInput
-            label="Solar System Size"
-            value={solarSizeKw}
-            onChange={setSolarSizeKw}
-            min={3}
-            max={15}
-            step={1}
-            unit="kW"
-            showValue
+      <CalculatorShell
+        eyebrow="Solar + EV"
+        title="Solar Charging Your EV"
+        quickAnswer="A 4 to 6 kW solar array typically covers a daily driver EV in most of the country."
+        inputs={inputs}
+        hero={hero}
+      >
+        {/* Live savings meter: grid vs solar annual cost */}
+        <div className="mb-8">
+          <SavingsMeter
+            leftLabel="GRID"
+            leftValue={Math.round(results.gridAnnual)}
+            rightLabel="SOLAR"
+            rightValue={Math.round(results.solarAnnualCost)}
           />
         </div>
 
-        <NumberInput
-          label="Solar Installation Cost"
-          value={installCost}
-          onChange={setInstallCost}
-          min={5000}
-          max={60000}
-          step={500}
-          unit="$"
-          helpText="Total system cost before tax credits"
-        />
-
-        <NumberInput
-          label="Current Monthly Electric Bill (without EV)"
-          value={monthlyBill}
-          onChange={setMonthlyBill}
-          min={0}
-          max={1000}
-          step={10}
-          unit="$"
-          helpText="Your home electricity bill before adding EV charging"
-        />
-
-        <div className="sm:col-span-2">
-          <SliderInput
-            label="Daily Miles Driven"
-            value={dailyMiles}
-            onChange={setDailyMiles}
-            min={10}
-            max={150}
-            step={5}
-            unit="miles"
-            showValue
-          />
-        </div>
-
-        {/* Tax credit checkbox */}
-        <div className="flex items-center gap-3 sm:col-span-2">
-          <input
-            type="checkbox"
-            id="tax-credit-toggle"
-            checked={taxCreditEnabled}
-            onChange={(e) => setTaxCreditEnabled(e.target.checked)}
-            className="h-5 w-5 rounded border-[var(--color-border)] text-[var(--color-primary)] accent-[var(--color-primary)]"
-          />
-          <label
-            htmlFor="tax-credit-toggle"
-            className="text-sm font-medium text-[var(--color-text)]"
+        {/* Cross-link chips */}
+        <div className="mt-2 mb-8 flex flex-wrap gap-3 text-sm">
+          <Link
+            href="/solar-payback"
+            className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5"
           >
-            Apply 30% Tax Credit (lease/PPA via Section 48E, through 2027)
-            {taxCreditEnabled && (
-              <span className="ml-2 text-[var(--color-ev-green)]">
-                Saving {fmtShort.format(results.taxCredit)}
-              </span>
-            )}
-          </label>
-        </div>
-      </div>
-
-      {/* ── Results ── */}
-      <div className="mt-10">
-        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
-          Your Solar + EV Savings
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <ResultCard
-            label="Solar Covers EV Charging"
-            value={fmtPct.format(results.solarCoversEvPct)}
-            unit=""
-            highlight
-            icon="☀️"
-          />
-          <ResultCard
-            label="Payback Period"
-            value={formatPaybackYears(results.paybackYears)}
-            unit=""
-            icon="📅"
-          />
-          <ResultCard
-            label="Monthly Savings"
-            value={fmt.format(results.monthlySolarSavings)}
-            unit="/month"
-            icon="💰"
-          />
-          <ResultCard
-            label="25-Year Total Savings"
-            value={fmtShort.format(results.totalSavings25yr)}
-            unit="net profit"
-            highlight
-            icon="🏆"
-          />
+            Solar payback calculator
+          </Link>
+          <Link
+            href="/solar-battery-ev"
+            className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5"
+          >
+            Add a home battery
+          </Link>
+          <Link
+            href="/ev-charging-cost"
+            className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5"
+          >
+            Grid charging cost
+          </Link>
         </div>
 
-        {/* ── Solar Coverage Visualization ── */}
-        <div className="mt-8 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-5">
-          <h3 className="mb-4 text-sm font-semibold text-[var(--color-text)]">
-            Solar Coverage of EV Charging
-          </h3>
-          <div className="relative">
-            <div className="h-6 w-full overflow-hidden rounded-full bg-[var(--color-border)]">
-              <div
-                className="h-full rounded-full bg-[var(--color-primary)] transition-all duration-500"
-                style={{ width: `${coveragePct}%` }}
-              />
-            </div>
-            <div className="mt-3 flex items-start justify-between text-xs">
-              <div className="text-[var(--color-text-muted)]">
-                <span className="block font-semibold">EV Needs</span>
-                <span>
-                  {Math.round(results.annualEvKwh).toLocaleString()} kWh/yr
-                </span>
-              </div>
-              <div className="text-right text-[var(--color-text-muted)]">
-                <span className="block font-semibold">Solar Produces</span>
-                <span className="font-semibold text-[var(--color-ev-green)]">
-                  {Math.round(results.annualSolarKwh).toLocaleString()} kWh/yr
-                </span>
-              </div>
-            </div>
-          </div>
+        <EducationalContent>
+          <h2>How the Solar + EV Calculation Works</h2>
+          <p>
+            This calculator estimates annual solar energy production based on your
+            system size and state. Sunny states like Arizona and Nevada produce
+            roughly 1,600 kWh per installed kW per year, while cloudier states
+            like Washington and Michigan produce around 1,000 kWh/kW/yr. Most
+            states fall in the middle at about 1,300 kWh/kW/yr. Your EV&apos;s
+            energy consumption is calculated from its EPA-rated efficiency and your
+            daily driving distance.
+          </p>
+          <h3>Why Solar and EVs Are Better Together</h3>
+          <p>
+            Solar panels alone offset your home electricity bill, which provides
+            moderate savings. Adding an EV dramatically increases your electricity
+            consumption, which means more of your solar production displaces
+            expensive grid power. This synergy makes both investments pay off
+            faster. A homeowner who installs solar before buying an EV may see a
+            10-year payback. That same homeowner with an EV could see a 7-year
+            payback because the savings per year are higher.
+          </p>
+          <h3>Net Metering Makes It Work</h3>
+          <p>
+            Most EV owners charge overnight, but solar panels produce during the
+            day. Net metering bridges this gap: your solar system exports excess
+            power to the grid during the day, and you receive credits that offset
+            the electricity you draw at night for EV charging. The grid acts as a
+            free battery. However, net metering policies vary by state and
+            utility. Some states offer full retail credit, while others offer
+            reduced rates. Check with your utility for specific terms.
+          </p>
+          <h3>Solar Tax Credits in 2026</h3>
+          <p>
+            The residential solar tax credit (Section 25D) was eliminated by the
+            One Big Beautiful Bill Act signed in July 2025. If you buy and own
+            your solar system outright, there is no longer a federal tax credit
+            available. However, third-party-owned systems (leases and Power
+            Purchase Agreements) may still benefit from the Section 48E commercial
+            credit at 30% through the end of 2027. Many states also offer their
+            own incentives, including rebates, property tax exemptions, and
+            renewable energy credits. Check your state&apos;s energy office for
+            current programs.
+          </p>
+        </EducationalContent>
 
-          {results.solarCoversEvPct >= 1 && (
-            <p className="mt-4 text-center text-sm text-[var(--color-ev-green)]">
-              Your solar system produces more than enough to cover all EV
-              charging. The surplus ({fmtShort.format((results.annualSolarKwh - results.annualEvKwh) * electricityRate)}/yr value) offsets your home electric bill.
-            </p>
-          )}
-
-          {results.solarCoversEvPct < 1 && (
-            <p className="mt-4 text-center text-sm text-[var(--color-text-muted)]">
-              Your solar covers {Math.round(results.solarCoversEvPct * 100)}% of
-              EV charging. Consider a larger system to cover the remaining{" "}
-              {Math.round(results.annualEvKwh - results.annualSolarKwh).toLocaleString()}{" "}
-              kWh/yr.
-            </p>
-          )}
-        </div>
-
-        {/* ── Monthly Comparison ── */}
-        <div className="mt-6 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-5">
-          <h3 className="mb-4 text-sm font-semibold text-[var(--color-text)]">
-            Monthly Cost Comparison
-          </h3>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-[var(--color-text-muted)]">
-                Without solar (home + EV)
-              </span>
-              <span className="font-semibold text-[var(--color-text)]">
-                {fmt.format(results.monthlyWithoutSolar)}/mo
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-[var(--color-text-muted)]">
-                With solar (home + EV)
-              </span>
-              <span className="font-semibold text-[var(--color-ev-green)]">
-                {fmt.format(Math.max(results.monthlyWithSolar, 0))}/mo
-              </span>
-            </div>
-            <hr className="border-[var(--color-border)]" />
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-semibold text-[var(--color-text)]">
-                You save
-              </span>
-              <span className="font-bold text-[var(--color-ev-green)]">
-                {fmt.format(results.monthlySolarSavings)}/mo
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* ── Key Numbers ── */}
-        <div className="mt-6 grid gap-4 sm:grid-cols-3">
-          <ResultCard
-            label="Annual Electricity Savings"
-            value={fmtShort.format(results.annualElectricitySavings)}
-            unit="/year"
-            icon="⚡"
-          />
-          <ResultCard
-            label="Net Solar Cost"
-            value={fmtShort.format(results.netSolarCost)}
-            unit={taxCreditEnabled ? "after 30% ITC" : "no tax credit"}
-            icon="🔧"
-          />
-          <ResultCard
-            label="Solar Covers Total Home"
-            value={fmtPct.format(results.solarCoversTotalPct)}
-            unit="of all electricity"
-            icon="🏠"
-          />
-        </div>
-      </div>
-
-      <ShareResults
-        title={`Solar + EV: ${formatPaybackYears(results.paybackYears)} payback`}
-        text={`My ${solarSizeKw} kW solar system covers ${Math.round(results.solarCoversEvPct * 100)}% of EV charging and saves ${fmt.format(results.monthlySolarSavings)}/month. ${fmtShort.format(results.totalSavings25yr)} in total savings over 25 years!`}
-      />
-
-      <EducationalContent>
-        <h2>How the Solar + EV Calculation Works</h2>
-        <p>
-          This calculator estimates annual solar energy production based on your
-          system size and state. Sunny states like Arizona and Nevada produce
-          roughly 1,600 kWh per installed kW per year, while cloudier states
-          like Washington and Michigan produce around 1,000 kWh/kW/yr. Most
-          states fall in the middle at about 1,300 kWh/kW/yr. Your EV&apos;s
-          energy consumption is calculated from its EPA-rated efficiency and your
-          daily driving distance.
-        </p>
-        <h3>Why Solar and EVs Are Better Together</h3>
-        <p>
-          Solar panels alone offset your home electricity bill, which provides
-          moderate savings. Adding an EV dramatically increases your electricity
-          consumption, which means more of your solar production displaces
-          expensive grid power. This synergy makes both investments pay off
-          faster. A homeowner who installs solar before buying an EV may see a
-          10-year payback. That same homeowner with an EV could see a 7-year
-          payback because the savings per year are higher.
-        </p>
-        <h3>Net Metering Makes It Work</h3>
-        <p>
-          Most EV owners charge overnight, but solar panels produce during the
-          day. Net metering bridges this gap: your solar system exports excess
-          power to the grid during the day, and you receive credits that offset
-          the electricity you draw at night for EV charging. The grid acts as a
-          free battery. However, net metering policies vary by state and
-          utility. Some states offer full retail credit, while others offer
-          reduced rates. Check with your utility for specific terms.
-        </p>
-        <h3>Solar Tax Credits in 2026</h3>
-        <p>
-          The residential solar tax credit (Section 25D) was eliminated by the
-          One Big Beautiful Bill Act signed in July 2025. If you buy and own
-          your solar system outright, there is no longer a federal tax credit
-          available. However, third-party-owned systems (leases and Power
-          Purchase Agreements) may still benefit from the Section 48E commercial
-          credit at 30% through the end of 2027. Many states also offer their
-          own incentives, including rebates, property tax exemptions, and
-          renewable energy credits. Check your state&apos;s energy office for
-          current programs.
-        </p>
-      </EducationalContent>
-
-      <FAQSection questions={solarEvFAQ} />
-      <EmailCapture source="solar-ev" />
-      <RelatedCalculators currentPath="/solar-ev" />
-    </CalculatorLayout>
+        <FAQSection questions={solarEvFAQ} />
+        <EmailCapture source="solar-ev" />
+        <RelatedCalculators currentPath="/solar-ev" />
+      </CalculatorShell>
+    </>
   );
 }

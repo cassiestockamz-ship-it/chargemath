@@ -1,25 +1,313 @@
 @import "tailwindcss";
 
-:root {
-  --color-primary: #0ea5e9;
-  --color-primary-dark: #0284c7;
-  --color-accent: #10b981;
-  --color-bg: #f8fafc;
+/* ————————————————————————————————————————————————
+   VOLTLINE — the ChargeMath design system.
+   Deep indigo + lightning yellow + circuit teal on a
+   near-white surface with one deep instrument panel
+   strip for hero result blocks. Positive, affirmative,
+   "your answer is already on screen" vibe.
+   ———————————————————————————————————————————————— */
+
+@theme inline {
+  /* Neutrals (surface stack) */
+  --color-bg: #f6f7fb;
   --color-surface: #ffffff;
-  --color-surface-alt: #f1f5f9;
-  --color-text: #0f172a;
-  --color-text-muted: #64748b;
-  --color-border: #e2e8f0;
-  --color-ev-green: #22c55e;
-  --color-gas-red: #ef4444;
+  --color-surface-alt: #eef1f8;
+  --color-surface-ink: #0b0f1a;
+  --color-surface-ink-2: #101634;
+  --color-border: #dde2ee;
+  --color-border-hi: #c4cbdc;
+
+  /* Text stack */
+  --color-ink: #0c1024;
+  --color-ink-2: #2a3352;
+  --color-ink-3: #5a658a;
+  --color-ink-4: #8690ad;
+
+  /* Brand — deep electric indigo */
+  --color-brand: #2f3dff;
+  --color-brand-hi: #5565ff;
+  --color-brand-soft: #eef0ff;
+  --color-brand-ink: #1a1f80;
+
+  /* Volt — the hero accent (result number color) */
+  --color-volt: #ffd60a;
+  --color-volt-soft: #fff8cc;
+  --color-volt-ink: #4a3900;
+
+  /* Teal — "cheap / efficient / good news" accent */
+  --color-teal: #17c2a6;
+  --color-teal-soft: #e6fbf5;
+  --color-teal-ink: #0b5d4e;
+
+  /* Tier semantics (value-level, not safety)
+     good = saves money / fast payback / low cost
+     mid  = national average / neutral
+     warn = expensive / slow payback */
+  --color-good: #17c2a6;
+  --color-good-soft: #e6fbf5;
+  --color-good-ink: #0b5d4e;
+  --color-mid: #c88a00;
+  --color-mid-soft: #fff4d6;
+  --color-mid-ink: #6a4500;
+  --color-warn: #c45a2a;
+  --color-warn-soft: #fdece1;
+  --color-warn-ink: #6f2d10;
+
+  /* Legacy aliases (existing ~40 calculator pages use these).
+     Aliased to Voltline tokens so the palette swap is transparent. */
+  --color-primary: #2f3dff;
+  --color-primary-dark: #1a1f80;
+  --color-accent: #17c2a6;
+  --color-text: #0c1024;
+  --color-text-muted: #5a658a;
+  --color-ev-green: #17c2a6;
+  --color-gas-red: #c45a2a;
+
+  /* Fonts */
+  --font-display: var(--font-space-grotesk);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains);
+}
+
+/* Duplicate as plain CSS vars so `var(--color-*)` references
+   in existing Tailwind `bg-[var(--color-*)]` arbitrary values
+   still resolve. */
+:root {
+  --color-bg: #f6f7fb;
+  --color-surface: #ffffff;
+  --color-surface-alt: #eef1f8;
+  --color-surface-ink: #0b0f1a;
+  --color-surface-ink-2: #101634;
+  --color-border: #dde2ee;
+  --color-border-hi: #c4cbdc;
+  --color-ink: #0c1024;
+  --color-ink-2: #2a3352;
+  --color-ink-3: #5a658a;
+  --color-ink-4: #8690ad;
+  --color-brand: #2f3dff;
+  --color-brand-hi: #5565ff;
+  --color-brand-soft: #eef0ff;
+  --color-brand-ink: #1a1f80;
+  --color-volt: #ffd60a;
+  --color-volt-soft: #fff8cc;
+  --color-volt-ink: #4a3900;
+  --color-teal: #17c2a6;
+  --color-teal-soft: #e6fbf5;
+  --color-teal-ink: #0b5d4e;
+  --color-good: #17c2a6;
+  --color-good-soft: #e6fbf5;
+  --color-good-ink: #0b5d4e;
+  --color-mid: #c88a00;
+  --color-mid-soft: #fff4d6;
+  --color-mid-ink: #6a4500;
+  --color-warn: #c45a2a;
+  --color-warn-soft: #fdece1;
+  --color-warn-ink: #6f2d10;
+  --color-primary: #2f3dff;
+  --color-primary-dark: #1a1f80;
+  --color-accent: #17c2a6;
+  --color-text: #0c1024;
+  --color-text-muted: #5a658a;
+  --color-ev-green: #17c2a6;
+  --color-gas-red: #c45a2a;
 }
 
 body {
-  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans), "Inter", system-ui, -apple-system, sans-serif;
   background: var(--color-bg);
-  color: var(--color-text);
+  color: var(--color-ink);
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
 }
 
+/* ————————————————————————————————————————————————
+   Rail utilities (3px top stripe, one per tier)
+   ———————————————————————————————————————————————— */
+.rail-brand { box-shadow: inset 0 3px 0 0 var(--color-brand); }
+.rail-volt  { box-shadow: inset 0 3px 0 0 var(--color-volt); }
+.rail-good  { box-shadow: inset 0 3px 0 0 var(--color-good); }
+.rail-mid   { box-shadow: inset 0 3px 0 0 var(--color-mid); }
+.rail-warn  { box-shadow: inset 0 3px 0 0 var(--color-warn); }
+
+/* ————————————————————————————————————————————————
+   Hero result number typography
+   ———————————————————————————————————————————————— */
+.cm-hero-number {
+  font-family: var(--font-display), var(--font-sans), system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(2.75rem, 10vw, 4.5rem);
+  line-height: 1;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+}
+.cm-result-number {
+  font-family: var(--font-display), var(--font-sans), system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 2.25rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.cm-eyebrow {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-ink-3);
+}
+.cm-mono {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--color-ink-3);
+}
+
+/* ————————————————————————————————————————————————
+   Micro-interactions
+   ———————————————————————————————————————————————— */
+@keyframes cm-pulse-once {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.035); }
+  100% { transform: scale(1); }
+}
+.animate-pulse-once {
+  animation: cm-pulse-once 0.7s cubic-bezier(0.32, 0.72, 0, 1) 1;
+}
+
+@keyframes cm-fade-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up {
+  animation: cm-fade-up 0.45s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+@keyframes cm-score-sweep {
+  from { stroke-dashoffset: 283; }
+}
+.animate-score-sweep {
+  animation: cm-score-sweep 0.9s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+@keyframes cm-bar-fill {
+  from { width: 0%; }
+}
+.animate-bar-fill {
+  animation: cm-bar-fill 0.55s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+@keyframes cm-shimmer {
+  0%, 100% { opacity: 0.9; }
+  50%      { opacity: 1; }
+}
+.animate-live-dot {
+  animation: cm-shimmer 1.8s ease-in-out infinite;
+}
+
+@keyframes cm-roll-in {
+  0%   { transform: translateY(40%); opacity: 0; }
+  60%  { transform: translateY(-4%); opacity: 1; }
+  100% { transform: translateY(0);    opacity: 1; }
+}
+.animate-roll-in {
+  animation: cm-roll-in 0.5s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+/* Reduced motion kills everything opinionated */
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse-once,
+  .animate-fade-up,
+  .animate-score-sweep,
+  .animate-bar-fill,
+  .animate-live-dot,
+  .animate-roll-in {
+    animation: none !important;
+  }
+  * { transition-duration: 0.01ms !important; }
+}
+
+/* ————————————————————————————————————————————————
+   content-visibility: auto — long educational content
+   and below-fold tile grids paint lazily.
+   ———————————————————————————————————————————————— */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 240px;
+}
+
+/* ————————————————————————————————————————————————
+   View Transitions — persistent chrome morphs across
+   navigations via next.config experimental.viewTransition.
+   ———————————————————————————————————————————————— */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 220ms;
+  animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.vt-header       { view-transition-name: cm-header; }
+.vt-header-logo  { view-transition-name: cm-header-logo; }
+.vt-nav          { view-transition-name: cm-nav; }
+.vt-hero-number  { view-transition-name: cm-hero-number; }
+.vt-savings-meter{ view-transition-name: cm-savings-meter; }
+.vt-footer       { view-transition-name: cm-footer; }
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
+  }
+}
+
+/* ————————————————————————————————————————————————
+   Calc prose — for EducationalContent / long-form blocks
+   under the tool. Mirrors recallscanner's .guide-prose.
+   ———————————————————————————————————————————————— */
+.calc-prose {
+  color: var(--color-ink-2);
+  font-size: 16.5px;
+  line-height: 1.7;
+}
+.calc-prose > * + * { margin-top: 1.05em; }
+.calc-prose h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-ink);
+  line-height: 1.2;
+  margin-top: 2.2em;
+  margin-bottom: 0.6em;
+  letter-spacing: -0.01em;
+}
+.calc-prose h2:first-child { margin-top: 0; }
+.calc-prose h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-top: 1.8em;
+  margin-bottom: 0.5em;
+}
+.calc-prose p { margin: 0; }
+.calc-prose strong { color: var(--color-ink); font-weight: 600; }
+.calc-prose a {
+  color: var(--color-brand);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: color-mix(in oklch, var(--color-brand) 30%, transparent);
+}
+.calc-prose a:hover { text-decoration-color: var(--color-brand); }
+.calc-prose ul, .calc-prose ol { padding-left: 1.4em; margin: 1.05em 0; }
+.calc-prose ul { list-style: disc; }
+.calc-prose ol { list-style: decimal; }
+.calc-prose li + li { margin-top: 0.45em; }
+.calc-prose li::marker { color: var(--color-ink-4); }
+
+/* ————————————————————————————————————————————————
+   Native number input spinner reset (existing rule)
+   ———————————————————————————————————————————————— */
 @layer base {
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"]::-webkit-outer-spin-button {
@@ -31,6 +319,9 @@ body {
   }
 }
 
+/* ————————————————————————————————————————————————
+   Print styles (existing)
+   ———————————————————————————————————————————————— */
 @media print {
   header,
   footer,
@@ -41,36 +332,15 @@ body {
   .no-print {
     display: none !important;
   }
-  body {
-    background: white !important;
-    color: black !important;
-    font-size: 12pt;
-  }
-  main {
-    padding: 0 !important;
-  }
-  .rounded-2xl {
-    border: 1px solid #ccc !important;
-    box-shadow: none !important;
-  }
-  a {
-    color: inherit !important;
-    text-decoration: none !important;
-  }
-  a[href]::after {
-    content: " (" attr(href) ")";
-    font-size: 0.8em;
-    color: #666;
-  }
+  body { background: white !important; color: black !important; font-size: 12pt; }
+  main { padding: 0 !important; }
+  .rounded-2xl { border: 1px solid #ccc !important; box-shadow: none !important; }
+  a { color: inherit !important; text-decoration: none !important; }
+  a[href]::after { content: " (" attr(href) ")"; font-size: 0.8em; color: #666; }
   nav a[href]::after,
   header a[href]::after,
-  footer a[href]::after {
-    content: none;
-  }
-  @page {
-    margin: 1cm;
-  }
-  /* Print footer branding */
+  footer a[href]::after { content: none; }
+  @page { margin: 1cm; }
   main::after {
     content: "Generated by chargemath.com";
     display: block;

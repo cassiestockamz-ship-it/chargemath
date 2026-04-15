@@ -526,7 +526,7 @@ export default function PanelLoadCheckPage() {
         card={{
           headline: `${fmt(r.totalAmps, 1)} A`,
           label: `NEC 220.83 demand on a ${r.panelAmpsVal} A panel`,
-          sub: `${r.evAmpsVal} A EV charger — ${r.verdict === "pass" ? "PASSES" : r.verdict === "tight" ? "TIGHT" : "OVER CAPACITY"}`,
+          sub: `${r.evAmpsVal} A EV charger: ${r.verdict === "pass" ? "PASSES" : r.verdict === "tight" ? "TIGHT" : "OVER CAPACITY"}`,
           calc: "panel-load-check",
         }}
       />
@@ -632,6 +632,6 @@ const panelLoadFAQ = [
   {
     question: "Is this permit-ready?",
     answer:
-      "The printed worksheet is in the same format inspectors expect and follows the 220.83 optional method exactly. However, requirements vary by jurisdiction: some cities still require a licensed electrician's stamp on the calc, and some utilities will run their own demand study before approving service-sized loads. Use this as a planning tool and starting point — bring it to your electrician to verify nameplate VAs and local amendments.",
+      "The printed worksheet is in the same format inspectors expect and follows the 220.83 optional method exactly. However, requirements vary by jurisdiction: some cities still require a licensed electrician's stamp on the calc, and some utilities will run their own demand study before approving service-sized loads. Use this as a planning tool and starting point, then bring it to your electrician to verify nameplate VAs and local amendments.",
   },
 ];

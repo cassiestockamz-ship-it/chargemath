@@ -173,7 +173,7 @@ export default function EvTireCostPage() {
           <strong>Quick answer:</strong> A typical EV crossover (around 4,500 lb) driving
           13,500 miles a year on OEM-grade tires will spend about{" "}
           <strong>$1,300 more</strong> on tires than an equivalent ICE crossover over five
-          years — about <strong>$0.02 per mile</strong> in hidden tire tax. Heavy EVs like
+          years, about <strong>$0.02 per mile</strong> in hidden tire tax. Heavy EVs like
           the Rivian R1T or Hummer EV can double that number. Premium low-rolling-resistance
           tires cost more up front but often pay for themselves through energy savings and
           longer life.
@@ -415,7 +415,7 @@ const evTireFAQ = [
   {
     question: "Do EVs really wear tires 20% faster than gas cars?",
     answer:
-      "Yes, for a same-class comparison. Michelin's published data and independent testing by Tire Rack and Consumer Reports all land at 15-25% faster wear on equivalent vehicles. The three reasons are instant torque (no shift smoothing), higher curb weight (batteries add 500-1,200 lb), and single-gear transmissions that transfer full torque on every launch. On very heavy EVs like the Hummer EV or Rivian R1T, the wear penalty is much higher — 35-50% is not unusual.",
+      "Yes, for a same-class comparison. Michelin's published data and independent testing by Tire Rack and Consumer Reports all land at 15-25% faster wear on equivalent vehicles. The three reasons are instant torque (no shift smoothing), higher curb weight (batteries add 500-1,200 lb), and single-gear transmissions that transfer full torque on every launch. On very heavy EVs like the Hummer EV or Rivian R1T, the wear penalty is much higher, and 35-50% is not unusual.",
   },
   {
     question: "Are EV-specific tires worth the extra cost?",
@@ -425,12 +425,12 @@ const evTireFAQ = [
   {
     question: "Why is my EV so hard on tires compared to my last car?",
     answer:
-      "If you're switching from a light car (Civic, Corolla, Prius) to an EV crossover (Model Y, Mach-E, Ioniq 5), you're comparing a 2,900-3,100 lb vehicle to a 4,300-4,600 lb one. That weight alone accounts for about half the wear increase. Add instant torque and the lack of shift cushioning and you get the other half. It's not that your EV is defective — it's that you moved up a full class.",
+      "If you're switching from a light car (Civic, Corolla, Prius) to an EV crossover (Model Y, Mach-E, Ioniq 5), you're comparing a 2,900-3,100 lb vehicle to a 4,300-4,600 lb one. That weight alone accounts for about half the wear increase. Add instant torque and the lack of shift cushioning and you get the other half. It's not that your EV is defective. It's that you moved up a full class.",
   },
   {
     question: "What should I do to make EV tires last longer?",
     answer:
-      "The three biggest levers: (1) rotate religiously every 5,000-7,500 miles, not 'when you remember', because EV rear axles wear much faster on dual-motor cars. (2) Alignment every rotation, not every other one — EV geometry is sensitive to weight. (3) Ease off the torque at launches. A spirited driver wears tires 25% faster than a calm one on the same car. The combined effect of those three things can add 15-20% to tire life.",
+      "The three biggest levers: (1) rotate religiously every 5,000-7,500 miles, not 'when you remember', because EV rear axles wear much faster on dual-motor cars. (2) Alignment every rotation, not every other one, because EV geometry is sensitive to weight. (3) Ease off the torque at launches. A spirited driver wears tires 25% faster than a calm one on the same car. The combined effect of those three things can add 15-20% to tire life.",
   },
   {
     question: "Why do Cybertruck and Hummer EV owners replace tires so often?",

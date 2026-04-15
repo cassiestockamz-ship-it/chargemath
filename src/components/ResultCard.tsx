@@ -6,6 +6,13 @@ interface ResultCardProps {
   icon?: string;
 }
 
+/**
+ * Legacy result tile used by the non-anchor calculator pages. Kept
+ * drop-in compatible (same props) and repainted in Voltline: brand
+ * rail by default, volt rail when highlighted, display-font result
+ * number, mono unit suffix. Non-anchor pages inherit the upgrade
+ * without any per-page edits.
+ */
 export default function ResultCard({
   label,
   value,
@@ -13,32 +20,31 @@ export default function ResultCard({
   highlight = false,
   icon,
 }: ResultCardProps) {
+  const rail = highlight ? "rail-volt" : "rail-brand";
+  const numberColor = highlight ? "var(--color-ink)" : "var(--color-ink)";
   return (
-    <div
-      className={`rounded-xl border p-5 transition-shadow hover:shadow-md ${
-        highlight
-          ? "border-[var(--color-ev-green)]/30 bg-[var(--color-ev-green)]/5"
-          : "border-[var(--color-border)] bg-[var(--color-surface)]"
-      }`}
+    <article
+      className={`${rail} relative flex flex-col gap-2 rounded-2xl border border-[var(--color-border)] bg-white p-5`}
       aria-live="polite"
       role="status"
     >
-      <div className="mb-1 text-sm font-medium text-[var(--color-text-muted)]">
-        {icon && <span className="mr-1.5">{icon}</span>}
+      <div className="flex items-center gap-1.5 cm-eyebrow">
+        {icon && (
+          <span className="text-base not-italic" aria-hidden>
+            {icon}
+          </span>
+        )}
         {label}
       </div>
       <div className="flex items-baseline gap-1.5">
         <span
-          className={`text-3xl font-bold tracking-tight ${
-            highlight ? "text-[var(--color-ev-green)]" : "text-[var(--color-text)]"
-          }`}
+          className="cm-result-number"
+          style={{ color: numberColor }}
         >
           {value}
         </span>
-        <span className="text-sm font-medium text-[var(--color-text-muted)]">
-          {unit}
-        </span>
+        {unit && <span className="cm-mono">{unit}</span>}
       </div>
-    </div>
+    </article>
   );
 }

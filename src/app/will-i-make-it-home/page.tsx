@@ -390,11 +390,11 @@ export default function WillIMakeItHomePage() {
       </div>
 
       <ShareResults
-        title={`Will I make it home? ${verdictLabel} — ${fmt(r.arrivalSoc, 0)}%`}
+        title={`Will I make it home? ${verdictLabel}, ${fmt(r.arrivalSoc, 0)}%`}
         text={`${r.vehicle.year} ${r.vehicle.make} ${r.vehicle.model} at ${startSoc}% SOC going ${distance} mi in ${tempF}°F. Predicted arrival: ${fmt(r.arrivalSoc, 0)}%. Verdict: ${verdictLabel}.`}
         card={{
           headline: `${fmt(r.arrivalSoc, 0)}%`,
-          label: `Arrival SOC — ${verdictLabel}`,
+          label: `Arrival SOC: ${verdictLabel}`,
           sub: `${r.vehicle.year} ${r.vehicle.make} ${r.vehicle.model} · ${distance} mi at ${tempF}°F, ${speed} mph`,
           calc: "will-i-make-it-home",
         }}

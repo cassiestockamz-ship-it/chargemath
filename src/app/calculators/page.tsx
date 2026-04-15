@@ -14,7 +14,7 @@ const categories = [
     id: "live",
     label: "Live Data + Unique Tools",
     icon: "⚡",
-    description: "Tools nobody else has — live weather, real DCFC curves, permit worksheets, and a panic calculator that tells you if you'll make it home tonight.",
+    description: "Tools nobody else has: live weather, real DCFC curves, permit worksheets, and a panic calculator that tells you if you'll make it home tonight.",
     calculators: [
       { title: "Will I Make It Home?", description: "EV panic calculator with real-world arrival SOC", href: "/will-i-make-it-home" },
       { title: "Winter Range Forecast", description: "Live 7-day range forecast by ZIP", href: "/winter-range-forecast" },
