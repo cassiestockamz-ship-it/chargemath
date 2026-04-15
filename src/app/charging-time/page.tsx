@@ -175,6 +175,8 @@ export default function ChargingTimePage() {
       eyebrow="Charging time"
       headline="PLUG IN FOR"
       amount={results.chargeTimeHours}
+      amountPrefix=""
+      amountDecimals={1}
       amountUnit=" hours"
       sub={`From ${startPercent}% to ${effectiveTarget}% on a ${chargerLabel}. That is about ${Math.round(results.milesAdded)} miles of range added.`}
       dialPercent={effectiveTarget}

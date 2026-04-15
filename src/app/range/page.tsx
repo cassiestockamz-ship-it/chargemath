@@ -220,6 +220,8 @@ export default function RangePage() {
       eyebrow="Real range"
       headline="YOU GET"
       amount={Math.round(results.adjustedRange)}
+      amountPrefix=""
+      amountDecimals={0}
       amountUnit=" miles"
       sub={`Versus the EPA rating of ${vehicle.epaRangeMiles} miles. That is about ${pctOfEpa}% of sticker.`}
       dialPercent={Math.min(100, Math.max(0, Math.round((results.adjustedRange / vehicle.epaRangeMiles) * 100)))}

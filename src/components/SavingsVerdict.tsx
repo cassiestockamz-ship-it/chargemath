@@ -9,10 +9,14 @@ interface Props {
   eyebrow?: string;
   /** Line 1 headline, e.g. "YOU SAVE" or "YOU PAY" */
   headline: string;
-  /** The big animated dollar figure */
+  /** The big animated number */
   amount: number;
-  /** What the amount means, e.g. "/year", "/month", " over 5 years" */
+  /** Prefix for the hero number. Default "$". Pass "" for non-currency values like miles, hours, months. */
+  amountPrefix?: string;
+  /** What the amount means, e.g. "/year", "/month", " miles", " hours" */
   amountUnit?: string;
+  /** Decimal places on the hero number. Default: 2 if amount < 100, else 0. */
+  amountDecimals?: number;
   /** Short sub-line explainer, ideally one line */
   sub?: ReactNode;
   /** 0-100 dial percentage, e.g. "share of fuel cost eliminated" */
@@ -34,13 +38,21 @@ export default function SavingsVerdict({
   eyebrow = "Savings verdict",
   headline,
   amount,
+  amountPrefix = "$",
   amountUnit = "/year",
+  amountDecimals,
   sub,
   dialPercent,
   dialLabel = "SAVINGS",
   children,
   morphHero = true,
 }: Props) {
+  const resolvedDecimals =
+    typeof amountDecimals === "number"
+      ? amountDecimals
+      : amount >= 100
+        ? 0
+        : 2;
   return (
     <section
       className="rail-volt relative overflow-hidden rounded-3xl border border-[var(--color-border)] bg-white p-5 sm:p-8"
@@ -82,8 +94,8 @@ export default function SavingsVerdict({
               <CountUp
                 value={amount}
                 duration={950}
-                prefix="$"
-                decimals={amount >= 100 ? 0 : 2}
+                prefix={amountPrefix}
+                decimals={resolvedDecimals}
               />
             </span>
             <span className="text-[0.35em] font-medium text-[var(--color-ink-3)]">

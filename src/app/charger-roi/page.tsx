@@ -247,6 +247,8 @@ export default function ChargerROIPage() {
       eyebrow="Home charger ROI"
       headline="PAYS OFF IN"
       amount={paybackDisplay}
+      amountPrefix=""
+      amountDecimals={0}
       amountUnit=" months"
       sub="Versus using public fast chargers at $0.40 to $0.60 per kWh"
       dialPercent={returnPct}

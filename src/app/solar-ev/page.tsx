@@ -301,6 +301,8 @@ export default function SolarEVPage() {
       eyebrow="Solar + EV"
       headline="SOLAR POWERS"
       amount={Math.round(results.milesPoweredPerDay)}
+      amountPrefix=""
+      amountDecimals={0}
       amountUnit=" miles/day"
       sub={`From a ${solarSizeKw} kW array in ${stateName}. That is about $${annualSavingsRounded.toLocaleString()} saved versus grid charging each year.`}
       dialPercent={Math.min(100, Math.max(0, solarCoveragePct))}
