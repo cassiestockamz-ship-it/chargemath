@@ -2,16 +2,16 @@
 
 import { useState, useMemo, useCallback } from "react";
 import Link from "next/link";
-import CalculatorLayout from "@/components/CalculatorLayout";
+import CalculatorShell from "@/components/CalculatorShell";
+import SavingsVerdict from "@/components/SavingsVerdict";
+import SavingsTile from "@/components/SavingsTile";
 import SelectInput from "@/components/SelectInput";
 import NumberInput from "@/components/NumberInput";
 import SliderInput from "@/components/SliderInput";
-import ResultCard from "@/components/ResultCard";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import FAQSection from "@/components/FAQSection";
-import ShareResults from "@/components/ShareResults";
 import EducationalContent from "@/components/EducationalContent";
 import EmailCapture from "@/components/EmailCapture";
 import { useUrlSync } from "@/lib/useUrlState";
@@ -205,12 +205,96 @@ export default function UsedEvValuePage() {
     label: `${v.year} ${v.make} ${v.model}`,
   }));
 
+  // Dial: share of original MSRP retained
+  const dialPercent = Math.max(0, Math.min(100, results.valueVsNew));
+
+  const inputs = (
+    <div className="grid gap-4 sm:grid-cols-3">
+      <SelectInput
+        label="EV model"
+        value={vehicleId}
+        onChange={setVehicleId}
+        options={vehicleOptions}
+        helpText={`${vehicle.batteryCapacityKwh} kWh battery, ${vehicle.epaRangeMiles} mi range`}
+      />
+      <SliderInput
+        label="Vehicle age"
+        value={ageYears}
+        onChange={setAgeYears}
+        min={1}
+        max={12}
+        step={1}
+        unit=" years"
+        showValue
+      />
+      <SliderInput
+        label="Total mileage"
+        value={totalMileage}
+        onChange={setTotalMileage}
+        min={5000}
+        max={200000}
+        step={1000}
+        unit=" mi"
+        showValue
+      />
+    </div>
+  );
+
+  const hero = (
+    <SavingsVerdict
+      headline="FAIR PRICE"
+      amount={results.estimatedValue}
+      amountUnit=""
+      sub={
+        <>
+          A {ageYears}-year-old {vehicle.year} {vehicle.make} {vehicle.model} with {totalMileage.toLocaleString()} miles.
+          Original MSRP {`$${originalMsrp.toLocaleString()}`}.
+          Estimated remaining range {Math.round(results.remainingRange)} mi.
+        </>
+      }
+      dialPercent={dialPercent}
+      dialLabel="VALUE RETAINED"
+    >
+      <SavingsTile
+        label="BATTERY HEALTH"
+        value={results.batteryHealthPct}
+        decimals={1}
+        unit="%"
+        tier={results.isBelowWarranty ? "warn" : "good"}
+        animate
+      />
+      <SavingsTile
+        label="AGE PENALTY"
+        value={Math.round((1 - calculateDepreciation(ageYears)) * 100)}
+        unit="%"
+        tier="warn"
+        animate
+      />
+      <SavingsTile
+        label="MILEAGE PENALTY"
+        value={Math.round(results.mileageDeduction * 100)}
+        unit="%"
+        tier="mid"
+        animate
+      />
+      <SavingsTile
+        label="RESIDUAL"
+        value={results.valueVsNew}
+        decimals={1}
+        unit="% of MSRP"
+        tier="brand"
+        animate
+      />
+    </SavingsVerdict>
+  );
+
   return (
-    <CalculatorLayout
+    <CalculatorShell
+      eyebrow="Used EV value"
       title="Used EV Value Estimator"
-      description="Estimate the current market value of a used electric vehicle based on age, mileage, battery health, and condition."
-      lastUpdated="March 2026"
-      intro="Used EV prices depend heavily on battery health, which is something traditional car valuation tools often miss. This calculator factors in depreciation curves, mileage, charging habits, and battery degradation to give you a realistic estimate. If you are buying or selling, understanding these factors helps you negotiate a fair price."
+      quickAnswer="Used EV prices hinge on battery health. A 3 year old EV at 90% battery typically holds 55 to 65% of its original MSRP."
+      inputs={inputs}
+      hero={hero}
     >
       <CalculatorSchema
         name="Used EV Value Estimator"
@@ -227,288 +311,59 @@ export default function UsedEvValuePage() {
         ]}
       />
 
-      {/* Inputs */}
-      <div className="grid gap-6 sm:grid-cols-2">
-        <SelectInput
-          label="Select EV Model"
-          value={vehicleId}
-          onChange={setVehicleId}
-          options={vehicleOptions}
-          helpText={`${vehicle.batteryCapacityKwh} kWh battery | ${vehicle.epaRangeMiles} mi EPA range`}
-        />
-
-        <NumberInput
-          label="Original MSRP"
-          value={originalMsrp}
-          onChange={setOriginalMsrp}
-          min={10000}
-          max={200000}
-          step={500}
-          unit="$"
-          helpText="Sticker price when new"
-        />
-
-        <SliderInput
-          label="Vehicle Age"
-          value={ageYears}
-          onChange={setAgeYears}
-          min={1}
-          max={12}
-          step={1}
-          unit=" years"
-          showValue
-        />
-
-        <SliderInput
-          label="Total Mileage"
-          value={totalMileage}
-          onChange={setTotalMileage}
-          min={5000}
-          max={200000}
-          step={1000}
-          unit=" mi"
-          showValue
-        />
-
-        <SelectInput
-          label="Vehicle Condition"
-          value={condition}
-          onChange={(v) => setCondition(v as Condition)}
-          options={CONDITION_OPTIONS}
-        />
-
-        <SelectInput
-          label="Charging Habits"
-          value={chargingHabit}
-          onChange={(v) => setChargingHabit(v as ChargingHabit)}
-          options={CHARGING_OPTIONS}
-          helpText="How the vehicle was primarily charged"
-        />
-      </div>
-
-      {/* Results */}
-      <div className="mt-10">
-        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
-          Value Estimate
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <ResultCard
-            label="Estimated Current Value"
-            value={`$${Math.round(results.estimatedValue).toLocaleString()}`}
-            unit=""
-            highlight
-            icon="💰"
+      {/* Advanced inputs (collapsed by default) */}
+      <details className="group mb-6 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-3">
+        <summary className="cursor-pointer text-sm font-medium text-[var(--color-ink-2)]">
+          Advanced inputs
+        </summary>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <NumberInput
+            label="Original MSRP"
+            value={originalMsrp}
+            onChange={setOriginalMsrp}
+            min={10000}
+            max={200000}
+            step={500}
+            unit="$"
+            helpText="Sticker price when new"
           />
-          <ResultCard
-            label="Battery Health"
-            value={results.batteryHealthPct.toFixed(1)}
-            unit="%"
-            icon={results.isBelowWarranty ? "⚠️" : "🔋"}
+          <SelectInput
+            label="Vehicle condition"
+            value={condition}
+            onChange={(v) => setCondition(v as Condition)}
+            options={CONDITION_OPTIONS}
           />
-          <ResultCard
-            label="Value vs. New"
-            value={results.valueVsNew.toFixed(1)}
-            unit="%"
-            icon="📊"
-          />
-          <ResultCard
-            label="Cost per Range Mile"
-            value={`$${results.costPerRangeMile.toFixed(2)}`}
-            unit=""
-            icon="🗺️"
+          <SelectInput
+            label="Charging habits"
+            value={chargingHabit}
+            onChange={(v) => setChargingHabit(v as ChargingHabit)}
+            options={CHARGING_OPTIONS}
+            helpText="How the vehicle was primarily charged"
           />
         </div>
-      </div>
+      </details>
 
-      {/* Depreciation Breakdown */}
-      <div className="mt-10">
-        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
-          Value Breakdown
-        </h2>
-        <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-5">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-[var(--color-text)]">
-                Original MSRP
-              </span>
-              <span className="font-semibold text-[var(--color-text)]">
-                ${originalMsrp.toLocaleString()}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-[var(--color-text)]">
-                Depreciation ({ageYears} year{ageYears !== 1 ? "s" : ""})
-              </span>
-              <span className="font-semibold text-red-500">
-                -$
-                {Math.round(
-                  originalMsrp * (1 - calculateDepreciation(ageYears))
-                ).toLocaleString()}
-              </span>
-            </div>
-
-            {results.conditionMod !== 0 && (
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-[var(--color-text)]">
-                  Condition Adjustment ({condition})
-                </span>
-                <span
-                  className={`font-semibold ${
-                    results.conditionMod > 0
-                      ? "text-green-500"
-                      : "text-red-500"
-                  }`}
-                >
-                  {results.conditionMod > 0 ? "+" : ""}$
-                  {Math.round(
-                    originalMsrp * Math.abs(results.conditionMod)
-                  ).toLocaleString()}
-                </span>
-              </div>
-            )}
-
-            {results.mileageDeduction > 0 && (
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-[var(--color-text)]">
-                  High Mileage Deduction
-                </span>
-                <span className="font-semibold text-red-500">
-                  -$
-                  {Math.round(
-                    originalMsrp * results.mileageDeduction
-                  ).toLocaleString()}
-                </span>
-              </div>
-            )}
-
-            {results.batteryDeduction > 0 && (
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-[var(--color-text)]">
-                  Battery Below 80% Penalty
-                </span>
-                <span className="font-semibold text-red-500">
-                  -$
-                  {Math.round(
-                    originalMsrp * results.batteryDeduction
-                  ).toLocaleString()}
-                </span>
-              </div>
-            )}
-
-            <div className="flex items-center justify-between border-t border-[var(--color-border)] pt-3">
-              <span className="text-sm font-bold text-[var(--color-text)]">
-                Estimated Value
-              </span>
-              <span className="text-lg font-bold text-[var(--color-primary)]">
-                ${Math.round(results.estimatedValue).toLocaleString()}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Battery Health Detail */}
-      <div className="mt-10">
-        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
-          Battery Health Analysis
-        </h2>
-        <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-5">
-          {/* Battery bar */}
-          <div className="mb-4">
-            <div className="mb-2 flex justify-between text-sm">
-              <span className="text-[var(--color-text-muted)]">
-                Estimated Battery Capacity
-              </span>
-              <span className="font-semibold text-[var(--color-text)]">
-                {results.batteryHealthPct.toFixed(1)}%
-              </span>
-            </div>
-            <div className="relative h-6 w-full overflow-hidden rounded-full bg-[var(--color-border)]">
-              {/* 80% threshold marker */}
-              <div
-                className="absolute top-0 h-full w-px bg-red-500 z-10"
-                style={{ left: "80%" }}
-                title="80% warranty threshold"
-              />
-              <div
-                className="h-full rounded-full transition-all duration-500"
-                style={{
-                  width: `${Math.min(results.batteryHealthPct, 100)}%`,
-                  backgroundColor: results.isBelowWarranty
-                    ? "#ef4444"
-                    : "var(--color-ev-green)",
-                }}
-              />
-            </div>
-            <div className="mt-1 flex justify-between text-xs text-[var(--color-text-muted)]">
-              <span>0%</span>
-              <span className="text-red-500">80% warranty threshold</span>
-              <span>100%</span>
-            </div>
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-lg bg-[var(--color-surface)] p-3">
-              <p className="text-xs text-[var(--color-text-muted)]">
-                Estimated Remaining Range
-              </p>
-              <p className="text-lg font-bold text-[var(--color-text)]">
-                {Math.round(results.remainingRange)} miles
-              </p>
-              <p className="text-xs text-[var(--color-text-muted)]">
-                vs. {vehicle.epaRangeMiles} mi when new
-              </p>
-            </div>
-            <div className="rounded-lg bg-[var(--color-surface)] p-3">
-              <p className="text-xs text-[var(--color-text-muted)]">
-                Warranty Status
-              </p>
-              <p
-                className={`text-lg font-bold ${
-                  results.isBelowWarranty ? "text-red-500" : "text-green-500"
-                }`}
-              >
-                {results.isBelowWarranty
-                  ? "Below 80% Threshold"
-                  : "Above 80% Threshold"}
-              </p>
-              <p className="text-xs text-[var(--color-text-muted)]">
-                {results.isBelowWarranty
-                  ? "May qualify for warranty battery replacement"
-                  : "Battery within normal warranty range"}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Contextual Cross-Links */}
-      <div className="mt-6 flex flex-wrap gap-3 text-sm">
+      {/* Contextual cross-links */}
+      <div className="mt-8 flex flex-wrap gap-3 text-sm">
         <Link
           href="/range"
-          className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5"
+          className="rounded-lg border border-[var(--color-border)] bg-white px-3 py-2 font-medium text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
         >
-          Check real-world range for this EV &rarr;
+          Check real-world range for this EV
         </Link>
         <Link
           href="/ev-charging-cost"
-          className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5"
+          className="rounded-lg border border-[var(--color-border)] bg-white px-3 py-2 font-medium text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
         >
-          Calculate charging costs &rarr;
+          Calculate charging costs
         </Link>
         <Link
           href="/gas-vs-electric"
-          className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5"
+          className="rounded-lg border border-[var(--color-border)] bg-white px-3 py-2 font-medium text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
         >
-          Compare gas vs electric savings &rarr;
+          Compare gas vs electric savings
         </Link>
       </div>
-
-      <ShareResults
-        title={`Used EV Value: $${Math.round(results.estimatedValue).toLocaleString()}`}
-        text={`A ${ageYears}-year-old ${vehicle.year} ${vehicle.make} ${vehicle.model} with ${totalMileage.toLocaleString()} miles is worth about $${Math.round(results.estimatedValue).toLocaleString()} (${results.valueVsNew.toFixed(0)}% of original $${originalMsrp.toLocaleString()} MSRP). Battery health: ${results.batteryHealthPct.toFixed(1)}%.`}
-      />
 
       <EducationalContent>
         <h2>What to Look for When Buying a Used EV</h2>
@@ -549,8 +404,8 @@ export default function UsedEvValuePage() {
         <h3>Factor in Available Tax Credits</h3>
         <p>
           Used EVs may qualify for a federal tax credit of up to $4,000 under
-          current IRS rules, but there are income and price caps. Check
-          IRS.gov for the latest eligibility requirements, as this can
+          current IRS rules (Section 25E), but there are income and price caps.
+          Check IRS.gov for the latest eligibility requirements, as this can
           significantly offset the purchase price.
         </p>
       </EducationalContent>
@@ -558,6 +413,6 @@ export default function UsedEvValuePage() {
       <FAQSection questions={usedEvFAQ} />
       <EmailCapture source="used-ev-value" />
       <RelatedCalculators currentPath="/used-ev-value" />
-    </CalculatorLayout>
+    </CalculatorShell>
   );
 }

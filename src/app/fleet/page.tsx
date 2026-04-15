@@ -1,36 +1,20 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
-import CalculatorLayout from "@/components/CalculatorLayout";
+import Link from "next/link";
+import CalculatorShell from "@/components/CalculatorShell";
+import SavingsVerdict from "@/components/SavingsVerdict";
+import SavingsMeter from "@/components/SavingsMeter";
+import SavingsTile from "@/components/SavingsTile";
 import NumberInput from "@/components/NumberInput";
 import SliderInput from "@/components/SliderInput";
-import ResultCard from "@/components/ResultCard";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import FAQSection from "@/components/FAQSection";
-import ShareResults from "@/components/ShareResults";
 import EducationalContent from "@/components/EducationalContent";
 import EmailCapture from "@/components/EmailCapture";
 import { useUrlSync } from "@/lib/useUrlState";
-
-const fmt = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
-
-const fmtShort = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
-
-const fmtNumber = new Intl.NumberFormat("en-US", {
-  maximumFractionDigits: 0,
-});
 
 const CO2_LBS_PER_GALLON = 19.6;
 
@@ -43,22 +27,22 @@ const fleetFAQ = [
   {
     question: "What maintenance costs are lower with electric fleet vehicles?",
     answer:
-      "EVs eliminate oil changes, transmission servicing, exhaust system repairs, and brake pad replacements (regenerative braking extends pad life 2-3x). Fleet EVs typically cost $400-600/year in maintenance versus $1,000-1,400/year for gas equivalents. The biggest savings come from avoiding engine and drivetrain repairs, which account for roughly 40% of gas vehicle maintenance spending.",
+      "EVs eliminate oil changes, transmission servicing, exhaust system repairs, and brake pad replacements (regenerative braking extends pad life 2 to 3 times). Fleet EVs typically cost $400 to $600 per year in maintenance versus $1,000 to $1,400 per year for gas equivalents. The biggest savings come from avoiding engine and drivetrain repairs, which account for roughly 40 percent of gas vehicle maintenance spending.",
   },
   {
     question: "Should I switch my entire fleet at once or phase it in?",
     answer:
-      "Most fleet managers recommend a phased approach. Start with 10-20% of vehicles to build charging infrastructure and operational experience. Prioritize vehicles with predictable daily routes under 200 miles, fixed overnight parking locations, and high daily mileage (which maximizes fuel savings). Full fleet transitions typically take 3-5 years.",
+      "Most fleet managers recommend a phased approach. Start with 10 to 20 percent of vehicles to build charging infrastructure and operational experience. Prioritize vehicles with predictable daily routes under 200 miles, fixed overnight parking locations, and high daily mileage (which maximizes fuel savings). Full fleet transitions typically take 3 to 5 years.",
   },
   {
     question: "What charging infrastructure do I need for a fleet?",
     answer:
-      "For overnight depot charging, plan one Level 2 charger (7-19 kW) per vehicle. A 10-vehicle fleet typically needs a 100-200 kW electrical service upgrade costing $15,000-50,000 depending on existing infrastructure. DC fast chargers ($30,000-100,000 each) are useful for midday top-ups on high-mileage routes but are not required for most fleets that return to base nightly.",
+      "For overnight depot charging, plan one Level 2 charger (7 to 19 kW) per vehicle. A 10-vehicle fleet typically needs a 100 to 200 kW electrical service upgrade costing $15,000 to $50,000 depending on existing infrastructure. DC fast chargers ($30,000 to $100,000 each) are useful for midday top-ups on high-mileage routes but are not required for most fleets that return to base nightly.",
   },
   {
     question: "Are there tax incentives for fleet electrification?",
     answer:
-      "Yes. The federal Commercial Clean Vehicle Credit (Section 45W) offers up to $7,500 per light-duty EV or $40,000 per heavy-duty EV with no manufacturer cap. The Alternative Fuel Vehicle Refueling Property Credit (30C) covers 30% of charging equipment costs up to $100,000 per location. Many states offer additional fleet incentives, grants, and utility rate discounts for commercial EV charging.",
+      "Yes. The federal Commercial Clean Vehicle Credit (Section 45W) offers up to $7,500 per light-duty EV or $40,000 per heavy-duty EV with no manufacturer cap. The Alternative Fuel Vehicle Refueling Property Credit (30C) covers 30 percent of charging equipment costs up to $100,000 per location. Many states offer additional fleet incentives, grants, and utility rate discounts for commercial EV charging.",
   },
 ];
 
@@ -144,16 +128,27 @@ export default function FleetElectrificationPage() {
     // Annual combined savings (fuel + maintenance)
     const annualTotalSavings = annualFuelSavings + annualMaintenanceSavings;
 
-    // Breakeven year: when cumulative savings offset purchase premium
-    let breakevenYear: number;
+    // Per vehicle annual savings
+    const perVehicleAnnual = fleetSize > 0 ? annualTotalSavings / fleetSize : 0;
+
+    // TCO delta per vehicle
+    const tcoDeltaPerVehicle = fleetSize > 0 ? totalSavings / fleetSize : 0;
+
+    // Breakeven: months, not years, for more useful display on this card
+    let breakevenMonths: number;
     if (purchaseCostDifference <= 0) {
-      // EVs are cheaper to buy, breakeven is immediate
-      breakevenYear = 0;
+      breakevenMonths = 0;
     } else if (annualTotalSavings <= 0) {
-      breakevenYear = Infinity;
+      breakevenMonths = Infinity;
     } else {
-      breakevenYear = purchaseCostDifference / annualTotalSavings;
+      breakevenMonths = (purchaseCostDifference / annualTotalSavings) * 12;
     }
+
+    // Share of fuel cost eliminated
+    const fuelCutPercent =
+      annualGasFuelFleet > 0
+        ? Math.max(0, Math.min(100, (annualFuelSavings / annualGasFuelFleet) * 100))
+        : 0;
 
     // CO2 reduction
     const annualGallonsFleet = fleetAnnualMiles / gasMpg;
@@ -166,11 +161,14 @@ export default function FleetElectrificationPage() {
       annualFuelSavings,
       annualMaintenanceSavings,
       annualTotalSavings,
+      perVehicleAnnual,
+      tcoDeltaPerVehicle,
       purchaseCostDifference,
       gasTCO,
       evTCO,
       totalSavings,
-      breakevenYear,
+      breakevenMonths,
+      fuelCutPercent,
       annualCO2ReductionLbs,
       annualCO2ReductionTons,
     };
@@ -188,28 +186,109 @@ export default function FleetElectrificationPage() {
     ownershipYears,
   ]);
 
-  const formatBreakeven = (years: number): string => {
-    if (years <= 0) return "Immediate";
-    if (!isFinite(years)) return "N/A";
-    const wholeYears = Math.floor(years);
-    const months = Math.round((years - wholeYears) * 12);
-    if (wholeYears === 0) return `${months} month${months !== 1 ? "s" : ""}`;
-    if (months === 0)
-      return `${wholeYears} year${wholeYears !== 1 ? "s" : ""}`;
-    return `${wholeYears}y ${months}m`;
-  };
+  const breakevenDisplay = !isFinite(results.breakevenMonths)
+    ? 0
+    : Math.round(results.breakevenMonths);
+  const breakevenUnit = !isFinite(results.breakevenMonths)
+    ? " never"
+    : results.breakevenMonths === 0
+      ? " day 1"
+      : " months";
 
-  // TCO comparison bar calculations
-  const maxTCO = Math.max(results.gasTCO, results.evTCO);
-  const gasTCOPct = maxTCO > 0 ? (results.gasTCO / maxTCO) * 100 : 0;
-  const evTCOPct = maxTCO > 0 ? (results.evTCO / maxTCO) * 100 : 0;
+  const inputs = (
+    <div className="grid gap-4 sm:grid-cols-3">
+      <SliderInput
+        label="Fleet size"
+        value={fleetSize}
+        onChange={setFleetSize}
+        min={2}
+        max={100}
+        step={1}
+        unit="vehicles"
+        showValue
+      />
+      <SliderInput
+        label="Daily miles per vehicle"
+        value={dailyMiles}
+        onChange={setDailyMiles}
+        min={20}
+        max={200}
+        step={5}
+        unit="mi"
+        showValue
+      />
+      <NumberInput
+        label="Current fleet MPG"
+        value={gasMpg}
+        onChange={setGasMpg}
+        min={8}
+        max={50}
+        step={1}
+        unit="MPG"
+        helpText="Average fuel economy of your current fleet"
+      />
+    </div>
+  );
+
+  const hero = (
+    <SavingsVerdict
+      headline="FLEET SAVES"
+      amount={Math.max(0, results.annualTotalSavings)}
+      amountUnit="/year"
+      sub={
+        <>
+          Across {fleetSize} vehicles on fuel plus maintenance. Over {ownershipYears} years that totals ${Math.max(0, Math.round(results.totalSavings)).toLocaleString()} versus a gas fleet.
+        </>
+      }
+      dialPercent={Math.round(results.fuelCutPercent)}
+      dialLabel="FUEL CUT"
+    >
+      <SavingsTile
+        label="ANNUAL SAVINGS"
+        value={Math.max(0, results.annualTotalSavings)}
+        prefix="$"
+        decimals={0}
+        unit="/yr"
+        tier="good"
+        animate
+      />
+      <SavingsTile
+        label="PER VEHICLE"
+        value={Math.max(0, results.perVehicleAnnual)}
+        prefix="$"
+        decimals={0}
+        unit="/yr"
+        tier="brand"
+        animate
+      />
+      <SavingsTile
+        label="TCO DELTA"
+        value={Math.max(0, results.tcoDeltaPerVehicle)}
+        prefix="$"
+        decimals={0}
+        unit="/veh"
+        tier="volt"
+        animate
+      />
+      <SavingsTile
+        label="BREAK-EVEN MONTH"
+        value={breakevenDisplay}
+        prefix=""
+        decimals={0}
+        unit={breakevenUnit}
+        tier={!isFinite(results.breakevenMonths) ? "warn" : "mid"}
+        animate
+      />
+    </SavingsVerdict>
+  );
 
   return (
-    <CalculatorLayout
+    <CalculatorShell
+      eyebrow="Fleet electrification"
       title="Fleet Electrification Calculator"
-      description="Estimate the total cost of switching your business vehicle fleet from gas to electric. Compare fuel, maintenance, and total cost of ownership."
-      intro="Switching a fleet to EVs involves higher upfront vehicle costs but significantly lower fuel and maintenance expenses. Most commercial fleets see a 2-4 year payback on the EV price premium, with 30-50% lower total cost of ownership over a 7-year period. This calculator helps you model the numbers for your specific fleet."
-      lastUpdated="March 2026"
+      quickAnswer="Commercial fleets typically see a 2 to 4 year payback on EV price premium and 30 to 50 percent lower TCO over 7 years."
+      inputs={inputs}
+      hero={hero}
     >
       <CalculatorSchema
         name="Fleet Electrification Calculator"
@@ -226,120 +305,43 @@ export default function FleetElectrificationPage() {
         ]}
       />
 
-      {/* Inputs */}
-      <div className="grid gap-6 sm:grid-cols-2">
-        <div className="sm:col-span-2">
-          <SliderInput
-            label="Fleet Size"
-            value={fleetSize}
-            onChange={setFleetSize}
-            min={2}
-            max={100}
+      {/* Advanced inputs (collapsed by default) */}
+      <details className="mb-6 rounded-2xl border border-[var(--color-border)] bg-white p-4 sm:p-5">
+        <summary className="cursor-pointer select-none text-sm font-semibold text-[var(--color-ink)]">
+          Advanced inputs
+        </summary>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <NumberInput
+            label="Gas price"
+            value={gasPrice}
+            onChange={setGasPrice}
+            min={1}
+            max={8}
+            step={0.1}
+            unit="$/gallon"
+          />
+          <NumberInput
+            label="EV efficiency"
+            value={evEfficiency}
+            onChange={setEvEfficiency}
+            min={15}
+            max={60}
             step={1}
-            unit="vehicles"
-            showValue
+            unit="kWh/100mi"
+            helpText="30 for sedans, 40 to 50 for vans"
           />
-        </div>
-
-        <div className="sm:col-span-2">
-          <SliderInput
-            label="Average Daily Miles per Vehicle"
-            value={dailyMiles}
-            onChange={setDailyMiles}
-            min={20}
-            max={200}
-            step={5}
-            unit="miles"
-            showValue
+          <NumberInput
+            label="Electricity rate"
+            value={electricityRate}
+            onChange={setElectricityRate}
+            min={5}
+            max={50}
+            step={1}
+            unit="cents/kWh"
+            helpText="Your commercial rate"
           />
-        </div>
-
-        <NumberInput
-          label="Current Fleet MPG"
-          value={gasMpg}
-          onChange={setGasMpg}
-          min={8}
-          max={50}
-          step={1}
-          unit="MPG"
-          helpText="Average fuel economy of your current gas/diesel fleet"
-        />
-
-        <NumberInput
-          label="Gas Price"
-          value={gasPrice}
-          onChange={setGasPrice}
-          min={1}
-          max={8}
-          step={0.1}
-          unit="$/gallon"
-        />
-
-        <NumberInput
-          label="EV Efficiency"
-          value={evEfficiency}
-          onChange={setEvEfficiency}
-          min={15}
-          max={60}
-          step={1}
-          unit="kWh/100mi"
-          helpText="30 kWh/100mi is typical for sedans; vans use 40-50"
-        />
-
-        <NumberInput
-          label="Electricity Rate"
-          value={electricityRate}
-          onChange={setElectricityRate}
-          min={5}
-          max={50}
-          step={1}
-          unit="cents/kWh"
-          helpText="Your commercial electricity rate"
-        />
-
-        <NumberInput
-          label="EV Purchase Price (per vehicle)"
-          value={evPrice}
-          onChange={setEvPrice}
-          min={20000}
-          max={150000}
-          step={1000}
-          unit="$"
-        />
-
-        <NumberInput
-          label="Gas Vehicle Price (per vehicle)"
-          value={gasVehiclePrice}
-          onChange={setGasVehiclePrice}
-          min={15000}
-          max={120000}
-          step={1000}
-          unit="$"
-        />
-
-        <NumberInput
-          label="Annual Maintenance (Gas Vehicle)"
-          value={gasMaintenanceAnnual}
-          onChange={setGasMaintenanceAnnual}
-          min={200}
-          max={5000}
-          step={100}
-          unit="$/year"
-        />
-
-        <NumberInput
-          label="Annual Maintenance (EV)"
-          value={evMaintenanceAnnual}
-          onChange={setEvMaintenanceAnnual}
-          min={100}
-          max={3000}
-          step={50}
-          unit="$/year"
-        />
-
-        <div className="sm:col-span-2">
           <SliderInput
-            label="Ownership Period"
+            label="Ownership period"
             value={ownershipYears}
             onChange={setOwnershipYears}
             min={3}
@@ -348,182 +350,111 @@ export default function FleetElectrificationPage() {
             unit="years"
             showValue
           />
-        </div>
-      </div>
-
-      {/* Results */}
-      <div className="mt-10">
-        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
-          Fleet Electrification Results
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <ResultCard
-            label="Annual Fuel Savings"
-            value={fmtShort.format(results.annualFuelSavings)}
-            unit="/year"
-            icon="⛽"
+          <NumberInput
+            label="EV purchase price (per vehicle)"
+            value={evPrice}
+            onChange={setEvPrice}
+            min={20000}
+            max={150000}
+            step={1000}
+            unit="$"
           />
-          <ResultCard
-            label="Annual Maintenance Savings"
-            value={fmtShort.format(results.annualMaintenanceSavings)}
-            unit="/year"
-            icon="🔧"
+          <NumberInput
+            label="Gas vehicle price (per vehicle)"
+            value={gasVehiclePrice}
+            onChange={setGasVehiclePrice}
+            min={15000}
+            max={120000}
+            step={1000}
+            unit="$"
           />
-          <ResultCard
-            label={`Total Fleet Savings (${ownershipYears}yr)`}
-            value={fmtShort.format(results.totalSavings)}
-            unit="over gas fleet"
-            highlight
-            icon="💰"
+          <NumberInput
+            label="Annual maintenance (gas vehicle)"
+            value={gasMaintenanceAnnual}
+            onChange={setGasMaintenanceAnnual}
+            min={200}
+            max={5000}
+            step={100}
+            unit="$/year"
           />
-          <ResultCard
-            label="Breakeven Year"
-            value={formatBreakeven(results.breakevenYear)}
-            unit=""
-            highlight
-            icon="📅"
-          />
-          <ResultCard
-            label="CO2 Reduced Annually"
-            value={`${fmtNumber.format(Math.round(results.annualCO2ReductionTons))}`}
-            unit="tons/year"
-            icon="🌱"
-          />
-          <ResultCard
-            label="Purchase Price Premium"
-            value={fmtShort.format(results.purchaseCostDifference)}
-            unit="total fleet"
-            icon="🏷️"
+          <NumberInput
+            label="Annual maintenance (EV)"
+            value={evMaintenanceAnnual}
+            onChange={setEvMaintenanceAnnual}
+            min={100}
+            max={3000}
+            step={50}
+            unit="$/year"
           />
         </div>
+      </details>
 
-        {/* TCO Comparison */}
-        <div className="mt-8 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-5">
-          <h3 className="mb-4 text-sm font-semibold text-[var(--color-text)]">
-            {ownershipYears}-Year Total Cost of Ownership
-          </h3>
-
-          {/* Gas Fleet Bar */}
-          <div className="mb-4">
-            <div className="mb-1 flex items-center justify-between text-sm">
-              <span className="font-medium text-[var(--color-text)]">
-                Gas Fleet
-              </span>
-              <span className="font-semibold text-[var(--color-text-muted)]">
-                {fmtShort.format(results.gasTCO)}
-              </span>
-            </div>
-            <div className="h-6 w-full overflow-hidden rounded-full bg-[var(--color-border)]">
-              <div
-                className="h-full rounded-full bg-red-400/70 transition-all duration-500"
-                style={{ width: `${gasTCOPct}%` }}
-              />
-            </div>
-          </div>
-
-          {/* EV Fleet Bar */}
-          <div className="mb-4">
-            <div className="mb-1 flex items-center justify-between text-sm">
-              <span className="font-medium text-[var(--color-text)]">
-                EV Fleet
-              </span>
-              <span className="font-semibold text-[var(--color-ev-green)]">
-                {fmtShort.format(results.evTCO)}
-              </span>
-            </div>
-            <div className="h-6 w-full overflow-hidden rounded-full bg-[var(--color-border)]">
-              <div
-                className="h-full rounded-full bg-[var(--color-ev-green)] transition-all duration-500"
-                style={{ width: `${evTCOPct}%` }}
-              />
-            </div>
-          </div>
-
-          {/* Summary line */}
-          <div className="mt-3 text-center text-sm">
-            {results.totalSavings > 0 ? (
-              <span className="font-semibold text-[var(--color-ev-green)]">
-                EV fleet saves {fmtShort.format(results.totalSavings)} over{" "}
-                {ownershipYears} years ({fmtShort.format(results.totalSavings / fleetSize)}/vehicle)
-              </span>
-            ) : (
-              <span className="text-[var(--color-text-muted)]">
-                Gas fleet is {fmtShort.format(Math.abs(results.totalSavings))}{" "}
-                cheaper over {ownershipYears} years with current settings.
-                Consider adjusting fuel prices or ownership period.
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Annual Cost Breakdown */}
-        <div className="mt-6 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-5">
-          <h3 className="mb-3 text-sm font-semibold text-[var(--color-text)]">
-            Annual Fleet Operating Costs
-          </h3>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-[var(--color-border)] text-left text-[var(--color-text-muted)]">
-                  <th className="pb-2 font-medium">Category</th>
-                  <th className="pb-2 text-right font-medium">Gas Fleet</th>
-                  <th className="pb-2 text-right font-medium">EV Fleet</th>
-                  <th className="pb-2 text-right font-medium">Savings</th>
-                </tr>
-              </thead>
-              <tbody className="text-[var(--color-text)]">
-                <tr className="border-b border-[var(--color-border)]/50">
-                  <td className="py-2">Fuel / Electricity</td>
-                  <td className="py-2 text-right">
-                    {fmtShort.format(results.annualGasFuelFleet)}
-                  </td>
-                  <td className="py-2 text-right">
-                    {fmtShort.format(results.annualEvFuelFleet)}
-                  </td>
-                  <td className="py-2 text-right font-semibold text-[var(--color-ev-green)]">
-                    {fmtShort.format(results.annualFuelSavings)}
-                  </td>
-                </tr>
-                <tr className="border-b border-[var(--color-border)]/50">
-                  <td className="py-2">Maintenance</td>
-                  <td className="py-2 text-right">
-                    {fmtShort.format(gasMaintenanceAnnual * fleetSize)}
-                  </td>
-                  <td className="py-2 text-right">
-                    {fmtShort.format(evMaintenanceAnnual * fleetSize)}
-                  </td>
-                  <td className="py-2 text-right font-semibold text-[var(--color-ev-green)]">
-                    {fmtShort.format(results.annualMaintenanceSavings)}
-                  </td>
-                </tr>
-                <tr>
-                  <td className="pt-2 font-semibold">Total Annual</td>
-                  <td className="pt-2 text-right font-semibold">
-                    {fmtShort.format(
-                      results.annualGasFuelFleet +
-                        gasMaintenanceAnnual * fleetSize
-                    )}
-                  </td>
-                  <td className="pt-2 text-right font-semibold">
-                    {fmtShort.format(
-                      results.annualEvFuelFleet +
-                        evMaintenanceAnnual * fleetSize
-                    )}
-                  </td>
-                  <td className="pt-2 text-right font-bold text-[var(--color-ev-green)]">
-                    {fmtShort.format(results.annualTotalSavings)}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <ShareResults
-        title={`Fleet EV Savings: ${fmtShort.format(results.totalSavings)} over ${ownershipYears} years`}
-        text={`Switching ${fleetSize} vehicles to EV saves ${fmtShort.format(results.annualFuelSavings)}/year in fuel and ${fmtShort.format(results.annualMaintenanceSavings)}/year in maintenance. Breakeven in ${formatBreakeven(results.breakevenYear)}. Total ${ownershipYears}-year savings: ${fmtShort.format(results.totalSavings)}. CO2 reduced: ${fmtNumber.format(Math.round(results.annualCO2ReductionTons))} tons/year.`}
+      {/* Signature split-column live meter: fleet gas vs fleet EV annual operating cost */}
+      <SavingsMeter
+        leftLabel="FLEET GAS"
+        leftValue={results.annualGasFuelFleet + gasMaintenanceAnnual * fleetSize}
+        rightLabel="FLEET EV"
+        rightValue={results.annualEvFuelFleet + evMaintenanceAnnual * fleetSize}
       />
+
+      <h2 className="cm-eyebrow mt-8 mb-3">Fleet impact</h2>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <SavingsTile
+          label="FUEL SAVINGS"
+          value={Math.max(0, results.annualFuelSavings)}
+          prefix="$"
+          decimals={0}
+          unit="/yr"
+          tier="good"
+        />
+        <SavingsTile
+          label="MAINT SAVINGS"
+          value={Math.max(0, results.annualMaintenanceSavings)}
+          prefix="$"
+          decimals={0}
+          unit="/yr"
+          tier="brand"
+        />
+        <SavingsTile
+          label={`${ownershipYears} YEAR TOTAL`}
+          value={Math.max(0, results.totalSavings)}
+          prefix="$"
+          decimals={0}
+          unit=" saved"
+          tier="volt"
+          animate
+        />
+        <SavingsTile
+          label="CO2 CUT"
+          value={Math.round(results.annualCO2ReductionTons)}
+          prefix=""
+          decimals={0}
+          unit=" tons/yr"
+          tier="good"
+        />
+      </div>
+
+      {/* Contextual cross-links */}
+      <div className="mt-8 flex flex-wrap gap-3 text-sm">
+        <Link
+          href="/total-cost"
+          className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
+        >
+          Per-vehicle total cost of ownership
+        </Link>
+        <Link
+          href="/gas-vs-electric"
+          className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
+        >
+          Side by side fuel cost comparison
+        </Link>
+        <Link
+          href="/charger-roi"
+          className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
+        >
+          Home and depot charger ROI
+        </Link>
+      </div>
 
       <EducationalContent>
         <h2>Understanding Fleet Electrification Economics</h2>
@@ -532,17 +463,17 @@ export default function FleetElectrificationPage() {
         </p>
         <h3>Fuel Cost Advantage</h3>
         <p>
-          Electricity costs roughly $0.04-0.06 per mile for a typical EV, compared to $0.12-0.20 per mile for a gas vehicle at $3.50/gallon. For a 10-vehicle fleet driving 80 miles/day each, that difference adds up to $15,000-25,000 in annual fuel savings alone. Commercial electricity rates are often lower than residential rates, and many utilities offer special EV fleet charging programs with off-peak discounts.
+          Electricity costs roughly $0.04 to $0.06 per mile for a typical EV, compared to $0.12 to $0.20 per mile for a gas vehicle at $3.50 per gallon. For a 10-vehicle fleet driving 80 miles per day each, that difference adds up to $15,000 to $25,000 in annual fuel savings alone. Commercial electricity rates are often lower than residential rates, and many utilities offer special EV fleet charging programs with off-peak discounts.
         </p>
         <h3>Maintenance Savings Add Up</h3>
         <p>
-          EVs have roughly 60% fewer moving parts than gas vehicles. No oil changes, no transmission fluid, no spark plugs, no exhaust system repairs. Regenerative braking extends brake pad life by 2-3x. Fleet managers typically report 40-60% lower maintenance costs per vehicle after switching to EVs, which for a 10-vehicle fleet means $6,000-10,000 in annual savings.
+          EVs have roughly 60 percent fewer moving parts than gas vehicles. No oil changes, no transmission fluid, no spark plugs, no exhaust system repairs. Regenerative braking extends brake pad life by 2 to 3 times. Fleet managers typically report 40 to 60 percent lower maintenance costs per vehicle after switching to EVs, which for a 10-vehicle fleet means $6,000 to $10,000 in annual savings.
         </p>
         <h3>Key Considerations for Fleet Managers</h3>
         <ul>
-          <li>Charging infrastructure is the biggest upfront cost beyond vehicles. Budget $2,000-5,000 per Level 2 charging station plus electrical panel upgrades if needed.</li>
-          <li>Route planning matters: EVs with 250+ mile range cover most fleet use cases, but vehicles running 200+ miles/day may need midday charging or DC fast chargers.</li>
-          <li>Resale values for fleet EVs are still developing. Battery degradation is minimal for modern EVs (typically 85-90% capacity after 200,000 miles), which supports strong residual values.</li>
+          <li>Charging infrastructure is the biggest upfront cost beyond vehicles. Budget $2,000 to $5,000 per Level 2 charging station plus electrical panel upgrades if needed.</li>
+          <li>Route planning matters. EVs with 250+ mile range cover most fleet use cases, but vehicles running 200+ miles per day may need midday charging or DC fast chargers.</li>
+          <li>Resale values for fleet EVs are still developing. Battery degradation is minimal for modern EVs (typically 85 to 90 percent capacity after 200,000 miles), which supports strong residual values.</li>
           <li>Federal tax credits (Section 45W) can offset $7,500 per light-duty vehicle with no manufacturer cap for commercial buyers, significantly reducing the purchase premium.</li>
           <li>Driver training is minimal since EVs are simpler to operate, but fleet managers should train staff on charging procedures and range management.</li>
         </ul>
@@ -551,6 +482,6 @@ export default function FleetElectrificationPage() {
       <FAQSection questions={fleetFAQ} />
       <EmailCapture source="fleet" />
       <RelatedCalculators currentPath="/fleet" />
-    </CalculatorLayout>
+    </CalculatorShell>
   );
 }

@@ -2,15 +2,15 @@
 
 import { useState, useMemo, useCallback } from "react";
 import Link from "next/link";
-import CalculatorLayout from "@/components/CalculatorLayout";
+import CalculatorShell from "@/components/CalculatorShell";
+import SavingsVerdict from "@/components/SavingsVerdict";
+import SavingsTile from "@/components/SavingsTile";
 import SelectInput from "@/components/SelectInput";
 import SliderInput from "@/components/SliderInput";
-import ResultCard from "@/components/ResultCard";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import FAQSection from "@/components/FAQSection";
-import ShareResults from "@/components/ShareResults";
 import EducationalContent from "@/components/EducationalContent";
 import EmailCapture from "@/components/EmailCapture";
 import { useUrlSync } from "@/lib/useUrlState";
@@ -27,7 +27,7 @@ const TERRAIN_OPTIONS: { value: Terrain; label: string }[] = [
 
 const HEADWIND_OPTIONS: { value: Headwind; label: string }[] = [
   { value: "none", label: "None" },
-  { value: "light", label: "Light (10-20 mph)" },
+  { value: "light", label: "Light (10 to 20 mph)" },
   { value: "strong", label: "Strong (20+ mph)" },
 ];
 
@@ -47,7 +47,7 @@ const TOWING_FAQ = [
   {
     question: "How much range does towing reduce on an EV?",
     answer:
-      "Towing typically reduces EV range by 30-50%, depending on the weight of the trailer, your speed, terrain, and wind conditions. A 3,000 lb trailer at highway speeds on flat roads will reduce range by roughly 20-30%. Add hills or headwind and reductions can reach 50-60%.",
+      "Towing typically reduces EV range by 30 to 50 percent, depending on the weight of the trailer, your speed, terrain, and wind conditions. A 3,000 lb trailer at highway speeds on flat roads will reduce range by roughly 20 to 30 percent. Add hills or headwind and reductions can reach 50 to 60 percent.",
   },
   {
     question: "What is the maximum tow rating for most EVs?",
@@ -57,12 +57,12 @@ const TOWING_FAQ = [
   {
     question: "Why does speed matter so much when towing with an EV?",
     answer:
-      "Aerodynamic drag increases with the square of your speed, and a trailer significantly increases your vehicle's frontal area and drag coefficient. Above 55 mph, every additional mile per hour costs disproportionately more energy. Slowing from 70 to 55 mph while towing can recover 15-25% of your range.",
+      "Aerodynamic drag increases with the square of your speed, and a trailer significantly increases your vehicle's frontal area and drag coefficient. Above 55 mph, every additional mile per hour costs disproportionately more energy. Slowing from 70 to 55 mph while towing can recover 15 to 25 percent of your range.",
   },
   {
     question: "How should I plan charging stops when towing?",
     answer:
-      "Plan to charge more frequently than you would without a trailer. Use the 80% rule: only count on 80% of your estimated towing range between stops to account for elevation changes, detours, and battery degradation. Apps like A Better Route Planner (ABRP) let you input your trailer weight for more accurate stop planning.",
+      "Plan to charge more frequently than you would without a trailer. Use the 80 percent rule: only count on 80 percent of your estimated towing range between stops to account for elevation changes, detours, and battery degradation. Apps like A Better Route Planner (ABRP) let you input your trailer weight for more accurate stop planning.",
   },
   {
     question: "Does regenerative braking help when towing?",
@@ -128,13 +128,6 @@ export default function TowingRangePage() {
       totalReductionPercent,
       safeTowDistance,
       chargingStops: Math.max(0, chargingStops),
-      // Breakdown for the bar chart
-      breakdown: {
-        weight: weightReduction,
-        speed: speedReduction,
-        terrain: terrainReduction,
-        wind: windReduction,
-      },
     };
   }, [vehicle, towWeight, speed, terrain, headwind]);
 
@@ -143,22 +136,95 @@ export default function TowingRangePage() {
     label: `${v.year} ${v.make} ${v.model}`,
   }));
 
-  // Impact breakdown for visualization
-  const impactBreakdown = [
-    { label: "Trailer Weight", value: results.breakdown.weight, color: "#ef4444" },
-    { label: "Speed", value: results.breakdown.speed, color: "#3b82f6" },
-    { label: "Terrain", value: results.breakdown.terrain, color: "#8b5cf6" },
-    { label: "Headwind", value: results.breakdown.wind, color: "#f59e0b" },
-  ].filter((f) => f.value > 0);
+  const percentRetained = Math.max(0, 100 - results.totalReductionPercent);
 
-  const totalBreakdown = impactBreakdown.reduce((sum, f) => sum + f.value, 0);
+  const inputs = (
+    <div className="grid gap-4 sm:grid-cols-3">
+      <SelectInput
+        label="Your EV"
+        value={vehicleId}
+        onChange={setVehicleId}
+        options={vehicleOptions}
+        helpText={`${vehicle.epaRangeMiles} mi EPA range`}
+      />
+      <SliderInput
+        label="Trailer weight"
+        value={towWeight}
+        onChange={setTowWeight}
+        min={500}
+        max={10000}
+        step={100}
+        unit="lbs"
+        showValue
+      />
+      <SliderInput
+        label="Average speed"
+        value={speed}
+        onChange={setSpeed}
+        min={40}
+        max={80}
+        step={1}
+        unit="mph"
+        showValue
+      />
+    </div>
+  );
+
+  const hero = (
+    <SavingsVerdict
+      eyebrow="Trailer range"
+      headline="TOWING RANGE"
+      amount={Math.round(results.towingRange)}
+      amountPrefix=""
+      amountDecimals={0}
+      amountUnit=" miles"
+      sub={`With a ${towWeight.toLocaleString()} lb trailer at ${speed} mph versus ${Math.round(results.epaRange)} miles EPA. Safe distance between charges: ${Math.round(results.safeTowDistance)} miles.`}
+      dialPercent={Math.max(0, Math.min(100, Math.round(percentRetained)))}
+      dialLabel="OF EPA"
+      morphHero={false}
+    >
+      <SavingsTile
+        label="TOWING RANGE"
+        value={Math.round(results.towingRange)}
+        prefix=""
+        decimals={0}
+        unit=" mi"
+        tier="brand"
+      />
+      <SavingsTile
+        label="EPA RATING"
+        value={Math.round(results.epaRange)}
+        prefix=""
+        decimals={0}
+        unit=" mi"
+        tier="mid"
+      />
+      <SavingsTile
+        label="DRAG PENALTY"
+        value={Math.round(results.totalReductionPercent)}
+        prefix=""
+        decimals={0}
+        unit="% lost"
+        tier="warn"
+      />
+      <SavingsTile
+        label="STOPS (300 MI)"
+        value={results.chargingStops}
+        prefix=""
+        decimals={0}
+        unit={results.chargingStops === 1 ? " stop" : " stops"}
+        tier="volt"
+      />
+    </SavingsVerdict>
+  );
 
   return (
-    <CalculatorLayout
+    <CalculatorShell
+      eyebrow="Trailer range"
       title="EV Towing Range Calculator"
-      description="Estimate how towing a trailer or heavy load affects your electric vehicle's driving range based on weight, speed, terrain, and wind."
-      lastUpdated="March 2026"
-      intro="Towing with an EV can cut your range by 30-60% depending on conditions. Trailer weight is the biggest factor, but highway speed, hills, and headwinds all stack up fast. This calculator helps you plan realistic charging stops and avoid getting stranded."
+      quickAnswer="Towing with an EV typically cuts range by 30 to 60 percent. Weight, highway speed, hills, and headwind all stack up fast."
+      inputs={inputs}
+      hero={hero}
     >
       <CalculatorSchema
         name="EV Towing Range Calculator"
@@ -172,199 +238,48 @@ export default function TowingRangePage() {
         ]}
       />
 
-      {/* Inputs */}
-      <div className="grid gap-6 sm:grid-cols-2">
-        <SelectInput
-          label="Select Your EV"
-          value={vehicleId}
-          onChange={setVehicleId}
-          options={vehicleOptions}
-          helpText={`${vehicle.batteryCapacityKwh} kWh battery • ${vehicle.epaRangeMiles} mi EPA range`}
-        />
-
-        <SliderInput
-          label="Trailer / Load Weight"
-          value={towWeight}
-          onChange={setTowWeight}
-          min={500}
-          max={10000}
-          step={100}
-          unit="lbs"
-          showValue
-        />
-
-        <SliderInput
-          label="Average Speed"
-          value={speed}
-          onChange={setSpeed}
-          min={40}
-          max={80}
-          step={1}
-          unit="mph"
-          showValue
-        />
-
-        <SelectInput
-          label="Terrain"
-          value={terrain}
-          onChange={(v) => setTerrain(v as Terrain)}
-          options={TERRAIN_OPTIONS}
-        />
-
-        <SelectInput
-          label="Headwind"
-          value={headwind}
-          onChange={(v) => setHeadwind(v as Headwind)}
-          options={HEADWIND_OPTIONS}
-        />
-      </div>
-
-      {/* Results */}
-      <div className="mt-10">
-        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
-          Towing Range Estimates
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <ResultCard
-            label="Estimated Towing Range"
-            value={Math.round(results.towingRange).toLocaleString()}
-            unit="miles"
-            highlight
-            icon="🚛"
+      {/* Advanced inputs (collapsed by default) */}
+      <details className="mb-6 rounded-2xl border border-[var(--color-border)] bg-white p-4 sm:p-5">
+        <summary className="cursor-pointer select-none text-sm font-semibold text-[var(--color-ink)]">
+          Advanced inputs
+        </summary>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <SelectInput
+            label="Terrain"
+            value={terrain}
+            onChange={(v) => setTerrain(v as Terrain)}
+            options={TERRAIN_OPTIONS}
           />
-          <ResultCard
-            label="Range Reduction"
-            value={results.totalReductionPercent.toFixed(1)}
-            unit="%"
-            icon="📉"
-          />
-          <ResultCard
-            label="Safe Towing Distance"
-            value={Math.round(results.safeTowDistance).toLocaleString()}
-            unit="miles"
-            icon="🛡️"
-          />
-          <ResultCard
-            label="Charging Stops (300 mi trip)"
-            value={results.chargingStops.toString()}
-            unit="stops"
-            icon="⚡"
+          <SelectInput
+            label="Headwind"
+            value={headwind}
+            onChange={(v) => setHeadwind(v as Headwind)}
+            options={HEADWIND_OPTIONS}
           />
         </div>
-      </div>
+      </details>
 
-      {/* Additional detail cards */}
-      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <ResultCard
-          label="EPA Range (no towing)"
-          value={results.epaRange.toLocaleString()}
-          unit="miles"
-          icon="📋"
-        />
-        <ResultCard
-          label="Miles Lost to Towing"
-          value={Math.round(results.milesLost).toLocaleString()}
-          unit="miles"
-          icon="🗺️"
-        />
-      </div>
-
-      {/* Reduction Breakdown */}
-      <div className="mt-10">
-        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
-          Range Reduction Breakdown
-        </h2>
-        <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-5">
-          {/* Stacked bar */}
-          {totalBreakdown > 0 && (
-            <div className="mb-5">
-              <div className="flex h-8 w-full overflow-hidden rounded-full">
-                {impactBreakdown.map((f) => (
-                  <div
-                    key={f.label}
-                    className="h-full transition-all duration-500"
-                    style={{
-                      width: `${(f.value / totalBreakdown) * 100}%`,
-                      backgroundColor: f.color,
-                      minWidth: "4px",
-                    }}
-                    title={`${f.label}: ${f.value.toFixed(1)}%`}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Factor rows */}
-          <div className="space-y-3">
-            {impactBreakdown.map((f) => (
-              <div key={f.label} className="flex items-center gap-3">
-                <div
-                  className="h-3 w-3 flex-shrink-0 rounded-full"
-                  style={{ backgroundColor: f.color }}
-                />
-                <span className="min-w-[140px] text-sm font-medium text-[var(--color-text)]">
-                  {f.label}
-                </span>
-                <div className="flex-1">
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--color-border)]">
-                    <div
-                      className="h-full rounded-full transition-all duration-500"
-                      style={{
-                        width: `${(f.value / 70) * 100}%`,
-                        backgroundColor: f.color,
-                      }}
-                    />
-                  </div>
-                </div>
-                <span className="min-w-[60px] text-right text-sm font-semibold text-[var(--color-text)]">
-                  {f.value.toFixed(1)}%
-                </span>
-              </div>
-            ))}
-          </div>
-
-          {/* Total */}
-          <div className="mt-4 flex items-center justify-between border-t border-[var(--color-border)] pt-3">
-            <span className="text-sm font-semibold text-[var(--color-text)]">
-              Total Range Reduction
-            </span>
-            <span className="text-lg font-bold text-[var(--color-text)]">
-              {results.totalReductionPercent.toFixed(1)}%
-              {results.totalReductionPercent >= 70 && (
-                <span className="ml-2 text-xs font-normal text-[#ef4444]">(capped at 70%)</span>
-              )}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Contextual Cross-Links */}
-      <div className="mt-6 flex flex-wrap gap-3 text-sm">
+      {/* Contextual cross-links */}
+      <div className="mt-2 mb-8 flex flex-wrap gap-3 text-sm">
         <Link
           href="/range"
-          className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5"
+          className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
         >
-          Full range calculator (all conditions) →
+          Full range calculator (all conditions)
         </Link>
         <Link
           href="/ev-charging-cost"
-          className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5"
+          className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
         >
-          Calculate charging cost for your trip →
+          Calculate charging cost for your trip
         </Link>
         <Link
           href="/charging-time"
-          className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5"
+          className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
         >
-          Estimate charging time per stop →
+          Estimate charging time per stop
         </Link>
       </div>
-
-      <ShareResults
-        title={`Towing Range: ${Math.round(results.towingRange)} miles`}
-        text={`My ${vehicle.year} ${vehicle.make} ${vehicle.model} towing ${towWeight.toLocaleString()} lbs at ${speed} mph: ${Math.round(results.towingRange)} miles range (${results.totalReductionPercent.toFixed(0)}% reduction from ${results.epaRange} mi EPA). Safe distance between charges: ${Math.round(results.safeTowDistance)} miles.`}
-      />
 
       <EducationalContent>
         <h2>EV Towing: What You Need to Know</h2>
@@ -373,26 +288,26 @@ export default function TowingRangePage() {
         </p>
         <h3>Why Towing Kills EV Range</h3>
         <p>
-          Two forces work against you when towing: rolling resistance (proportional to weight) and aerodynamic drag (proportional to speed squared and frontal area). A trailer adds both weight and wind resistance, creating a compounding effect. At 65 mph with a 5,000 lb trailer, you can expect roughly 40-50% less range than the EPA rating.
+          Two forces work against you when towing: rolling resistance (proportional to weight) and aerodynamic drag (proportional to speed squared and frontal area). A trailer adds both weight and wind resistance, creating a compounding effect. At 65 mph with a 5,000 lb trailer, you can expect roughly 40 to 50 percent less range than the EPA rating.
         </p>
         <h3>Tips for Maximizing Towing Range</h3>
         <ul>
-          <li>Slow down. Dropping from 70 to 55 mph can recover 15-25% of your towing range. Aerodynamic losses grow exponentially with speed.</li>
-          <li>Use an aerodynamic trailer or add a nose cone. Reducing the trailer&apos;s drag coefficient can improve range by 5-10%.</li>
+          <li>Slow down. Dropping from 70 to 55 mph can recover 15 to 25 percent of your towing range. Aerodynamic losses grow exponentially with speed.</li>
+          <li>Use an aerodynamic trailer or add a nose cone. Reducing the trailer&apos;s drag coefficient can improve range by 5 to 10 percent.</li>
           <li>Keep tires properly inflated on both the vehicle and trailer. Under-inflation increases rolling resistance significantly.</li>
-          <li>Plan charging stops conservatively. Use the 80% rule and always have a backup charger in mind.</li>
+          <li>Plan charging stops conservatively. Use the 80 percent rule and always have a backup charger in mind.</li>
           <li>Pre-condition the cabin before departing while still plugged in. This avoids using battery energy for climate control early in the trip.</li>
           <li>Check your vehicle&apos;s tow rating before loading up. Exceeding the rated capacity damages the drivetrain and voids warranty coverage.</li>
         </ul>
         <h3>Planning a Towing Trip</h3>
         <p>
-          Route planning is critical when towing with an EV. Use apps like A Better Route Planner (ABRP) that let you input trailer weight and get adjusted range estimates. Build in extra time for charging stops. DC fast charging from 10-80% is the most efficient window, so plan stops around that range.
+          Route planning is critical when towing with an EV. Use apps like A Better Route Planner (ABRP) that let you input trailer weight and get adjusted range estimates. Build in extra time for charging stops. DC fast charging from 10 to 80 percent is the most efficient window, so plan stops around that range.
         </p>
       </EducationalContent>
 
       <FAQSection questions={TOWING_FAQ} />
       <EmailCapture source="towing-range" />
       <RelatedCalculators currentPath="/towing-range" />
-    </CalculatorLayout>
+    </CalculatorShell>
   );
 }

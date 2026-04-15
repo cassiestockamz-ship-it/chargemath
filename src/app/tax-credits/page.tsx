@@ -2,14 +2,15 @@
 
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
-import CalculatorLayout from "@/components/CalculatorLayout";
+import CalculatorShell from "@/components/CalculatorShell";
+import SavingsVerdict from "@/components/SavingsVerdict";
+import SavingsTile from "@/components/SavingsTile";
 import SelectInput from "@/components/SelectInput";
 import NumberInput from "@/components/NumberInput";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import FAQSection from "@/components/FAQSection";
-import ShareResults from "@/components/ShareResults";
 import EducationalContent from "@/components/EducationalContent";
 import EmailCapture from "@/components/EmailCapture";
 import { getDefaultStateCode } from "@/lib/useDefaultState";
@@ -44,15 +45,6 @@ const STATUS_LABELS: Record<CreditStatus, string> = {
   over_income: "OVER INCOME",
   over_price: "OVER PRICE",
   na: "N/A",
-};
-
-const STATUS_COLORS: Record<CreditStatus, string> = {
-  eligible: "text-green-600 bg-green-50 border-green-200",
-  expired: "text-red-500 bg-red-50 border-red-200 line-through",
-  check: "text-amber-600 bg-amber-50 border-amber-200",
-  over_income: "text-red-500 bg-red-50 border-red-200",
-  over_price: "text-red-500 bg-red-50 border-red-200",
-  na: "text-gray-400 bg-gray-50 border-gray-200",
 };
 
 export default function TaxCreditsPage() {
@@ -118,7 +110,7 @@ export default function TaxCreditsPage() {
   const credits = useMemo(() => {
     const rows: CreditRow[] = [];
 
-    // Federal new vehicle credit (30D) - expired
+    // Federal new vehicle credit (30D) - expired Sept 30 2025
     if (vehicleType === "new") {
       rows.push({
         name: `Federal ${FEDERAL_CREDITS.newVehicle.name}`,
@@ -162,9 +154,6 @@ export default function TaxCreditsPage() {
     if (stateIncentive && stateIncentive.credits.length > 0) {
       for (const credit of stateIncentive.credits) {
         if (!credit.active) continue;
-
-        // For used vehicle type, only show if notes mention "used"
-        // For simplicity, show all state credits with "CHECK" status
         rows.push({
           name: `State: ${stateIncentive.state} ${credit.name}`,
           amount: 0, // State amounts vary; show as CHECK
@@ -193,18 +182,132 @@ export default function TaxCreditsPage() {
     return rows;
   }, [vehicleType, stateCode, purchasePrice, filingStatus, agi, wantsCharger, chargerCost]);
 
+  // Bucket totals for tiles
+  const federalVehicleCredit = useMemo(() => {
+    return credits
+      .filter((c) => c.status === "eligible" && c.name.startsWith("Federal") && !c.name.toLowerCase().includes("charger"))
+      .reduce((sum, c) => sum + c.amount, 0);
+  }, [credits]);
+
+  const stateCreditCount = useMemo(
+    () => credits.filter((c) => c.name.startsWith("State:")).length,
+    [credits]
+  );
+
+  const chargerCredit = useMemo(() => {
+    return credits
+      .filter((c) => c.status === "eligible" && c.name.toLowerCase().includes("charger"))
+      .reduce((sum, c) => sum + c.amount, 0);
+  }, [credits]);
+
   const totalEstimate = useMemo(() => {
     return credits
       .filter((c) => c.status === "eligible")
       .reduce((sum, c) => sum + c.amount, 0);
   }, [credits]);
 
+  const hasAnyEligible = totalEstimate > 0 || stateCreditCount > 0;
+  const stateName = ELECTRICITY_RATES[stateCode]?.state ?? stateCode;
+
+  const dialPercent =
+    purchasePrice > 0
+      ? Math.max(0, Math.min(100, (totalEstimate / purchasePrice) * 100))
+      : 0;
+
+  const inputs = (
+    <div className="grid gap-4 sm:grid-cols-3">
+      <SelectInput
+        label="Vehicle type"
+        value={vehicleType}
+        onChange={handleVehicleTypeChange}
+        options={vehicleTypeOptions}
+      />
+      <SelectInput
+        label="Your state"
+        value={stateCode}
+        onChange={setStateCode}
+        options={stateOptions}
+      />
+      <NumberInput
+        label="Purchase price"
+        value={purchasePrice}
+        onChange={setPurchasePrice}
+        min={1000}
+        max={200000}
+        step={500}
+        unit="$"
+        helpText={
+          vehicleType === "used"
+            ? "Used EV credit requires price \u2264 $25,000"
+            : undefined
+        }
+      />
+    </div>
+  );
+
+  const hero = (
+    <SavingsVerdict
+      headline={hasAnyEligible ? "YOU MIGHT GET" : "NO CURRENT CREDIT"}
+      amount={totalEstimate}
+      amountUnit={stateCreditCount > 0 ? " + state" : ""}
+      sub={
+        vehicleType === "new" ? (
+          <>
+            The federal Section 30D new EV credit was repealed for vehicles placed in service after September 30, 2025.
+            State and utility programs in {stateName} may still apply.
+            The Section 30C home charger credit remains active through 2032.
+          </>
+        ) : (
+          <>
+            The federal Section 25E used EV credit is still active (30% of price up to $4,000).
+            Eligibility depends on AGI, filing status, and a $25,000 price cap.
+            Check {stateName} state and utility programs for additional savings.
+          </>
+        )
+      }
+      dialPercent={dialPercent}
+      dialLabel="SHARE OF PRICE"
+    >
+      <SavingsTile
+        label="FEDERAL"
+        value={federalVehicleCredit}
+        prefix="$"
+        unit={vehicleType === "new" ? " (30D repealed)" : " (25E used)"}
+        tier={federalVehicleCredit > 0 ? "good" : "warn"}
+        animate
+      />
+      <SavingsTile
+        label="STATE"
+        value={stateCreditCount}
+        unit={stateCreditCount === 1 ? " program" : " programs"}
+        tier={stateCreditCount > 0 ? "brand" : "mid"}
+        animate
+      />
+      <SavingsTile
+        label="UTILITY"
+        value={0}
+        unit=" check local"
+        tier="mid"
+        animate
+      />
+      <SavingsTile
+        label="CHARGER"
+        value={chargerCredit}
+        prefix="$"
+        unit=" (30C)"
+        tier={chargerCredit > 0 ? "volt" : "mid"}
+        animate
+      />
+    </SavingsVerdict>
+  );
+
   return (
-    <CalculatorLayout
+    <CalculatorShell
+      eyebrow="Tax credits"
       title="EV Tax Credit Estimator"
-      description="Estimate your federal and state EV tax credits, rebates, and charger installation incentives."
-      intro="The federal EV tax credit is worth up to $7,500 for new EVs and $4,000 for used EVs in 2024-2026. Eligibility depends on your income, the vehicle's MSRP, and where it was assembled. Many states offer additional rebates of $500-5,000 on top of the federal credit."
-      lastUpdated="March 2026"
+      quickAnswer="The federal new EV credit (30D) was repealed Sept 30 2025. Used EVs (25E, up to $4,000) and home charger installs (30C, up to $1,000) still qualify."
+      inputs={inputs}
+      hero={hero}
     >
       <CalculatorSchema
         name="EV Tax Credit Estimator"
@@ -213,106 +316,73 @@ export default function TaxCreditsPage() {
       />
       <BreadcrumbSchema items={[{name: "Home", url: "https://chargemath.com"}, {name: "EV Tax Credit Estimator", url: "https://chargemath.com/tax-credits"}]} />
 
-      {/* Disclaimer Banner */}
-      <div className="mb-8 rounded-xl border border-amber-300 bg-amber-50 p-4">
+      {/* Post-30D disclaimer banner */}
+      <div className="mb-6 rounded-xl border border-amber-300 bg-amber-50 p-4">
         <p className="text-sm font-medium text-amber-800">
-          Tax credit information changes frequently. This calculator provides
-          estimates only. Consult a tax professional for advice specific to your
-          situation. The federal 30D credit for new EVs expired September 30, 2025.
-          The used EV credit (25E) and charger credit (30C) remain active.
+          The federal Section 30D new EV credit was repealed by the OBBBA for vehicles placed in service after September 30, 2025. If you are buying a 2026 or newer EV, expect $0 from the federal new-vehicle credit. The Section 25E used EV credit (30% up to $4,000) and Section 30C home charger credit (30% up to $1,000, through 2032) remain active. Consult a tax professional for your specific situation.
         </p>
       </div>
 
-      {/* Inputs */}
-      <div className="grid gap-6 sm:grid-cols-2">
-        <SelectInput
-          label="Vehicle Type"
-          value={vehicleType}
-          onChange={handleVehicleTypeChange}
-          options={vehicleTypeOptions}
-        />
-
-        <SelectInput
-          label="Your State"
-          value={stateCode}
-          onChange={setStateCode}
-          options={stateOptions}
-        />
-
-        <NumberInput
-          label="Purchase Price"
-          value={purchasePrice}
-          onChange={setPurchasePrice}
-          min={1000}
-          max={200000}
-          step={500}
-          unit="$"
-          helpText={
-            vehicleType === "used"
-              ? "Used EV credit requires price \u2264 $25,000"
-              : undefined
-          }
-        />
-
-        <SelectInput
-          label="Filing Status"
-          value={filingStatus}
-          onChange={(v) => setFilingStatus(v as FilingStatus)}
-          options={filingStatusOptions}
-        />
-
-        <NumberInput
-          label="Adjusted Gross Income (AGI)"
-          value={agi}
-          onChange={setAgi}
-          min={0}
-          max={1000000}
-          step={1000}
-          unit="$"
-          helpText="Your modified adjusted gross income from your tax return"
-        />
-
-        <SelectInput
-          label="Planning to Install Home Charger?"
-          value={wantsCharger}
-          onChange={setWantsCharger}
-          options={chargerOptions}
-        />
-
-        {wantsCharger === "yes" && (
-          <NumberInput
-            label="Charger + Installation Cost"
-            value={chargerCost}
-            onChange={setChargerCost}
-            min={100}
-            max={10000}
-            step={50}
-            unit="$"
-            helpText="Total cost including equipment and electrician"
+      {/* Advanced inputs */}
+      <details className="group mb-6 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-3">
+        <summary className="cursor-pointer text-sm font-medium text-[var(--color-ink-2)]">
+          Advanced inputs
+        </summary>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <SelectInput
+            label="Filing status"
+            value={filingStatus}
+            onChange={(v) => setFilingStatus(v as FilingStatus)}
+            options={filingStatusOptions}
           />
-        )}
-      </div>
+          <NumberInput
+            label="Adjusted Gross Income (AGI)"
+            value={agi}
+            onChange={setAgi}
+            min={0}
+            max={1000000}
+            step={1000}
+            unit="$"
+            helpText="Your modified adjusted gross income from your tax return"
+          />
+          <SelectInput
+            label="Planning to install home charger?"
+            value={wantsCharger}
+            onChange={setWantsCharger}
+            options={chargerOptions}
+          />
+          {wantsCharger === "yes" && (
+            <NumberInput
+              label="Charger + installation cost"
+              value={chargerCost}
+              onChange={setChargerCost}
+              min={100}
+              max={10000}
+              step={50}
+              unit="$"
+              helpText="Total cost including equipment and electrician"
+            />
+          )}
+        </div>
+      </details>
 
-      {/* Results */}
-      <div className="mt-10">
-        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
-          Your Estimated Credits & Incentives
-        </h2>
-
-        <div className="overflow-x-auto rounded-xl border border-[var(--color-border)]">
+      {/* Credits table */}
+      <div className="mt-6">
+        <h2 className="cm-eyebrow mb-3">Credit breakdown</h2>
+        <div className="overflow-x-auto rounded-2xl border border-[var(--color-border)] bg-white">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-[var(--color-border)] bg-[var(--color-surface-alt)]">
-                <th className="px-4 py-3 text-left font-semibold text-[var(--color-text)]">
+                <th className="px-4 py-3 text-left font-semibold text-[var(--color-ink)]">
                   Credit
                 </th>
-                <th className="px-4 py-3 text-right font-semibold text-[var(--color-text)]">
+                <th className="px-4 py-3 text-right font-semibold text-[var(--color-ink)]">
                   Amount
                 </th>
-                <th className="px-4 py-3 text-center font-semibold text-[var(--color-text)]">
+                <th className="px-4 py-3 text-center font-semibold text-[var(--color-ink)]">
                   Status
                 </th>
-                <th className="hidden px-4 py-3 text-left font-semibold text-[var(--color-text)] md:table-cell">
+                <th className="hidden px-4 py-3 text-left font-semibold text-[var(--color-ink)] md:table-cell">
                   Notes
                 </th>
               </tr>
@@ -323,9 +393,9 @@ export default function TaxCreditsPage() {
                   key={i}
                   className="border-b border-[var(--color-border)] last:border-b-0"
                 >
-                  <td className="px-4 py-3 font-medium text-[var(--color-text)]">
+                  <td className="px-4 py-3 font-medium text-[var(--color-ink)]">
                     {credit.name}
-                    <span className="block text-xs text-[var(--color-text-muted)] md:hidden">
+                    <span className="block text-xs text-[var(--color-ink-3)] md:hidden">
                       {credit.notes}
                     </span>
                   </td>
@@ -335,7 +405,7 @@ export default function TaxCreditsPage() {
                         ? "text-red-400 line-through"
                         : credit.status === "check"
                           ? "text-amber-600"
-                          : "text-[var(--color-text)]"
+                          : "text-[var(--color-ink)]"
                     }`}
                   >
                     {credit.status === "check"
@@ -345,29 +415,26 @@ export default function TaxCreditsPage() {
                         : "$0"}
                   </td>
                   <td className="px-4 py-3 text-center">
-                    <span
-                      className={`inline-block rounded-full border px-2.5 py-0.5 text-xs font-semibold ${STATUS_COLORS[credit.status]}`}
-                    >
+                    <span className="inline-block rounded-full border border-[var(--color-border)] bg-[var(--color-surface-alt)] px-2.5 py-0.5 text-xs font-semibold text-[var(--color-ink-2)]">
                       {STATUS_LABELS[credit.status]}
                     </span>
                   </td>
-                  <td className="hidden px-4 py-3 text-xs text-[var(--color-text-muted)] md:table-cell">
+                  <td className="hidden px-4 py-3 text-xs text-[var(--color-ink-3)] md:table-cell">
                     {credit.notes}
                   </td>
                 </tr>
               ))}
 
-              {/* Total row */}
               <tr className="bg-[var(--color-surface-alt)]">
-                <td className="px-4 py-3 font-bold text-[var(--color-text)]">
-                  Total Estimated Credits
+                <td className="px-4 py-3 font-bold text-[var(--color-ink)]">
+                  Total eligible
                 </td>
-                <td className="px-4 py-3 text-right text-lg font-bold text-[var(--color-ev-green)]">
+                <td className="px-4 py-3 text-right text-lg font-bold text-[var(--color-good-ink)]">
                   {fmt.format(totalEstimate)}
                   {credits.some((c) => c.status === "check") && "+"}
                 </td>
                 <td className="px-4 py-3" />
-                <td className="hidden px-4 py-3 text-xs text-[var(--color-text-muted)] md:table-cell">
+                <td className="hidden px-4 py-3 text-xs text-[var(--color-ink-3)] md:table-cell">
                   {credits.some((c) => c.status === "check") &&
                     "Plus state incentives (amounts vary by eligibility)"}
                 </td>
@@ -375,41 +442,20 @@ export default function TaxCreditsPage() {
             </tbody>
           </table>
         </div>
-
-        {/* Key for status badges */}
-        <div className="mt-4 flex flex-wrap gap-4 text-xs text-[var(--color-text-muted)]">
-          <div className="flex items-center gap-1.5">
-            <span className="inline-block h-2.5 w-2.5 rounded-full bg-green-500" />
-            ELIGIBLE = You likely qualify
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="inline-block h-2.5 w-2.5 rounded-full bg-amber-500" />
-            CHECK = Income/eligibility requirements apply
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="inline-block h-2.5 w-2.5 rounded-full bg-red-500" />
-            EXPIRED / OVER INCOME / OVER PRICE = Not available
-          </div>
-        </div>
       </div>
 
-      {/* Contextual Cross-Links */}
-      <div className="mt-6 flex flex-wrap gap-3 text-sm">
-        <Link href="/gas-vs-electric" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
-          Compare gas vs electric savings →
+      {/* Contextual cross-links */}
+      <div className="mt-8 flex flex-wrap gap-3 text-sm">
+        <Link href="/gas-vs-electric" className="rounded-lg border border-[var(--color-border)] bg-white px-3 py-2 font-medium text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]">
+          Compare gas vs electric savings
         </Link>
-        <Link href="/charger-roi" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
-          Calculate charger ROI →
+        <Link href="/charger-roi" className="rounded-lg border border-[var(--color-border)] bg-white px-3 py-2 font-medium text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]">
+          Calculate charger ROI
         </Link>
-        <Link href="/ev-charging-cost" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
-          Estimate your charging costs →
+        <Link href="/ev-charging-cost" className="rounded-lg border border-[var(--color-border)] bg-white px-3 py-2 font-medium text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]">
+          Estimate your charging costs
         </Link>
       </div>
-
-      <ShareResults
-        title={`EV Tax Credits: ${fmt.format(totalEstimate)}`}
-        text={`I may qualify for ${fmt.format(totalEstimate)} in EV tax credits for a ${vehicleType === "new" ? "new" : "used"} EV in ${ELECTRICITY_RATES[stateCode]?.state ?? stateCode}.${wantsCharger === "yes" ? ` Plus a charger installation credit!` : ""}`}
-      />
 
       <EducationalContent>
         <h2>How EV Tax Credits Work</h2>
@@ -418,7 +464,7 @@ export default function TaxCreditsPage() {
         </p>
         <h3>Current Federal Credit Status (2026)</h3>
         <p>
-          The Section 30D new vehicle credit expired September 30, 2025 and has not been renewed. The Section 25E used vehicle credit remains active: 30% of the purchase price up to $4,000 for qualifying used EVs priced under $25,000. The Section 30C charger installation credit also remains: 30% of equipment and installation costs up to $1,000.
+          The Section 30D new vehicle credit was repealed by the One Big Beautiful Bill Act for vehicles placed in service after September 30, 2025. It has not been renewed. If you bought a new EV in late 2025 or 2026, the federal new-vehicle credit is $0. The Section 25E used vehicle credit remains active: 30% of the purchase price up to $4,000 for qualifying used EVs priced under $25,000, subject to income limits. The Section 30C charger installation credit also remains active through 2032: 30% of equipment and installation costs up to $1,000 for residential installs.
         </p>
         <h3>State Incentives Vary Widely</h3>
         <ul>
@@ -431,6 +477,6 @@ export default function TaxCreditsPage() {
       <FAQSection questions={taxCreditFAQ} />
       <EmailCapture source="tax-credits" />
       <RelatedCalculators currentPath="/tax-credits" />
-    </CalculatorLayout>
+    </CalculatorShell>
   );
 }

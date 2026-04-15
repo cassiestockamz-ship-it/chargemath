@@ -1,33 +1,20 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
-import CalculatorLayout from "@/components/CalculatorLayout";
+import Link from "next/link";
+import CalculatorShell from "@/components/CalculatorShell";
+import SavingsVerdict from "@/components/SavingsVerdict";
+import SavingsTile from "@/components/SavingsTile";
+import SavingsMeter from "@/components/SavingsMeter";
 import NumberInput from "@/components/NumberInput";
 import SliderInput from "@/components/SliderInput";
-import ResultCard from "@/components/ResultCard";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import FAQSection from "@/components/FAQSection";
-import ShareResults from "@/components/ShareResults";
 import EducationalContent from "@/components/EducationalContent";
 import EmailCapture from "@/components/EmailCapture";
-import Link from "next/link";
 import { useUrlSync } from "@/lib/useUrlState";
-
-const fmt = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
-
-const fmtShort = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
 
 const leaseVsBuyFAQ = [
   {
@@ -224,22 +211,110 @@ export default function LeaseVsBuyPage() {
     actualAnnualMiles,
   ]);
 
-  const winnerLabel =
+  const leaseYears = leaseTermMonths / 12;
+  const headline =
     results.winner === "buy"
-      ? "Buying Wins"
+      ? "BUYING SAVES"
       : results.winner === "lease"
-        ? "Leasing Wins"
-        : "It's a Tie";
+        ? "LEASING SAVES"
+        : "IT IS A TIE";
 
-  const winnerIcon =
-    results.winner === "buy" ? "🏆" : results.winner === "lease" ? "🏆" : "🤝";
+  const loserNetCost = Math.max(results.buyNetCost, results.leaseNetCost);
+  const dialPercent =
+    loserNetCost > 0
+      ? Math.max(0, Math.min(100, (results.savings / loserNetCost) * 100))
+      : 0;
+
+  const inputs = (
+    <div className="grid gap-4 sm:grid-cols-3">
+      <NumberInput
+        label="Vehicle MSRP"
+        value={msrp}
+        onChange={setMsrp}
+        min={15000}
+        max={200000}
+        step={1000}
+        unit="$"
+      />
+      <NumberInput
+        label="Lease monthly payment"
+        value={leaseMonthlyPayment}
+        onChange={setLeaseMonthlyPayment}
+        min={100}
+        max={2000}
+        step={25}
+        unit="$"
+      />
+      <SliderInput
+        label="Actual annual miles"
+        value={actualAnnualMiles}
+        onChange={setActualAnnualMiles}
+        min={5000}
+        max={30000}
+        step={1000}
+        unit="mi"
+        showValue
+      />
+    </div>
+  );
+
+  const hero = (
+    <SavingsVerdict
+      headline={headline}
+      amount={results.savings}
+      amountUnit={` over ${leaseYears} yr`}
+      sub={
+        <>
+          Net cost comparison over the {leaseTermMonths}-month lease term on a {`$${msrp.toLocaleString()}`} EV.
+          Buying nets {`$${Math.round(results.buyNetCost).toLocaleString()}`} after equity.
+          Leasing costs {`$${Math.round(results.leaseNetCost).toLocaleString()}`} out of pocket.
+        </>
+      }
+      dialPercent={dialPercent}
+      dialLabel="COST CUT"
+    >
+      <SavingsTile
+        label="LEASE TOTAL"
+        value={results.leaseTotalWithPenalty}
+        prefix="$"
+        unit=" out"
+        tier="warn"
+        animate
+      />
+      <SavingsTile
+        label="BUY TOTAL"
+        value={results.buyTotalOverLeaseTerm}
+        prefix="$"
+        unit=" out"
+        tier="brand"
+        animate
+      />
+      <SavingsTile
+        label="LEASE /MO"
+        value={leaseMonthlyPayment}
+        prefix="$"
+        unit="/mo"
+        tier="mid"
+        animate
+      />
+      <SavingsTile
+        label="BUY /MO"
+        value={results.monthlyLoanPayment}
+        prefix="$"
+        unit="/mo"
+        tier="volt"
+        animate
+      />
+    </SavingsVerdict>
+  );
 
   return (
-    <CalculatorLayout
+    <CalculatorShell
+      eyebrow="Lease vs buy"
       title="Lease vs Buy EV Calculator"
-      description="Compare the true cost of leasing versus buying an electric vehicle over the same time period."
-      intro="Leasing offers lower monthly payments and access to the latest EV technology every few years. Buying costs more upfront but builds equity and typically saves money over the long run. This calculator compares both options side by side, factoring in loan payments, equity buildup, mileage penalties, and depreciation so you can make a confident decision."
-      lastUpdated="March 2026"
+      quickAnswer="Buying usually wins if you drive 12,000+ miles a year or plan to keep the car 5+ years. Leasing wins on low-mileage 2 to 3 year cycles."
+      inputs={inputs}
+      hero={hero}
     >
       <CalculatorSchema
         name="Lease vs Buy EV Calculator"
@@ -253,346 +328,120 @@ export default function LeaseVsBuyPage() {
         ]}
       />
 
-      {/* Inputs */}
-      <div className="grid gap-6 sm:grid-cols-2">
-        <div className="sm:col-span-2">
-          <h3 className="mb-3 text-sm font-semibold text-[var(--color-text-muted)] uppercase tracking-wide">
-            Vehicle & Purchase Details
-          </h3>
-        </div>
-
-        <NumberInput
-          label="Vehicle MSRP"
-          value={msrp}
-          onChange={setMsrp}
-          min={15000}
-          max={200000}
-          step={1000}
-          unit="$"
-        />
-
-        <NumberInput
-          label="Buy Down Payment"
-          value={buyDownPayment}
-          onChange={setBuyDownPayment}
-          min={0}
-          max={100000}
-          step={500}
-          unit="$"
-        />
-
-        <SliderInput
-          label="Loan Term"
-          value={loanTermYears}
-          onChange={setLoanTermYears}
-          min={3}
-          max={7}
-          step={1}
-          unit="years"
-          showValue
-        />
-
-        <NumberInput
-          label="Loan APR"
-          value={loanApr}
-          onChange={setLoanApr}
-          min={0}
-          max={20}
-          step={0.1}
-          unit="%"
-        />
-
-        <div className="sm:col-span-2 mt-4">
-          <h3 className="mb-3 text-sm font-semibold text-[var(--color-text-muted)] uppercase tracking-wide">
-            Lease Details
-          </h3>
-        </div>
-
-        <SliderInput
-          label="Lease Term"
-          value={leaseTermMonths}
-          onChange={setLeaseTermMonths}
-          min={24}
-          max={48}
-          step={6}
-          unit="months"
-          showValue
-        />
-
-        <NumberInput
-          label="Lease Monthly Payment"
-          value={leaseMonthlyPayment}
-          onChange={setLeaseMonthlyPayment}
-          min={100}
-          max={2000}
-          step={25}
-          unit="$"
-        />
-
-        <NumberInput
-          label="Lease Down Payment"
-          value={leaseDownPayment}
-          onChange={setLeaseDownPayment}
-          min={0}
-          max={20000}
-          step={500}
-          unit="$"
-        />
-
-        <NumberInput
-          label="Residual Value"
-          value={residualPct}
-          onChange={setResidualPct}
-          min={20}
-          max={80}
-          step={1}
-          unit="%"
-          helpText="Percentage of MSRP the vehicle is worth at lease end"
-        />
-
-        <div className="sm:col-span-2 mt-4">
-          <h3 className="mb-3 text-sm font-semibold text-[var(--color-text-muted)] uppercase tracking-wide">
-            Mileage
-          </h3>
-        </div>
-
-        <NumberInput
-          label="Annual Lease Mileage Limit"
-          value={annualMilesLimit}
-          onChange={setAnnualMilesLimit}
-          min={5000}
-          max={25000}
-          step={1000}
-          unit="mi/yr"
-        />
-
-        <NumberInput
-          label="Excess Mile Fee"
-          value={excessMileFee}
-          onChange={setExcessMileFee}
-          min={0.05}
-          max={0.5}
-          step={0.05}
-          unit="$/mi"
-        />
-
-        <div className="sm:col-span-2">
+      {/* Advanced inputs (collapsed by default) */}
+      <details className="group mb-6 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-3">
+        <summary className="cursor-pointer text-sm font-medium text-[var(--color-ink-2)]">
+          Advanced inputs
+        </summary>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <NumberInput
+            label="Buy down payment"
+            value={buyDownPayment}
+            onChange={setBuyDownPayment}
+            min={0}
+            max={100000}
+            step={500}
+            unit="$"
+          />
           <SliderInput
-            label="Your Actual Annual Miles"
-            value={actualAnnualMiles}
-            onChange={setActualAnnualMiles}
-            min={5000}
-            max={30000}
-            step={1000}
-            unit="miles"
+            label="Loan term"
+            value={loanTermYears}
+            onChange={setLoanTermYears}
+            min={3}
+            max={7}
+            step={1}
+            unit="years"
             showValue
           />
+          <NumberInput
+            label="Loan APR"
+            value={loanApr}
+            onChange={setLoanApr}
+            min={0}
+            max={20}
+            step={0.1}
+            unit="%"
+          />
+          <SliderInput
+            label="Lease term"
+            value={leaseTermMonths}
+            onChange={setLeaseTermMonths}
+            min={24}
+            max={48}
+            step={6}
+            unit="months"
+            showValue
+          />
+          <NumberInput
+            label="Lease down payment"
+            value={leaseDownPayment}
+            onChange={setLeaseDownPayment}
+            min={0}
+            max={20000}
+            step={500}
+            unit="$"
+          />
+          <NumberInput
+            label="Residual value"
+            value={residualPct}
+            onChange={setResidualPct}
+            min={20}
+            max={80}
+            step={1}
+            unit="%"
+            helpText="Percentage of MSRP the vehicle is worth at lease end"
+          />
+          <NumberInput
+            label="Annual lease mileage limit"
+            value={annualMilesLimit}
+            onChange={setAnnualMilesLimit}
+            min={5000}
+            max={25000}
+            step={1000}
+            unit="mi/yr"
+          />
+          <NumberInput
+            label="Excess mile fee"
+            value={excessMileFee}
+            onChange={setExcessMileFee}
+            min={0.05}
+            max={0.5}
+            step={0.05}
+            unit="$/mi"
+          />
         </div>
-      </div>
+      </details>
 
-      {/* Results */}
-      <div className="mt-10">
-        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
-          Cost Comparison
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <ResultCard
-            label={winnerLabel}
-            value={fmtShort.format(results.savings)}
-            unit="savings"
-            highlight
-            icon={winnerIcon}
-          />
-          <ResultCard
-            label="Monthly Loan Payment"
-            value={fmt.format(results.monthlyLoanPayment)}
-            unit="/month"
-            icon="🚗"
-          />
-          <ResultCard
-            label="Monthly Lease Payment"
-            value={fmt.format(leaseMonthlyPayment)}
-            unit="/month"
-            icon="📋"
-          />
-          <ResultCard
-            label="Buy: Total Paid"
-            value={fmtShort.format(results.buyTotalOverLeaseTerm)}
-            unit={`over ${leaseTermMonths} months`}
-            icon="💳"
-          />
-          <ResultCard
-            label="Lease: Total Paid"
-            value={fmtShort.format(results.leaseTotalWithPenalty)}
-            unit={`over ${leaseTermMonths} months`}
-            icon="💳"
-          />
-          <ResultCard
-            label="Equity if You Buy"
-            value={fmtShort.format(results.equityAtLeaseEnd)}
-            unit={`at month ${leaseTermMonths}`}
-            icon="📈"
-          />
-        </div>
-
-        {/* Detailed Breakdown */}
-        <div className="mt-8 grid gap-4 sm:grid-cols-2">
-          <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-5">
-            <h3 className="mb-4 text-sm font-semibold text-[var(--color-text)]">
-              Buying Breakdown
-            </h3>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-[var(--color-text-muted)]">Down payment</span>
-                <span className="font-medium text-[var(--color-text)]">{fmtShort.format(buyDownPayment)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[var(--color-text-muted)]">Monthly payment</span>
-                <span className="font-medium text-[var(--color-text)]">{fmt.format(results.monthlyLoanPayment)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[var(--color-text-muted)]">Total paid ({leaseTermMonths} mo)</span>
-                <span className="font-medium text-[var(--color-text)]">{fmtShort.format(results.buyTotalOverLeaseTerm)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[var(--color-text-muted)]">Vehicle value at month {leaseTermMonths}</span>
-                <span className="font-medium text-[var(--color-text)]">{fmtShort.format(results.vehicleValueAtLeaseEnd)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[var(--color-text-muted)]">Remaining loan balance</span>
-                <span className="font-medium text-[var(--color-text)]">{fmtShort.format(results.remainingBalance)}</span>
-              </div>
-              <div className="flex justify-between border-t border-[var(--color-border)] pt-2">
-                <span className="font-semibold text-[var(--color-text)]">Your equity</span>
-                <span className="font-bold text-[var(--color-ev-green)]">{fmtShort.format(results.equityAtLeaseEnd)}</span>
-              </div>
-              <div className="flex justify-between border-t border-[var(--color-border)] pt-2">
-                <span className="font-semibold text-[var(--color-text)]">Net cost (paid - equity)</span>
-                <span className="font-bold text-[var(--color-text)]">{fmtShort.format(results.buyNetCost)}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-5">
-            <h3 className="mb-4 text-sm font-semibold text-[var(--color-text)]">
-              Leasing Breakdown
-            </h3>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-[var(--color-text-muted)]">Down payment</span>
-                <span className="font-medium text-[var(--color-text)]">{fmtShort.format(leaseDownPayment)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[var(--color-text-muted)]">Monthly payment</span>
-                <span className="font-medium text-[var(--color-text)]">{fmt.format(leaseMonthlyPayment)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[var(--color-text-muted)]">Total lease payments</span>
-                <span className="font-medium text-[var(--color-text)]">{fmtShort.format(results.leaseTotalCost)}</span>
-              </div>
-              {results.excessMiles > 0 && (
-                <>
-                  <div className="flex justify-between">
-                    <span className="text-[var(--color-text-muted)]">Excess miles</span>
-                    <span className="font-medium text-red-500">{results.excessMiles.toLocaleString()} mi</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-[var(--color-text-muted)]">Mileage penalty</span>
-                    <span className="font-medium text-red-500">{fmtShort.format(results.mileagePenalty)}</span>
-                  </div>
-                </>
-              )}
-              <div className="flex justify-between">
-                <span className="text-[var(--color-text-muted)]">Equity at end</span>
-                <span className="font-medium text-[var(--color-text)]">$0</span>
-              </div>
-              <div className="flex justify-between border-t border-[var(--color-border)] pt-2">
-                <span className="font-semibold text-[var(--color-text)]">Net cost (total out-of-pocket)</span>
-                <span className="font-bold text-[var(--color-text)]">{fmtShort.format(results.leaseNetCost)}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Breakeven indicator */}
-        {results.breakevenMonth !== null && (
-          <div className="mt-6 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-5">
-            <h3 className="mb-3 text-sm font-semibold text-[var(--color-text)]">
-              Breakeven Analysis
-            </h3>
-            <div className="relative">
-              <div className="h-6 w-full overflow-hidden rounded-full bg-[var(--color-border)]">
-                <div
-                  className="h-full rounded-full bg-[var(--color-primary)] transition-all duration-500"
-                  style={{
-                    width: `${(results.breakevenMonth / leaseTermMonths) * 100}%`,
-                  }}
-                />
-              </div>
-              <div className="mt-3 flex items-start justify-between text-xs">
-                <div className="text-[var(--color-text-muted)]">
-                  <span className="block font-semibold">Month 1</span>
-                  <span>Lease is cheaper</span>
-                </div>
-                <div
-                  className="absolute text-center"
-                  style={{
-                    left: `${(results.breakevenMonth / leaseTermMonths) * 100}%`,
-                    transform: "translateX(-50%)",
-                    top: "2.25rem",
-                  }}
-                >
-                  <span className="block font-semibold text-[var(--color-ev-green)]">
-                    Buying Takes the Lead
-                  </span>
-                  <span className="text-[var(--color-text-muted)]">
-                    Month {results.breakevenMonth}
-                  </span>
-                </div>
-                <div className="text-right text-[var(--color-text-muted)]">
-                  <span className="block font-semibold">Month {leaseTermMonths}</span>
-                  <span className="font-semibold text-[var(--color-ev-green)]">
-                    {fmtShort.format(results.savings)} saved
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {results.breakevenMonth === null && results.winner === "lease" && (
-          <div className="mt-6 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-5 text-center text-sm text-[var(--color-text-muted)]">
-            Leasing stays cheaper for the entire {leaseTermMonths}-month term with your current settings. Buying may win over a longer ownership period.
-          </div>
-        )}
-
-        {/* Contextual Cross-Links */}
-        <div className="mt-6 flex flex-wrap gap-3 text-sm">
-          <Link
-            href="/tax-credits"
-            className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5"
-          >
-            Check EV tax credits &rarr;
-          </Link>
-          <Link
-            href="/ev-charging-cost"
-            className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5"
-          >
-            Estimate charging costs &rarr;
-          </Link>
-          <Link
-            href="/gas-vs-electric"
-            className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5"
-          >
-            Compare gas vs electric &rarr;
-          </Link>
-        </div>
-      </div>
-
-      <ShareResults
-        title={`Lease vs Buy: ${winnerLabel} by ${fmtShort.format(results.savings)}`}
-        text={`For a ${fmtShort.format(msrp)} EV over ${leaseTermMonths} months: buying costs ${fmtShort.format(results.buyNetCost)} net (after ${fmtShort.format(results.equityAtLeaseEnd)} equity), while leasing costs ${fmtShort.format(results.leaseNetCost)}. ${winnerLabel} by ${fmtShort.format(results.savings)}!`}
+      {/* Signature live meter: LEASE vs BUY net cost */}
+      <SavingsMeter
+        leftLabel="LEASE"
+        leftValue={results.leaseNetCost}
+        rightLabel="BUY"
+        rightValue={results.buyNetCost}
+        period={`/${leaseTermMonths}mo`}
       />
+
+      {/* Contextual cross-links */}
+      <div className="mt-8 flex flex-wrap gap-3 text-sm">
+        <Link
+          href="/tax-credits"
+          className="rounded-lg border border-[var(--color-border)] bg-white px-3 py-2 font-medium text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
+        >
+          Check EV tax credits
+        </Link>
+        <Link
+          href="/ev-charging-cost"
+          className="rounded-lg border border-[var(--color-border)] bg-white px-3 py-2 font-medium text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
+        >
+          Estimate charging costs
+        </Link>
+        <Link
+          href="/gas-vs-electric"
+          className="rounded-lg border border-[var(--color-border)] bg-white px-3 py-2 font-medium text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
+        >
+          Compare gas vs electric
+        </Link>
+      </div>
 
       <EducationalContent>
         <h2>How the Lease vs Buy Calculation Works</h2>
@@ -622,6 +471,6 @@ export default function LeaseVsBuyPage() {
       <FAQSection questions={leaseVsBuyFAQ} />
       <EmailCapture source="lease-vs-buy" />
       <RelatedCalculators currentPath="/lease-vs-buy" />
-    </CalculatorLayout>
+    </CalculatorShell>
   );
 }

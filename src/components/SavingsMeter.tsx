@@ -13,8 +13,10 @@ interface Props {
 /**
  * The ChargeMath signature interaction. Split-column cost meter
  * sitting above the result grid on cost-comparison calculators.
- * Each digit rolls independently like a real split-flap odometer
- * as the value changes, driven by a pure CSS transform transition.
+ * Each digit is a vertical column of 0-9 glyphs that translates
+ * independently via CSS transform as the value changes, driven by
+ * stable position-from-right React keys so React never remounts a
+ * slot even when the digit count changes (e.g., $99 becomes $1,234).
  *
  * Left column = losing option (gas, grid, public)
  * Right column = winning option (EV, solar, home)
@@ -142,11 +144,15 @@ export default function SavingsMeter({
 }
 
 /* ————————————————————————————————————————————————
-   OdometerNumber — split-flap digit display
-   Each digit is a vertical column of 0-9 glyphs. The column
-   translates to the target digit via a CSS transition, so every
-   slider move looks like a real odometer roll.
+   OdometerNumber — split-flap digit display with stable keys
+   Right-aligned to a fixed max width. Each slot has a stable
+   position-from-right key, so React never remounts a slot when
+   the digit count changes. Every slot renders the same uniform
+   DOM tree (digit column + comma overlay), toggling opacity to
+   switch modes, which avoids any flicker on rapid value changes.
    ———————————————————————————————————————————————— */
+
+const MAX_WIDTH = 7; // enough for "999,999"
 
 function OdometerNumber({
   value,
@@ -161,7 +167,8 @@ function OdometerNumber({
 }) {
   const rounded = Math.max(0, Math.round(value));
   const formatted = rounded.toLocaleString("en-US");
-  const chars = formatted.split("");
+  const padded = formatted.padStart(MAX_WIDTH, " ");
+  // padded[0] is leftmost (position MAX_WIDTH-1 from right), padded[last] is rightmost (position 0).
 
   return (
     <span
@@ -180,40 +187,44 @@ function OdometerNumber({
           {prefix}
         </span>
       )}
-      {chars.map((ch, i) => (
-        <DigitRoll key={`${i}-${chars.length}`} char={ch} />
-      ))}
+      {[...padded].map((ch, i) => {
+        const posFromRight = MAX_WIDTH - 1 - i;
+        return <DigitSlot key={`pos-${posFromRight}`} char={ch} />;
+      })}
     </span>
   );
 }
 
-function DigitRoll({ char }: { char: string }) {
+function DigitSlot({ char }: { char: string }) {
   const isDigit = /^[0-9]$/.test(char);
-  if (!isDigit) {
-    // comma, period, non-digit glyph — render inline
-    return (
-      <span aria-hidden style={{ display: "inline-block" }}>
-        {char}
-      </span>
-    );
-  }
+  const isComma = char === ",";
+  const isEmpty = !isDigit && !isComma; // space or anything else
 
-  const target = Number(char);
+  // Target digit (0 when not a digit — keeps the column at rest while hidden)
+  const target = isDigit ? Number(char) : 0;
 
+  // Uniform DOM tree: always contains width-holder + digit column + comma overlay.
+  // Opacity toggles control which one is visible. React never swaps nodes.
   return (
     <span
       aria-hidden
       className="relative inline-block overflow-hidden align-baseline"
-      style={{ height: "1em", lineHeight: 1 }}
+      style={{
+        height: "1em",
+        lineHeight: 1,
+      }}
     >
-      {/* Width-holder: invisible 0, sized correctly by tabular-nums */}
+      {/* Width holder (invisible 0, provides the tabular slot width) */}
       <span style={{ visibility: "hidden" }}>0</span>
-      {/* Rolling column */}
+
+      {/* Rolling digit column (0-9) */}
       <span
         className="absolute left-0 top-0"
         style={{
           transform: `translateY(${-target * 100}%)`,
-          transition: "transform 420ms cubic-bezier(0.32, 0.72, 0, 1)",
+          transition:
+            "transform 420ms cubic-bezier(0.32, 0.72, 0, 1), opacity 220ms ease",
+          opacity: isDigit ? 1 : 0,
           willChange: "transform",
         }}
       >
@@ -226,6 +237,21 @@ function DigitRoll({ char }: { char: string }) {
           </span>
         ))}
       </span>
+
+      {/* Comma overlay (only visible when char is ',') */}
+      <span
+        className="absolute left-0 top-0"
+        style={{
+          opacity: isComma ? 1 : 0,
+          transition: "opacity 220ms ease",
+          // empty slot gets neither column nor comma visible
+          pointerEvents: "none",
+        }}
+      >
+        ,
+      </span>
+      {/* Hidden fallback so the isEmpty case is handled silently */}
+      {isEmpty && <span className="sr-only">{" "}</span>}
     </span>
   );
 }

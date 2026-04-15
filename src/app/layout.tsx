@@ -143,6 +143,7 @@ export default function RootLayout({
               <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-[var(--color-ink-3)]">
                 <Link href="/guides" className="hover:text-[var(--color-ink)] transition-colors">State Guides</Link>
                 <Link href="/calculators" className="hover:text-[var(--color-ink)] transition-colors">All Calculators</Link>
+                <Link href="/methodology" className="hover:text-[var(--color-ink)] transition-colors">Methodology</Link>
                 <Link href="/embed" className="hover:text-[var(--color-ink)] transition-colors">Embed</Link>
                 <Link href="/about" className="hover:text-[var(--color-ink)] transition-colors">About</Link>
               </div>

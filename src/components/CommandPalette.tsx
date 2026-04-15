@@ -62,6 +62,8 @@ const ITEMS: Item[] = [
   // Guides
   { title: "All State Guides", href: "/guides", category: "Guides", keywords: "state california texas new york rates" },
   { title: "All Calculators (directory)", href: "/calculators", category: "Guides", keywords: "index full directory list" },
+  { title: "Methodology", href: "/methodology", category: "Guides", keywords: "formulas data sources math assumptions epa eia how we calculate" },
+  { title: "About ChargeMath", href: "/about", category: "Guides", keywords: "about team contact trust" },
 ];
 
 function score(item: Item, query: string): number {

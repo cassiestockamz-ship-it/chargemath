@@ -2,16 +2,17 @@
 
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
-import CalculatorLayout from "@/components/CalculatorLayout";
+import CalculatorShell from "@/components/CalculatorShell";
+import SavingsVerdict from "@/components/SavingsVerdict";
+import SavingsTile from "@/components/SavingsTile";
+import SavingsMeter from "@/components/SavingsMeter";
 import SelectInput from "@/components/SelectInput";
 import NumberInput from "@/components/NumberInput";
 import SliderInput from "@/components/SliderInput";
-import ResultCard from "@/components/ResultCard";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import FAQSection from "@/components/FAQSection";
-import ShareResults from "@/components/ShareResults";
 import EducationalContent from "@/components/EducationalContent";
 import EmailCapture from "@/components/EmailCapture";
 import { getDefaultStateCode } from "@/lib/useDefaultState";
@@ -21,33 +22,6 @@ import {
   NATIONAL_AVERAGE_RATE,
 } from "@/data/electricity-rates";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
-
-const fmt = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
-
-const fmtShort = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
-
-interface NetworkInfo {
-  name: string;
-  avgRate: number;
-  note: string;
-}
-
-const CHARGING_NETWORKS: NetworkInfo[] = [
-  { name: "Tesla Supercharger", avgRate: 0.35, note: "Tesla owners only; some sites open to other EVs via adapter" },
-  { name: "Electrify America", avgRate: 0.43, note: "Nationwide DC fast charging; membership drops rate to ~$0.31/kWh" },
-  { name: "ChargePoint", avgRate: 0.30, note: "Pricing varies by station owner; ranges from $0.20-$0.60/kWh" },
-  { name: "EVgo", avgRate: 0.35, note: "Pay-as-you-go or membership plans; widespread in metro areas" },
-];
 
 const publicChargingFAQ = [
   {
@@ -193,100 +167,159 @@ export default function PublicChargingCostPage() {
       label: `${data.state} (${data.residential}\u00A2/kWh)`,
     }));
 
-  // Bar widths for comparison chart
-  const maxMonthly = Math.max(results.homeOnlyMonthly, results.mixMonthly, results.publicOnlyMonthly);
-  const homeBarWidth = (results.homeOnlyMonthly / maxMonthly) * 100;
-  const mixBarWidth = (results.mixMonthly / maxMonthly) * 100;
-  const publicBarWidth = (results.publicOnlyMonthly / maxMonthly) * 100;
+  // Typical DC fast session: ~half a battery worth
+  const sessionKwh = vehicle.batteryCapacityKwh * 0.5;
+  const perSessionCost = sessionKwh * (dcFastRate / 100) + sessionFee;
+
+  // Percent more than home
+  const pctMoreThanHome =
+    results.homeOnlyMonthly > 0
+      ? Math.max(
+          0,
+          Math.min(
+            100,
+            ((results.publicOnlyMonthly - results.homeOnlyMonthly) / results.homeOnlyMonthly) * 100
+          )
+        )
+      : 0;
+
+  const inputs = (
+    <div className="grid gap-4 sm:grid-cols-3">
+      <SelectInput
+        label="Your EV"
+        value={vehicleId}
+        onChange={setVehicleId}
+        options={vehicleOptions}
+        helpText={`${vehicle.kwhPer100Miles} kWh/100mi, ${vehicle.batteryCapacityKwh} kWh battery`}
+      />
+      <SelectInput
+        label="Your state"
+        value={stateCode}
+        onChange={setStateCode}
+        options={stateOptions}
+      />
+      <SliderInput
+        label="% public charging"
+        value={publicPercent}
+        onChange={setPublicPercent}
+        min={0}
+        max={100}
+        step={5}
+        unit="%"
+        showValue
+      />
+    </div>
+  );
+
+  const hero = (
+    <SavingsVerdict
+      headline="PER SESSION"
+      amount={perSessionCost}
+      amountUnit="/session"
+      sub={
+        <>
+          Typical DC fast session at {dcFastRate}&cent;/kWh on a {vehicle.batteryCapacityKwh} kWh battery (about a half charge, ${sessionFee.toFixed(2)} connection fee).
+          Your current mix runs {`$${Math.round(results.mixMonthly)}`}/mo vs {`$${Math.round(results.homeOnlyMonthly)}`}/mo at home only.
+        </>
+      }
+      dialPercent={pctMoreThanHome}
+      dialLabel="OVER HOME"
+    >
+      <SavingsTile
+        label="PER KWH"
+        value={dcFastRate / 100}
+        prefix="$"
+        decimals={2}
+        unit="/kWh DC"
+        tier="warn"
+        animate
+      />
+      <SavingsTile
+        label="PER SESSION"
+        value={perSessionCost}
+        prefix="$"
+        decimals={2}
+        unit="/session"
+        tier="mid"
+        animate
+      />
+      <SavingsTile
+        label="MONTHLY"
+        value={results.publicOnlyMonthly}
+        prefix="$"
+        unit="/mo (all public)"
+        tier="warn"
+        animate
+      />
+      <SavingsTile
+        label="VS HOME"
+        value={Math.round(pctMoreThanHome)}
+        unit="% more"
+        tier="brand"
+        animate
+      />
+    </SavingsVerdict>
+  );
 
   return (
-    <CalculatorLayout
+    <CalculatorShell
+      eyebrow="Public charging"
       title="Public Charging Cost Calculator"
-      description="Compare the cost of public EV charging vs home charging. See how your mix of home and public charging affects your monthly and annual costs."
-      lastUpdated="March 2026"
-      intro="Public EV charging typically costs 2-3x more than home charging. The national average home rate is about 16 cents/kWh, while public Level 2 averages 25 cents/kWh and DC fast charging averages 35-45 cents/kWh. This calculator helps you estimate how much your public charging habit really costs and find the right balance."
+      quickAnswer="Public DC fast charging runs 2 to 3x home rates. A typical session costs $15 to $25, versus $5 to $10 at home for the same energy."
+      inputs={inputs}
+      hero={hero}
     >
       <CalculatorSchema name="Public Charging Cost Calculator" description="Compare public EV charging costs vs home charging. Estimate monthly costs for different mixes of home, Level 2, and DC fast charging." url="https://chargemath.com/public-charging" />
       <BreadcrumbSchema items={[{ name: "Home", url: "https://chargemath.com" }, { name: "Public Charging Cost Calculator", url: "https://chargemath.com/public-charging" }]} />
 
-      {/* Inputs */}
-      <div className="grid gap-6 sm:grid-cols-2">
-        <SelectInput
-          label="Select Your EV"
-          value={vehicleId}
-          onChange={setVehicleId}
-          options={vehicleOptions}
-          helpText={`${vehicle.batteryCapacityKwh} kWh battery \u2022 ${vehicle.epaRangeMiles} mi EPA range \u2022 ${vehicle.kwhPer100Miles} kWh/100mi`}
-        />
-
-        <SelectInput
-          label="Your State (Home Rate)"
-          value={stateCode}
-          onChange={setStateCode}
-          options={stateOptions}
-          helpText={`Home rate: ${(homeRate * 100).toFixed(1)}\u00A2/kWh from EIA data`}
-        />
-
-        <div className="sm:col-span-2">
-          <SliderInput
-            label="% of Charging at Public Stations"
-            value={publicPercent}
-            onChange={setPublicPercent}
-            min={0}
-            max={100}
-            step={5}
-            unit="%"
-            showValue
+      {/* Advanced inputs */}
+      <details className="group mb-6 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-3">
+        <summary className="cursor-pointer text-sm font-medium text-[var(--color-ink-2)]">
+          Advanced inputs
+        </summary>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <NumberInput
+            label="Level 2 public rate"
+            value={level2Rate}
+            onChange={setLevel2Rate}
+            min={5}
+            max={80}
+            step={1}
+            unit={"\u00A2/kWh"}
+            helpText="Typical range: 20-35 cents/kWh"
           />
-        </div>
-
-        <NumberInput
-          label="Level 2 Public Rate"
-          value={level2Rate}
-          onChange={setLevel2Rate}
-          min={5}
-          max={80}
-          step={1}
-          unit={"¢/kWh"}
-          helpText="Typical range: 20-35¢/kWh"
-        />
-
-        <NumberInput
-          label="DC Fast Charging Rate"
-          value={dcFastRate}
-          onChange={setDcFastRate}
-          min={10}
-          max={100}
-          step={1}
-          unit={"¢/kWh"}
-          helpText="Typical range: 30-60¢/kWh"
-        />
-
-        <NumberInput
-          label="Session Fee"
-          value={sessionFee}
-          onChange={setSessionFee}
-          min={0}
-          max={5}
-          step={0.25}
-          unit={"$/session"}
-          helpText="Per-session connection fee (some networks charge $0-$2)"
-        />
-
-        <NumberInput
-          label="Public Sessions per Month"
-          value={sessionsPerMonth}
-          onChange={setSessionsPerMonth}
-          min={0}
-          max={30}
-          step={1}
-          unit={"sessions"}
-          helpText="How often you charge at public stations"
-        />
-
-        <div className="sm:col-span-2">
+          <NumberInput
+            label="DC fast charging rate"
+            value={dcFastRate}
+            onChange={setDcFastRate}
+            min={10}
+            max={100}
+            step={1}
+            unit={"\u00A2/kWh"}
+            helpText="Typical range: 30-60 cents/kWh"
+          />
+          <NumberInput
+            label="Session fee"
+            value={sessionFee}
+            onChange={setSessionFee}
+            min={0}
+            max={5}
+            step={0.25}
+            unit={"$/session"}
+            helpText="Per-session connection fee (some networks charge $0-$2)"
+          />
+          <NumberInput
+            label="Public sessions per month"
+            value={sessionsPerMonth}
+            onChange={setSessionsPerMonth}
+            min={0}
+            max={30}
+            step={1}
+            unit={"sessions"}
+            helpText="How often you charge at public stations"
+          />
           <SliderInput
-            label="Daily Miles Driven"
+            label="Daily miles driven"
             value={dailyMiles}
             onChange={setDailyMiles}
             min={10}
@@ -296,239 +329,28 @@ export default function PublicChargingCostPage() {
             showValue
           />
         </div>
-      </div>
+      </details>
 
-      {/* Results: Three Scenarios */}
-      <div className="mt-10">
-        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
-          Cost Comparison: Home vs Public Charging
-        </h2>
+      {/* Signature live meter: HOME vs PUBLIC annual cost */}
+      <SavingsMeter
+        leftLabel="PUBLIC"
+        leftValue={results.publicOnlyAnnual}
+        rightLabel="HOME"
+        rightValue={results.homeOnlyAnnual}
+        period="/yr"
+      />
 
-        {/* Scenario: 100% Home */}
-        <h3 className="mb-3 text-sm font-semibold text-[var(--color-ev-green)]">
-          Scenario 1: 100% Home Charging
-        </h3>
-        <div className="mb-6 grid gap-4 sm:grid-cols-3">
-          <ResultCard
-            label="Monthly Cost"
-            value={fmt.format(results.homeOnlyMonthly)}
-            unit="/month"
-            highlight
-            icon="🏠"
-          />
-          <ResultCard
-            label="Annual Cost"
-            value={fmt.format(results.homeOnlyAnnual)}
-            unit="/year"
-            icon="📅"
-          />
-          <ResultCard
-            label="Cost Per Mile"
-            value={`$${results.homeOnlyCostPerMile.toFixed(3)}`}
-            unit="/mile"
-            icon="⚡"
-          />
-        </div>
-
-        {/* Scenario: Current Mix */}
-        <h3 className="mb-3 text-sm font-semibold text-[var(--color-primary)]">
-          Scenario 2: Your Mix ({publicPercent}% Public / {100 - publicPercent}% Home)
-        </h3>
-        <div className="mb-6 grid gap-4 sm:grid-cols-3">
-          <ResultCard
-            label="Monthly Cost"
-            value={fmt.format(results.mixMonthly)}
-            unit="/month"
-            highlight
-            icon="🔌"
-          />
-          <ResultCard
-            label="Annual Cost"
-            value={fmt.format(results.mixAnnual)}
-            unit="/year"
-            icon="📅"
-          />
-          <ResultCard
-            label="Cost Per Mile"
-            value={`$${results.mixCostPerMile.toFixed(3)}`}
-            unit="/mile"
-            icon="🔋"
-          />
-        </div>
-
-        {/* Scenario: 100% Public */}
-        <h3 className="mb-3 text-sm font-semibold text-[var(--color-gas-red)]">
-          Scenario 3: 100% Public Charging
-        </h3>
-        <div className="mb-6 grid gap-4 sm:grid-cols-3">
-          <ResultCard
-            label="Monthly Cost"
-            value={fmt.format(results.publicOnlyMonthly)}
-            unit="/month"
-            highlight
-            icon="🏪"
-          />
-          <ResultCard
-            label="Annual Cost"
-            value={fmt.format(results.publicOnlyAnnual)}
-            unit="/year"
-            icon="📅"
-          />
-          <ResultCard
-            label="Cost Per Mile"
-            value={`$${results.publicOnlyCostPerMile.toFixed(3)}`}
-            unit="/mile"
-            icon="💳"
-          />
-        </div>
-
-        {/* Extra Cost Summary */}
-        <div className="mb-6 grid gap-4 sm:grid-cols-2">
-          <ResultCard
-            label="Extra Monthly Cost vs Home Only"
-            value={fmt.format(results.extraMonthlyCost)}
-            unit="/month"
-            icon="📊"
-          />
-          <ResultCard
-            label="Extra Annual Cost vs Home Only"
-            value={fmt.format(results.extraAnnualCost)}
-            unit="/year"
-            highlight
-            icon="💰"
-          />
-        </div>
-
-        {/* Comparison Bar Chart */}
-        <div className="mt-8 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-5">
-          <h3 className="mb-4 text-sm font-semibold text-[var(--color-text)]">
-            Monthly Cost Comparison
-          </h3>
-          <div className="space-y-3">
-            <div>
-              <div className="mb-1 flex items-center justify-between text-sm">
-                <span className="font-medium text-[var(--color-ev-green)]">
-                  100% Home
-                </span>
-                <span className="font-semibold text-[var(--color-text)]">
-                  {fmt.format(results.homeOnlyMonthly)}
-                </span>
-              </div>
-              <div className="h-4 w-full overflow-hidden rounded-full bg-[var(--color-border)]">
-                <div
-                  className="h-full rounded-full bg-[var(--color-ev-green)] transition-all duration-500"
-                  style={{ width: `${homeBarWidth}%` }}
-                />
-              </div>
-            </div>
-            <div>
-              <div className="mb-1 flex items-center justify-between text-sm">
-                <span className="font-medium text-[var(--color-primary)]">
-                  Your Mix ({publicPercent}% Public)
-                </span>
-                <span className="font-semibold text-[var(--color-text)]">
-                  {fmt.format(results.mixMonthly)}
-                </span>
-              </div>
-              <div className="h-4 w-full overflow-hidden rounded-full bg-[var(--color-border)]">
-                <div
-                  className="h-full rounded-full bg-[var(--color-primary)] transition-all duration-500"
-                  style={{ width: `${mixBarWidth}%` }}
-                />
-              </div>
-            </div>
-            <div>
-              <div className="mb-1 flex items-center justify-between text-sm">
-                <span className="font-medium text-[var(--color-gas-red)]">
-                  100% Public
-                </span>
-                <span className="font-semibold text-[var(--color-text)]">
-                  {fmt.format(results.publicOnlyMonthly)}
-                </span>
-              </div>
-              <div className="h-4 w-full overflow-hidden rounded-full bg-[var(--color-border)]">
-                <div
-                  className="h-full rounded-full bg-[var(--color-gas-red)] transition-all duration-500"
-                  style={{ width: `${publicBarWidth}%` }}
-                />
-              </div>
-            </div>
-          </div>
-          {results.extraMonthlyCost > 0 ? (
-            <p className="mt-4 text-center text-sm font-semibold text-[var(--color-ev-green)]">
-              Your public charging mix costs you an extra {fmt.format(results.extraMonthlyCost)}/month vs charging at home
-            </p>
-          ) : (
-            <p className="mt-4 text-center text-sm font-semibold text-[var(--color-ev-green)]">
-              You&apos;re charging 100% at home. Nice savings!
-            </p>
-          )}
-        </div>
-
-        {/* Contextual Cross-Links */}
-        <div className="mt-6 flex flex-wrap gap-3 text-sm">
-          <Link href="/ev-charging-cost" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
-            Calculate home charging costs →
-          </Link>
-          <Link href="/charging-time" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
-            How long does charging take? →
-          </Link>
-          <Link href="/gas-vs-electric" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
-            Compare gas vs electric costs →
-          </Link>
-        </div>
-
-        <ShareResults
-          title={`Public Charging Cost: ${fmt.format(results.mixMonthly)}/month`}
-          text={`My ${vehicle.year} ${vehicle.make} ${vehicle.model} costs ${fmt.format(results.mixMonthly)}/month with ${publicPercent}% public charging. That's ${fmt.format(results.extraAnnualCost)}/year more than charging 100% at home.`}
-        />
-      </div>
-
-      {/* Charging Network Comparison */}
-      <div className="mt-10">
-        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
-          Major Charging Network Pricing
-        </h2>
-        <p className="mb-4 text-sm text-[var(--color-text-muted)]">
-          Rates shown are approximate national averages for DC fast charging as of early 2026. Actual prices vary by location, membership status, and time of day.
-        </p>
-        <div className="grid gap-4 sm:grid-cols-2">
-          {CHARGING_NETWORKS.map((network) => {
-            const fullChargeCost = vehicle.batteryCapacityKwh * network.avgRate;
-            const costPer100Miles = (vehicle.kwhPer100Miles * network.avgRate);
-            return (
-              <div
-                key={network.name}
-                className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4"
-              >
-                <div className="mb-2 flex items-center justify-between">
-                  <h3 className="text-sm font-semibold text-[var(--color-text)]">
-                    {network.name}
-                  </h3>
-                  <span className="rounded-full bg-[var(--color-primary)]/10 px-2.5 py-0.5 text-xs font-semibold text-[var(--color-primary)]">
-                    ~${network.avgRate.toFixed(2)}/kWh
-                  </span>
-                </div>
-                <div className="mb-2 grid grid-cols-2 gap-2 text-xs text-[var(--color-text-muted)]">
-                  <div>
-                    <span className="block text-[var(--color-text)] font-medium">{fmt.format(fullChargeCost)}</span>
-                    Full charge ({vehicle.batteryCapacityKwh} kWh)
-                  </div>
-                  <div>
-                    <span className="block text-[var(--color-text)] font-medium">{fmt.format(costPer100Miles)}</span>
-                    Per 100 miles
-                  </div>
-                </div>
-                <p className="text-xs text-[var(--color-text-muted)]">
-                  {network.note}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-        <p className="mt-3 text-xs text-[var(--color-text-muted)]">
-          Network costs shown for your {vehicle.year} {vehicle.make} {vehicle.model} ({vehicle.kwhPer100Miles} kWh/100mi). Membership plans can reduce per-kWh rates by 15-25%.
-        </p>
+      {/* Contextual cross-links */}
+      <div className="mt-8 flex flex-wrap gap-3 text-sm">
+        <Link href="/ev-charging-cost" className="rounded-lg border border-[var(--color-border)] bg-white px-3 py-2 font-medium text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]">
+          Calculate home charging costs
+        </Link>
+        <Link href="/charging-time" className="rounded-lg border border-[var(--color-border)] bg-white px-3 py-2 font-medium text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]">
+          How long does charging take?
+        </Link>
+        <Link href="/gas-vs-electric" className="rounded-lg border border-[var(--color-border)] bg-white px-3 py-2 font-medium text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]">
+          Compare gas vs electric costs
+        </Link>
       </div>
 
       <EducationalContent>
@@ -557,6 +379,6 @@ export default function PublicChargingCostPage() {
       <FAQSection questions={publicChargingFAQ} />
       <EmailCapture source="public-charging" />
       <RelatedCalculators currentPath="/public-charging" />
-    </CalculatorLayout>
+    </CalculatorShell>
   );
 }

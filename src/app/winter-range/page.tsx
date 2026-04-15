@@ -2,15 +2,15 @@
 
 import { useState, useMemo, useCallback } from "react";
 import Link from "next/link";
-import CalculatorLayout from "@/components/CalculatorLayout";
+import CalculatorShell from "@/components/CalculatorShell";
+import SavingsVerdict from "@/components/SavingsVerdict";
+import SavingsTile from "@/components/SavingsTile";
 import SelectInput from "@/components/SelectInput";
 import SliderInput from "@/components/SliderInput";
-import ResultCard from "@/components/ResultCard";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import FAQSection from "@/components/FAQSection";
-import ShareResults from "@/components/ShareResults";
 import EducationalContent from "@/components/EducationalContent";
 import EmailCapture from "@/components/EmailCapture";
 import { useUrlSync } from "@/lib/useUrlState";
@@ -85,14 +85,14 @@ function getWinterLossFraction(
 }
 
 const DRIVING_OPTIONS: { value: DrivingMode; label: string }[] = [
-  { value: "city", label: "City Driving" },
-  { value: "mix", label: "Mix (City + Highway)" },
-  { value: "highway", label: "Highway Driving" },
+  { value: "city", label: "City driving" },
+  { value: "mix", label: "Mix (city plus highway)" },
+  { value: "highway", label: "Highway driving" },
 ];
 
 const HEATING_OPTIONS = [
-  { value: "on", label: "Cabin Heat On" },
-  { value: "off", label: "Cabin Heat Off" },
+  { value: "on", label: "Cabin heat on" },
+  { value: "off", label: "Cabin heat off" },
 ];
 
 const PRECONDITION_OPTIONS = [
@@ -104,27 +104,27 @@ const winterFAQs = [
   {
     question: "How much range do EVs lose in cold weather?",
     answer:
-      "Most EVs lose 20-40% of their EPA-rated range in cold weather. At 20 degrees Fahrenheit with the cabin heater running, expect about 40% less range than the EPA number. At 0 degrees Fahrenheit, that can climb to 50%. The exact amount depends on your vehicle, driving speed, and whether you use preconditioning.",
+      "Most EVs lose 20 to 40 percent of their EPA-rated range in cold weather. At 20 degrees Fahrenheit with the cabin heater running, expect about 40 percent less range than the EPA number. At 0 degrees Fahrenheit, that can climb to 50 percent. The exact amount depends on your vehicle, driving speed, and whether you use preconditioning.",
   },
   {
     question: "Does turning off cabin heat really help EV range in winter?",
     answer:
-      "Yes, cabin heating is one of the biggest energy draws in cold weather. Turning off the main heater and relying on heated seats and a heated steering wheel instead can recover roughly 30-40% of the winter range loss. Heated seats use about 75 watts each versus 3,000-5,000 watts for the cabin heater.",
+      "Yes, cabin heating is one of the biggest energy draws in cold weather. Turning off the main heater and relying on heated seats and a heated steering wheel instead can recover roughly 30 to 40 percent of the winter range loss. Heated seats use about 75 watts each versus 3,000 to 5,000 watts for the cabin heater.",
   },
   {
     question: "What is battery preconditioning and does it help?",
     answer:
-      "Battery preconditioning warms the battery pack to its optimal operating temperature before you start driving. When done while the car is still plugged in, it uses grid electricity instead of stored battery energy. This can recover about 10% of your winter range loss and also improves regenerative braking performance.",
+      "Battery preconditioning warms the battery pack to its optimal operating temperature before you start driving. When done while the car is still plugged in, it uses grid electricity instead of stored battery energy. This can recover about 10 percent of your winter range loss and also improves regenerative braking performance.",
   },
   {
     question: "Do heat pump EVs perform better in winter?",
     answer:
-      "EVs with heat pumps (like newer Tesla models, Hyundai Ioniq 5, and BMW iX) handle cold weather better than those with resistive heaters. A heat pump moves heat rather than generating it, so it uses 2-3x less energy for cabin heating. This can mean 10-15% better winter range compared to a resistive-heater EV at the same temperature.",
+      "EVs with heat pumps (like newer Tesla models, Hyundai Ioniq 5, and BMW iX) handle cold weather better than those with resistive heaters. A heat pump moves heat rather than generating it, so it uses 2 to 3 times less energy for cabin heating. This can mean 10 to 15 percent better winter range compared to a resistive-heater EV at the same temperature.",
   },
   {
     question: "Should I charge my EV differently in winter?",
     answer:
-      "In winter, charge more frequently and keep the battery above 20% when possible. Cold batteries charge slower, so DC fast charging sessions may take longer. If your EV supports it, schedule charging to finish right before you leave so the battery is warm. Avoid letting the battery sit at very low charge in freezing temperatures.",
+      "In winter, charge more frequently and keep the battery above 20 percent when possible. Cold batteries charge slower, so DC fast charging sessions may take longer. If your EV supports it, schedule charging to finish right before you leave so the battery is warm. Avoid letting the battery sit at very low charge in freezing temperatures.",
   },
 ];
 
@@ -175,31 +175,15 @@ export default function WinterRangePage() {
     const winterRange = epaRange * (1 - lossFraction);
     const milesLost = epaRange - winterRange;
     const percentReduction = lossFraction * 100;
-
-    // Charging stops for a 200-mile trip
-    // Assume usable range is 90% of estimated (don't run to 0)
-    const usableWinterRange = winterRange * 0.9;
-    const usableSummerRange = epaRange * 0.9;
-
-    const tripDistance = 200;
-    const winterStops =
-      usableWinterRange >= tripDistance
-        ? 0
-        : Math.ceil(tripDistance / usableWinterRange) - 1;
-    const summerStops =
-      usableSummerRange >= tripDistance
-        ? 0
-        : Math.ceil(tripDistance / usableSummerRange) - 1;
+    const percentRetained = 100 - percentReduction;
 
     return {
       epaRange,
       winterRange,
       milesLost,
       percentReduction,
+      percentRetained,
       lossFraction,
-      winterStops,
-      summerStops,
-      usableWinterRange,
     };
   }, [vehicle, temperature, cabinHeat, drivingMode, preconditioning]);
 
@@ -208,19 +192,89 @@ export default function WinterRangePage() {
     label: `${v.year} ${v.make} ${v.model}`,
   }));
 
-  // Visual bar widths
-  const epaBarWidth = 100;
-  const winterBarWidth = Math.max(
-    5,
-    (results.winterRange / results.epaRange) * 100
+  const inputs = (
+    <div className="grid gap-4 sm:grid-cols-3">
+      <SelectInput
+        label="Your EV"
+        value={vehicleId}
+        onChange={setVehicleId}
+        options={vehicleOptions}
+        helpText={`${vehicle.epaRangeMiles} mi EPA range`}
+      />
+      <SliderInput
+        label="Outside temperature"
+        value={temperature}
+        onChange={setTemperature}
+        min={-20}
+        max={100}
+        step={1}
+        unit="°F"
+        showValue
+      />
+      <SelectInput
+        label="Cabin heating"
+        value={cabinHeat}
+        onChange={setCabinHeat}
+        options={HEATING_OPTIONS}
+      />
+    </div>
+  );
+
+  const hero = (
+    <SavingsVerdict
+      eyebrow="Cold weather range"
+      headline="WINTER RANGE"
+      amount={Math.round(results.winterRange)}
+      amountPrefix=""
+      amountDecimals={0}
+      amountUnit=" miles"
+      sub={`At ${temperature}°F versus ${Math.round(results.epaRange)} miles EPA. You keep about ${Math.round(results.percentRetained)} percent of sticker range.`}
+      dialPercent={Math.max(0, Math.min(100, Math.round(results.percentRetained)))}
+      dialLabel="OF EPA"
+      morphHero={false}
+    >
+      <SavingsTile
+        label="WINTER RANGE"
+        value={Math.round(results.winterRange)}
+        prefix=""
+        decimals={0}
+        unit=" mi"
+        tier="brand"
+      />
+      <SavingsTile
+        label="EPA RATING"
+        value={Math.round(results.epaRange)}
+        prefix=""
+        decimals={0}
+        unit=" mi"
+        tier="mid"
+      />
+      <SavingsTile
+        label="RANGE LOST"
+        value={Math.round(results.milesLost)}
+        prefix=""
+        decimals={0}
+        unit=" mi"
+        tier="warn"
+      />
+      <SavingsTile
+        label={`AT ${Math.round(temperature)}°F`}
+        value={Math.round(results.percentReduction)}
+        prefix=""
+        decimals={0}
+        unit="% loss"
+        tier="volt"
+      />
+    </SavingsVerdict>
   );
 
   return (
-    <CalculatorLayout
+    <CalculatorShell
+      eyebrow="Cold weather range"
       title="Winter Range Calculator"
-      description="Estimate how cold weather affects your EV's driving range. See your expected winter miles based on temperature, heating, and driving conditions."
-      lastUpdated="March 2026"
-      intro="Cold weather is the single biggest factor that reduces EV range. Freezing temperatures slow battery chemistry, cabin heating draws significant power, and cold tires increase rolling resistance. This calculator shows exactly how many miles you can expect from your EV in winter conditions."
+      quickAnswer="Most EVs lose 20 to 40 percent of range in cold weather. The biggest factors are temperature, cabin heat, and highway speed."
+      inputs={inputs}
+      hero={hero}
     >
       <CalculatorSchema
         name="Winter Range Calculator"
@@ -237,196 +291,54 @@ export default function WinterRangePage() {
         ]}
       />
 
-      {/* Inputs */}
-      <div className="grid gap-6 sm:grid-cols-2">
-        <SelectInput
-          label="Select Your EV"
-          value={vehicleId}
-          onChange={setVehicleId}
-          options={vehicleOptions}
-          helpText={`${vehicle.batteryCapacityKwh} kWh battery | ${vehicle.epaRangeMiles} mi EPA range`}
-        />
-
-        <SliderInput
-          label="Outside Temperature"
-          value={temperature}
-          onChange={setTemperature}
-          min={-20}
-          max={100}
-          step={1}
-          unit="°F"
-          showValue
-        />
-
-        <SelectInput
-          label="Cabin Heating"
-          value={cabinHeat}
-          onChange={setCabinHeat}
-          options={HEATING_OPTIONS}
-          helpText="Turning off cabin heat and using seat warmers saves significant range"
-        />
-
-        <SelectInput
-          label="Driving Style"
-          value={drivingMode}
-          onChange={(v) => setDrivingMode(v as DrivingMode)}
-          options={DRIVING_OPTIONS}
-        />
-
-        <SelectInput
-          label="Battery Preconditioning"
-          value={preconditioning}
-          onChange={setPreconditioning}
-          options={PRECONDITION_OPTIONS}
-          helpText="Warming the battery while plugged in before departure"
-        />
-      </div>
-
-      {/* Results */}
-      <div className="mt-10">
-        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
-          Winter Range Estimate
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <ResultCard
-            label="Estimated Winter Range"
-            value={Math.round(results.winterRange).toLocaleString()}
-            unit="miles"
-            highlight
-            icon="❄️"
+      {/* Advanced inputs (collapsed by default) */}
+      <details className="mb-6 rounded-2xl border border-[var(--color-border)] bg-white p-4 sm:p-5">
+        <summary className="cursor-pointer select-none text-sm font-semibold text-[var(--color-ink)]">
+          Advanced inputs
+        </summary>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <SelectInput
+            label="Driving style"
+            value={drivingMode}
+            onChange={(v) => setDrivingMode(v as DrivingMode)}
+            options={DRIVING_OPTIONS}
           />
-          <ResultCard
-            label="EPA Rated Range"
-            value={Math.round(results.epaRange).toLocaleString()}
-            unit="miles"
-            icon="📋"
-          />
-          <ResultCard
-            label="Miles Lost to Cold"
-            value={Math.round(results.milesLost).toLocaleString()}
-            unit="miles"
-            icon="📉"
-          />
-          <ResultCard
-            label="Range Reduction"
-            value={results.percentReduction.toFixed(1)}
-            unit="%"
-            icon="🌡️"
-          />
-          <ResultCard
-            label="Winter Charging Stops (200 mi)"
-            value={String(results.winterStops)}
-            unit={results.winterStops === 1 ? "stop" : "stops"}
-            icon="🔌"
-          />
-          <ResultCard
-            label="Summer Charging Stops (200 mi)"
-            value={String(results.summerStops)}
-            unit={results.summerStops === 1 ? "stop" : "stops"}
-            icon="☀️"
+          <SelectInput
+            label="Battery preconditioning"
+            value={preconditioning}
+            onChange={setPreconditioning}
+            options={PRECONDITION_OPTIONS}
+            helpText="Warming the battery while plugged in before departure"
           />
         </div>
-      </div>
+      </details>
 
-      {/* EPA vs Winter Range Comparison Bar */}
-      <div className="mt-10">
-        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
-          EPA Range vs Winter Range
-        </h2>
-        <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-5">
-          {/* EPA Range Bar */}
-          <div className="mb-4">
-            <div className="mb-1.5 flex items-center justify-between text-sm">
-              <span className="font-medium text-[var(--color-text)]">
-                EPA Rated Range
-              </span>
-              <span className="font-semibold text-[var(--color-text)]">
-                {Math.round(results.epaRange)} miles
-              </span>
-            </div>
-            <div className="h-8 w-full overflow-hidden rounded-full bg-[var(--color-border)]">
-              <div
-                className="flex h-full items-center justify-end rounded-full pr-3 transition-all duration-500"
-                style={{
-                  width: `${epaBarWidth}%`,
-                  backgroundColor: "var(--color-ev-green)",
-                }}
-              >
-                <span className="text-xs font-bold text-white">100%</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Winter Range Bar */}
-          <div>
-            <div className="mb-1.5 flex items-center justify-between text-sm">
-              <span className="font-medium text-[var(--color-text)]">
-                Estimated Winter Range
-              </span>
-              <span className="font-semibold text-[var(--color-text)]">
-                {Math.round(results.winterRange)} miles
-              </span>
-            </div>
-            <div className="h-8 w-full overflow-hidden rounded-full bg-[var(--color-border)]">
-              <div
-                className="flex h-full items-center justify-end rounded-full pr-3 transition-all duration-500"
-                style={{
-                  width: `${winterBarWidth}%`,
-                  backgroundColor: "#3b82f6",
-                }}
-              >
-                <span className="text-xs font-bold text-white">
-                  {(100 - results.percentReduction).toFixed(0)}%
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Loss callout */}
-          {results.milesLost > 0 && (
-            <div className="mt-4 flex items-center justify-between border-t border-[var(--color-border)] pt-3">
-              <span className="text-sm font-semibold text-[var(--color-text)]">
-                Range Lost to Winter Conditions
-              </span>
-              <span className="text-lg font-bold text-red-500">
-                {`-${Math.round(results.milesLost)} miles (${results.percentReduction.toFixed(0)}%)`}
-              </span>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Contextual Cross-Links */}
-      <div className="mt-6 flex flex-wrap gap-3 text-sm">
+      {/* Contextual cross-links */}
+      <div className="mt-2 mb-8 flex flex-wrap gap-3 text-sm">
         <Link
           href="/range"
-          className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5"
+          className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
         >
-          Full Range Calculator (all factors) &rarr;
+          Full range calculator (all factors)
         </Link>
         <Link
           href="/ev-charging-cost"
-          className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5"
+          className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
         >
-          How much does charging cost? &rarr;
+          How much does charging cost?
         </Link>
         <Link
           href="/charging-time"
-          className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5"
+          className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
         >
-          Calculate charging time &rarr;
+          Calculate charging time
         </Link>
       </div>
-
-      <ShareResults
-        title={`Winter Range: ${Math.round(results.winterRange)} miles`}
-        text={`My ${vehicle.year} ${vehicle.make} ${vehicle.model} gets about ${Math.round(results.winterRange)} miles in winter at ${temperature}°F vs ${Math.round(results.epaRange)} miles EPA range. That's a ${results.percentReduction.toFixed(0)}% reduction from cold weather.`}
-      />
 
       <EducationalContent>
         <h2>How Cold Weather Affects EV Range</h2>
         <p>
-          Cold temperatures reduce EV range through several mechanisms. Lithium-ion batteries have higher internal resistance in the cold, which reduces the energy they can deliver. Cabin heating draws 3-5 kW continuously, and cold tires have higher rolling resistance. Together, these factors can cut your range by 30-50% in freezing conditions.
+          Cold temperatures reduce EV range through several mechanisms. Lithium-ion batteries have higher internal resistance in the cold, which reduces the energy they can deliver. Cabin heating draws 3 to 5 kW continuously, and cold tires have higher rolling resistance. Together, these factors can cut your range by 30 to 50 percent in freezing conditions.
         </p>
         <h3>Preconditioning: The Single Best Winter Habit</h3>
         <p>
@@ -434,21 +346,21 @@ export default function WinterRangePage() {
         </p>
         <h3>Seat Heaters vs Cabin Heat</h3>
         <p>
-          The cabin heater in an EV typically draws 3,000 to 5,000 watts. A heated seat uses about 50-75 watts, and a heated steering wheel about 30 watts. By switching to seat and wheel heaters and lowering the cabin temperature by 10-15 degrees, you can save a meaningful amount of range. Some drivers report recovering 15-20 miles of range this way on a typical commute.
+          The cabin heater in an EV typically draws 3,000 to 5,000 watts. A heated seat uses about 50 to 75 watts, and a heated steering wheel about 30 watts. By switching to seat and wheel heaters and lowering the cabin temperature by 10 to 15 degrees, you can save a meaningful amount of range. Some drivers report recovering 15 to 20 miles of range this way on a typical commute.
         </p>
         <h3>Park in a Garage When Possible</h3>
         <p>
-          Even an unheated garage keeps your car 10-20 degrees warmer than parking outside overnight. This means a warmer battery in the morning, less preconditioning energy needed, and less cabin heating required. If you have access to a garage with a Level 2 charger, you can precondition the car right before departure and leave with a warm, fully charged battery.
+          Even an unheated garage keeps your car 10 to 20 degrees warmer than parking outside overnight. This means a warmer battery in the morning, less preconditioning energy needed, and less cabin heating required. If you have access to a garage with a Level 2 charger, you can precondition the car right before departure and leave with a warm, fully charged battery.
         </p>
         <h3>Plan for Shorter Legs Between Charging Stops</h3>
         <p>
-          On winter road trips, plan your charging stops closer together. Instead of pushing for the maximum range between stops, stop every 100-120 miles at DC fast chargers. Cold batteries also charge slower, so expect DC fast charging sessions to take 10-20% longer in freezing weather.
+          On winter road trips, plan your charging stops closer together. Instead of pushing for the maximum range between stops, stop every 100 to 120 miles at DC fast chargers. Cold batteries also charge slower, so expect DC fast charging sessions to take 10 to 20 percent longer in freezing weather.
         </p>
       </EducationalContent>
 
       <FAQSection questions={winterFAQs} />
       <EmailCapture source="winter-range" />
       <RelatedCalculators currentPath="/winter-range" />
-    </CalculatorLayout>
+    </CalculatorShell>
   );
 }

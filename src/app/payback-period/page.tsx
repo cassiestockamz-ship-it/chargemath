@@ -1,19 +1,19 @@
 "use client";
 
 import { useState, useMemo, useEffect, useCallback } from "react";
-import CalculatorLayout from "@/components/CalculatorLayout";
+import Link from "next/link";
+import CalculatorShell from "@/components/CalculatorShell";
+import SavingsVerdict from "@/components/SavingsVerdict";
+import SavingsTile from "@/components/SavingsTile";
 import SelectInput from "@/components/SelectInput";
 import NumberInput from "@/components/NumberInput";
 import SliderInput from "@/components/SliderInput";
-import ResultCard from "@/components/ResultCard";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import FAQSection from "@/components/FAQSection";
-import ShareResults from "@/components/ShareResults";
 import EducationalContent from "@/components/EducationalContent";
 import EmailCapture from "@/components/EmailCapture";
-import Link from "next/link";
 import { getDefaultStateCode } from "@/lib/useDefaultState";
 import { useUrlSync } from "@/lib/useUrlState";
 import { paybackPeriodFAQ } from "@/data/faq-data";
@@ -22,20 +22,6 @@ import {
   NATIONAL_AVERAGE_RATE,
 } from "@/data/electricity-rates";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
-
-const fmt = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
-
-const fmtShort = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
 
 export default function PaybackPeriodPage() {
   const [vehicleId, setVehicleId] = useState(EV_VEHICLES[0].id);
@@ -162,28 +148,109 @@ export default function PaybackPeriodPage() {
       label: `${data.state} (${data.residential}\u00A2/kWh)`,
     }));
 
-  const formatPayback = (months: number): string => {
-    if (!isFinite(months) || months <= 0) return "N/A";
-    const roundedMonths = Math.ceil(months);
-    if (roundedMonths < 12) return `${roundedMonths} months`;
-    const years = Math.floor(roundedMonths / 12);
-    const remaining = roundedMonths % 12;
-    if (remaining === 0) return `${years} year${years > 1 ? "s" : ""}`;
-    return `${years} year${years > 1 ? "s" : ""}, ${remaining} month${remaining > 1 ? "s" : ""}`;
-  };
+  // Year 5 recovery: share of EV premium recovered by year 5
+  const fiveYearSavings = results.totalMonthlySavings * 60;
+  const dialPercent =
+    results.effectivePremium > 0
+      ? Math.max(0, Math.min(100, (fiveYearSavings / results.effectivePremium) * 100))
+      : 100;
 
-  // Break-even timeline bar (capped at 10 years / 120 months)
-  const paybackCapped = Math.min(results.paybackMonths, 120);
-  const paybackPct = isFinite(results.paybackMonths)
-    ? (paybackCapped / 120) * 100
-    : 100;
+  // Break-even month (rounded) for tile
+  const breakEvenMonth =
+    isFinite(results.paybackMonths) && results.paybackMonths > 0
+      ? Math.ceil(results.paybackMonths)
+      : 0;
+
+  // Payback years for hero, capped at 99 when it never breaks even
+  const heroYears = isFinite(results.paybackYears)
+    ? Math.min(99, results.paybackYears)
+    : 99;
+
+  const inputs = (
+    <div className="grid gap-4 sm:grid-cols-3">
+      <SelectInput
+        label="Your EV"
+        value={vehicleId}
+        onChange={setVehicleId}
+        options={vehicleOptions}
+        helpText={`${vehicle.kwhPer100Miles} kWh/100mi, ${vehicle.epaRangeMiles} mi range`}
+      />
+      <SelectInput
+        label="Your state"
+        value={stateCode}
+        onChange={setStateCode}
+        options={stateOptions}
+      />
+      <SliderInput
+        label="Daily miles driven"
+        value={dailyMiles}
+        onChange={setDailyMiles}
+        min={10}
+        max={150}
+        step={5}
+        unit="miles"
+        showValue
+      />
+    </div>
+  );
+
+  const hero = (
+    <SavingsVerdict
+      headline="PAYS OFF IN"
+      amount={heroYears}
+      amountPrefix=""
+      amountDecimals={1}
+      amountUnit=" years"
+      sub={
+        <>
+          A {`$${Math.round(results.effectivePremium).toLocaleString()}`} EV premium recovered from {`$${Math.round(results.totalMonthlySavings).toLocaleString()}`}/mo in fuel and maintenance savings.
+          10 year net: {`$${Math.round(results.tenYearSavings).toLocaleString()}`}.
+        </>
+      }
+      dialPercent={dialPercent}
+      dialLabel="5 YR RECOVERY"
+    >
+      <SavingsTile
+        label="ANNUAL SAVINGS"
+        value={Math.max(0, results.totalMonthlySavings * 12)}
+        prefix="$"
+        unit="/yr"
+        tier="good"
+        animate
+      />
+      <SavingsTile
+        label="EV PREMIUM"
+        value={results.effectivePremium}
+        prefix="$"
+        unit=" net"
+        tier="warn"
+        animate
+      />
+      <SavingsTile
+        label="5 YR NET"
+        value={Math.max(0, results.totalMonthlySavings * 60 - results.effectivePremium)}
+        prefix="$"
+        unit=" total"
+        tier="volt"
+        animate
+      />
+      <SavingsTile
+        label="BREAK-EVEN MONTH"
+        value={breakEvenMonth}
+        unit={breakEvenMonth > 0 ? " mo" : " never"}
+        tier={breakEvenMonth > 0 ? "good" : "warn"}
+        animate
+      />
+    </SavingsVerdict>
+  );
 
   return (
-    <CalculatorLayout
+    <CalculatorShell
+      eyebrow="Payback period"
       title="EV Payback Period Calculator"
-      description="Find out when an electric vehicle pays for itself compared to a similar gas car, factoring in fuel savings, maintenance, and incentives."
-      intro="The average EV costs $5,000 to $15,000 more than a comparable gas car upfront, but lower fuel and maintenance costs close the gap over time. Most EV buyers break even in 3 to 7 years. This calculator shows your specific payback timeline based on real electricity rates, gas prices, and your driving habits."
-      lastUpdated="March 2026"
+      quickAnswer="Most EV buyers break even in 3 to 7 years. Higher daily miles and state incentives shorten the timeline."
+      inputs={inputs}
+      hero={hero}
     >
       <CalculatorSchema
         name="EV Payback Period Calculator"
@@ -200,325 +267,104 @@ export default function PaybackPeriodPage() {
         ]}
       />
 
-      {/* Inputs */}
-      <div className="grid gap-6 sm:grid-cols-2">
-        <SelectInput
-          label="Select Your EV"
-          value={vehicleId}
-          onChange={setVehicleId}
-          options={vehicleOptions}
-          helpText={`${vehicle.kwhPer100Miles} kWh/100mi \u2022 ${vehicle.epaRangeMiles} mi EPA range`}
-        />
-
-        <SelectInput
-          label="Your State"
-          value={stateCode}
-          onChange={setStateCode}
-          options={stateOptions}
-          helpText="Determines your electricity rate from EIA data"
-        />
-
-        <NumberInput
-          label="EV Purchase Price"
-          value={evPrice}
-          onChange={setEvPrice}
-          min={10000}
-          max={150000}
-          step={500}
-          unit={"$"}
-          helpText="Sticker price or negotiated price before incentives"
-        />
-
-        <NumberInput
-          label="Comparable Gas Car Price"
-          value={gasCarPrice}
-          onChange={setGasCarPrice}
-          min={5000}
-          max={100000}
-          step={500}
-          unit={"$"}
-          helpText="Price of a similar gas car you would buy instead"
-        />
-
-        <NumberInput
-          label="Gas Price"
-          value={gasPrice}
-          onChange={setGasPrice}
-          min={1}
-          max={10}
-          step={0.1}
-          unit={"$/gal"}
-        />
-
-        <NumberInput
-          label="Gas Car Fuel Economy"
-          value={gasCarMpg}
-          onChange={setGasCarMpg}
-          min={10}
-          max={60}
-          step={1}
-          unit={"MPG"}
-        />
-
-        <NumberInput
-          label="Monthly Maintenance Savings"
-          value={maintenanceSavings}
-          onChange={setMaintenanceSavings}
-          min={0}
-          max={200}
-          step={5}
-          unit={"$/mo"}
-          helpText="No oil changes, fewer brake jobs, no transmission service"
-        />
-
-        <NumberInput
-          label="Federal Tax Credit Applied"
-          value={federalCredit}
-          onChange={setFederalCredit}
-          min={0}
-          max={7500}
-          step={500}
-          unit={"$"}
-          helpText="30D expired early 2026; enter $0 unless you qualify otherwise"
-        />
-
-        <NumberInput
-          label="State Incentive / Rebate"
-          value={stateIncentive}
-          onChange={setStateIncentive}
-          min={0}
-          max={10000}
-          step={250}
-          unit={"$"}
-          helpText="Check your state's current EV rebate programs"
-        />
-
-        <div className="sm:col-span-2">
-          <SliderInput
-            label="Daily Miles Driven"
-            value={dailyMiles}
-            onChange={setDailyMiles}
+      {/* Advanced inputs (collapsed by default) */}
+      <details className="group mb-6 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-3">
+        <summary className="cursor-pointer text-sm font-medium text-[var(--color-ink-2)]">
+          Advanced inputs
+        </summary>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <NumberInput
+            label="EV purchase price"
+            value={evPrice}
+            onChange={setEvPrice}
+            min={10000}
+            max={150000}
+            step={500}
+            unit={"$"}
+            helpText="Sticker price or negotiated price before incentives"
+          />
+          <NumberInput
+            label="Comparable gas car price"
+            value={gasCarPrice}
+            onChange={setGasCarPrice}
+            min={5000}
+            max={100000}
+            step={500}
+            unit={"$"}
+            helpText="Price of a similar gas car you would buy instead"
+          />
+          <NumberInput
+            label="Gas price"
+            value={gasPrice}
+            onChange={setGasPrice}
+            min={1}
+            max={10}
+            step={0.1}
+            unit={"$/gal"}
+          />
+          <NumberInput
+            label="Gas car fuel economy"
+            value={gasCarMpg}
+            onChange={setGasCarMpg}
             min={10}
-            max={150}
+            max={60}
+            step={1}
+            unit={"MPG"}
+          />
+          <NumberInput
+            label="Monthly maintenance savings"
+            value={maintenanceSavings}
+            onChange={setMaintenanceSavings}
+            min={0}
+            max={200}
             step={5}
-            unit="miles"
-            showValue
+            unit={"$/mo"}
+            helpText="No oil changes, fewer brake jobs, no transmission service"
+          />
+          <NumberInput
+            label="Federal tax credit applied"
+            value={federalCredit}
+            onChange={setFederalCredit}
+            min={0}
+            max={7500}
+            step={500}
+            unit={"$"}
+            helpText="30D expired Sept 30 2025. Enter $0 for new 2026+ purchases."
+          />
+          <NumberInput
+            label="State incentive / rebate"
+            value={stateIncentive}
+            onChange={setStateIncentive}
+            min={0}
+            max={10000}
+            step={250}
+            unit={"$"}
+            helpText="Check your state's current EV rebate programs"
           />
         </div>
+      </details>
+
+      {/* Contextual cross-links */}
+      <div className="mt-8 flex flex-wrap gap-3 text-sm">
+        <Link
+          href="/gas-vs-electric"
+          className="rounded-lg border border-[var(--color-border)] bg-white px-3 py-2 font-medium text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
+        >
+          Gas vs electric cost comparison
+        </Link>
+        <Link
+          href="/ev-charging-cost"
+          className="rounded-lg border border-[var(--color-border)] bg-white px-3 py-2 font-medium text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
+        >
+          Calculate monthly charging cost
+        </Link>
+        <Link
+          href="/tax-credits"
+          className="rounded-lg border border-[var(--color-border)] bg-white px-3 py-2 font-medium text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
+        >
+          Check available EV tax credits
+        </Link>
       </div>
-
-      {/* Results */}
-      <div className="mt-10">
-        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
-          Your Payback Breakdown
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <ResultCard
-            label="Payback Period"
-            value={formatPayback(results.paybackMonths)}
-            unit=""
-            highlight
-            icon="\uD83D\uDCC5"
-          />
-          <ResultCard
-            label="Monthly Fuel Savings"
-            value={fmt.format(results.monthlyFuelSavings)}
-            unit="/month"
-            icon="\u26FD"
-          />
-          <ResultCard
-            label="Total Monthly Savings"
-            value={fmt.format(results.totalMonthlySavings)}
-            unit="/month (fuel + maintenance)"
-            icon="\uD83D\uDCB0"
-          />
-          <ResultCard
-            label="Effective Price Premium"
-            value={fmtShort.format(results.effectivePremium)}
-            unit="after incentives"
-            icon="\uD83C\uDFF7\uFE0F"
-          />
-          <ResultCard
-            label="10-Year Net Savings"
-            value={fmtShort.format(results.tenYearSavings)}
-            unit="total"
-            highlight
-            icon="\uD83C\uDFC6"
-          />
-          <ResultCard
-            label="Monthly Gas Cost (Comparable)"
-            value={fmt.format(results.monthlyGasCost)}
-            unit="/month"
-            icon="\uD83D\uDEE2\uFE0F"
-          />
-        </div>
-
-        {/* Monthly Savings Breakdown */}
-        <div className="mt-8 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-5">
-          <h3 className="mb-4 text-sm font-semibold text-[var(--color-text)]">
-            Monthly Savings Breakdown
-          </h3>
-          <div className="space-y-3 text-sm">
-            <div className="flex justify-between">
-              <span className="text-[var(--color-text-muted)]">
-                Gas car fuel cost
-              </span>
-              <span className="font-medium text-[var(--color-text)]">
-                {fmt.format(results.monthlyGasCost)}/mo
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-[var(--color-text-muted)]">
-                EV electricity cost
-              </span>
-              <span className="font-medium text-[var(--color-text)]">
-                {fmt.format(results.monthlyElecCost)}/mo
-              </span>
-            </div>
-            <div className="flex justify-between border-t border-[var(--color-border)] pt-2">
-              <span className="text-[var(--color-text-muted)]">
-                Fuel savings
-              </span>
-              <span className="font-medium text-[var(--color-ev-green)]">
-                {fmt.format(results.monthlyFuelSavings)}/mo
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-[var(--color-text-muted)]">
-                Maintenance savings
-              </span>
-              <span className="font-medium text-[var(--color-ev-green)]">
-                {fmt.format(maintenanceSavings)}/mo
-              </span>
-            </div>
-            <div className="flex justify-between border-t border-[var(--color-border)] pt-2">
-              <span className="font-semibold text-[var(--color-text)]">
-                Total monthly savings
-              </span>
-              <span className="font-bold text-[var(--color-ev-green)]">
-                {fmt.format(results.totalMonthlySavings)}/mo
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Break-Even Timeline */}
-        <div className="mt-8 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-5">
-          <h3 className="mb-4 text-sm font-semibold text-[var(--color-text)]">
-            Break-Even Timeline
-          </h3>
-          <div className="relative">
-            <div className="h-6 w-full overflow-hidden rounded-full bg-[var(--color-border)]">
-              <div
-                className="h-full rounded-full bg-[var(--color-primary)] transition-all duration-500"
-                style={{ width: `${paybackPct}%` }}
-              />
-            </div>
-
-            <div className="mt-3 flex items-start justify-between text-xs">
-              <div className="text-[var(--color-text-muted)]">
-                <span className="block font-semibold">Today</span>
-                <span>{fmtShort.format(results.effectivePremium)} premium</span>
-              </div>
-
-              {isFinite(results.paybackMonths) &&
-                results.paybackMonths <= 120 && (
-                  <div
-                    className="absolute text-center"
-                    style={{
-                      left: `${paybackPct}%`,
-                      transform: "translateX(-50%)",
-                      top: "2.25rem",
-                    }}
-                  >
-                    <span className="block font-semibold text-[var(--color-ev-green)]">
-                      Break Even
-                    </span>
-                    <span className="text-[var(--color-text-muted)]">
-                      Month {Math.ceil(results.paybackMonths)}
-                    </span>
-                  </div>
-                )}
-
-              <div className="text-right text-[var(--color-text-muted)]">
-                <span className="block font-semibold">10 Years</span>
-                <span className="font-semibold text-[var(--color-ev-green)]">
-                  {fmtShort.format(results.tenYearSavings)} saved
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {!isFinite(results.paybackMonths) && (
-            <p className="mt-4 text-center text-sm text-[var(--color-text-muted)]">
-              The EV does not pay for itself with current settings. Try
-              increasing daily miles, adjusting gas prices, or adding
-              incentives.
-            </p>
-          )}
-
-          {isFinite(results.paybackMonths) && results.paybackMonths > 120 && (
-            <p className="mt-4 text-center text-sm text-[var(--color-text-muted)]">
-              Payback period exceeds 10 years (
-              {formatPayback(results.paybackMonths)}). Consider a lower-priced
-              EV, higher daily mileage, or available incentives.
-            </p>
-          )}
-        </div>
-
-        {/* Year-by-Year Cumulative Savings */}
-        <div className="mt-8 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-5">
-          <h3 className="mb-4 text-sm font-semibold text-[var(--color-text)]">
-            Year-by-Year Cumulative Savings
-          </h3>
-          <div className="space-y-2 text-sm">
-            {results.yearBySavings.map((cumulative, i) => (
-              <div key={i} className="flex justify-between">
-                <span className="text-[var(--color-text-muted)]">
-                  Year {i + 1}
-                </span>
-                <span
-                  className={`font-medium ${
-                    cumulative >= 0
-                      ? "text-[var(--color-ev-green)]"
-                      : "text-red-500"
-                  }`}
-                >
-                  {cumulative >= 0 ? "+" : ""}
-                  {fmtShort.format(cumulative)}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Contextual Cross-Links */}
-        <div className="mt-6 flex flex-wrap gap-3 text-sm">
-          <Link
-            href="/gas-vs-electric"
-            className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5"
-          >
-            Gas vs electric cost comparison →
-          </Link>
-          <Link
-            href="/ev-charging-cost"
-            className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5"
-          >
-            Calculate monthly charging cost →
-          </Link>
-          <Link
-            href="/tax-credits"
-            className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5"
-          >
-            Check available EV tax credits →
-          </Link>
-        </div>
-      </div>
-
-      <ShareResults
-        title={`EV Payback: ${formatPayback(results.paybackMonths)}`}
-        text={`My EV pays for itself in ${formatPayback(results.paybackMonths)} vs a gas car. Saving ${fmt.format(results.totalMonthlySavings)}/month on fuel and maintenance. ${fmtShort.format(results.tenYearSavings)} total savings over 10 years!`}
-      />
 
       <EducationalContent>
         <h2>How the EV Payback Calculation Works</h2>
@@ -572,6 +418,6 @@ export default function PaybackPeriodPage() {
       <FAQSection questions={paybackPeriodFAQ} />
       <EmailCapture source="payback-period" />
       <RelatedCalculators currentPath="/payback-period" />
-    </CalculatorLayout>
+    </CalculatorShell>
   );
 }
