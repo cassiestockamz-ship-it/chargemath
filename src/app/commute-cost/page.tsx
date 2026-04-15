@@ -2,16 +2,17 @@
 
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
-import CalculatorLayout from "@/components/CalculatorLayout";
+import CalculatorShell from "@/components/CalculatorShell";
+import SavingsVerdict from "@/components/SavingsVerdict";
+import SavingsTile from "@/components/SavingsTile";
+import SavingsMeter from "@/components/SavingsMeter";
 import SelectInput from "@/components/SelectInput";
 import NumberInput from "@/components/NumberInput";
 import SliderInput from "@/components/SliderInput";
-import ResultCard from "@/components/ResultCard";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import FAQSection from "@/components/FAQSection";
-import ShareResults from "@/components/ShareResults";
 import EducationalContent from "@/components/EducationalContent";
 import EmailCapture from "@/components/EmailCapture";
 import { getDefaultStateCode } from "@/lib/useDefaultState";
@@ -21,20 +22,6 @@ import {
   NATIONAL_AVERAGE_RATE,
 } from "@/data/electricity-rates";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
-
-const fmt = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
-
-const fmtShort = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
 
 const commuteFAQ = [
   {
@@ -201,21 +188,97 @@ export default function CommuteCostPage() {
     { value: "6", label: "6 days/week" },
   ];
 
-  const evBarWidth = Math.min(
-    100,
-    (results.monthlyEvCost / Math.max(results.monthlyEvCost, results.monthlyGasCost)) * 100
+  const dialPercent =
+    results.monthlyGasCost > 0
+      ? Math.max(0, Math.min(100, (results.monthlySavings / results.monthlyGasCost) * 100))
+      : 0;
+
+  const inputs = (
+    <div className="grid gap-4 sm:grid-cols-3">
+      <SelectInput
+        label="Your EV"
+        value={vehicleId}
+        onChange={setVehicleId}
+        options={vehicleOptions}
+        helpText={`${vehicle.epaRangeMiles} mi range, ${vehicle.kwhPer100Miles} kWh/100mi`}
+      />
+      <SelectInput
+        label="Your state"
+        value={stateCode}
+        onChange={setStateCode}
+        options={stateOptions}
+      />
+      <SliderInput
+        label="One-way commute"
+        value={oneWayMiles}
+        onChange={setOneWayMiles}
+        min={5}
+        max={100}
+        step={1}
+        unit="mi"
+        showValue
+      />
+    </div>
   );
-  const gasBarWidth = Math.min(
-    100,
-    (results.monthlyGasCost / Math.max(results.monthlyEvCost, results.monthlyGasCost)) * 100
+
+  const hero = (
+    <SavingsVerdict
+      headline="COMMUTE COSTS"
+      amount={results.monthlyEvCost}
+      amountUnit="/month"
+      sub={
+        <>
+          {results.dailyCommuteMiles} miles round trip, {workDaysPerWeek} days a week. Driving a
+          gas car instead would cost {`$${results.monthlyGasCost.toFixed(0)}`}/month, so EV saves
+          you {`$${results.monthlySavings.toFixed(0)}`}/month.
+        </>
+      }
+      dialPercent={dialPercent}
+      dialLabel="FUEL CUT"
+    >
+      <SavingsTile
+        label="PER TRIP"
+        value={results.dailyEvCost}
+        prefix="$"
+        decimals={2}
+        unit="/day"
+        tier="brand"
+        animate
+      />
+      <SavingsTile
+        label="MONTHLY"
+        value={results.monthlyEvCost}
+        prefix="$"
+        unit="/mo"
+        tier="volt"
+        animate
+      />
+      <SavingsTile
+        label="ANNUAL"
+        value={results.annualEvCost}
+        prefix="$"
+        unit="/yr"
+        tier="good"
+        animate
+      />
+      <SavingsTile
+        label="5 YEAR"
+        value={results.annualEvCost * 5}
+        prefix="$"
+        unit=" total"
+        tier="mid"
+        animate
+      />
+    </SavingsVerdict>
   );
 
   return (
-    <CalculatorLayout
-      title="EV Commute Cost Calculator"
-      description="Compare your daily commute costs between an EV and a gas car. Factor in electricity rates, gas prices, parking, and tolls."
-      lastUpdated="March 2026"
-      intro="The average American commutes 27 miles each way to work. For an EV driver, that round-trip costs about $2-3 in electricity compared to $7-9 in gas. Over a full work year, switching to an EV for commuting alone can save $1,000-2,000 depending on your vehicle and local rates."
+    <CalculatorShell
+      eyebrow="Commute cost"
+      title="EV Commute Cost"
+      quickAnswer="A 25-mile one-way EV commute typically costs $30 to $50 per month in electricity, compared to $100 to $150 for a gas car."
+      inputs={inputs}
+      hero={hero}
     >
       <CalculatorSchema
         name="EV Commute Cost Calculator"
@@ -229,249 +292,148 @@ export default function CommuteCostPage() {
         ]}
       />
 
-      {/* Inputs */}
-      <div className="grid gap-6 sm:grid-cols-2">
-        <SelectInput
-          label="Select Your EV"
-          value={vehicleId}
-          onChange={setVehicleId}
-          options={vehicleOptions}
-          helpText={`${vehicle.batteryCapacityKwh} kWh battery \u2022 ${vehicle.epaRangeMiles} mi EPA range \u2022 ${vehicle.kwhPer100Miles} kWh/100mi`}
-        />
-
-        <SelectInput
-          label="Your State"
-          value={stateCode}
-          onChange={setStateCode}
-          options={stateOptions}
-          helpText="Average residential electricity rate from EIA"
-        />
-
-        <div className="sm:col-span-2">
-          <SliderInput
-            label="One-Way Commute Distance"
-            value={oneWayMiles}
-            onChange={setOneWayMiles}
-            min={5}
+      {/* Advanced inputs (collapsed by default) */}
+      <details className="mb-6 rounded-2xl border border-[var(--color-border)] bg-white p-4 sm:p-5">
+        <summary className="cursor-pointer select-none text-sm font-semibold text-[var(--color-ink)]">
+          Advanced inputs
+        </summary>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <SelectInput
+            label="Work days per week"
+            value={String(workDaysPerWeek)}
+            onChange={(v) => setWorkDaysPerWeek(Number(v))}
+            options={workDayOptions}
+          />
+          <NumberInput
+            label="Weeks worked per year"
+            value={weeksPerYear}
+            onChange={setWeeksPerYear}
+            min={1}
+            max={52}
+            step={1}
+            helpText="Typically 48 to 50 after vacation"
+          />
+          <NumberInput
+            label="Gas price"
+            value={gasPrice}
+            onChange={setGasPrice}
+            min={1}
+            max={10}
+            step={0.1}
+            unit="$/gal"
+          />
+          <NumberInput
+            label="Gas car MPG"
+            value={gasMpg}
+            onChange={setGasMpg}
+            min={10}
+            max={60}
+            step={1}
+            unit="MPG"
+          />
+          <NumberInput
+            label="Parking cost per day"
+            value={parkingCostPerDay}
+            onChange={setParkingCostPerDay}
+            min={0}
             max={100}
             step={1}
-            unit="miles"
-            showValue
+            unit="$/day"
+            helpText="Leave at 0 if parking is free"
+          />
+          <NumberInput
+            label="Tolls per day"
+            value={tollsPerDay}
+            onChange={setTollsPerDay}
+            min={0}
+            max={50}
+            step={0.5}
+            unit="$/day"
+            helpText="Round-trip toll costs"
           />
         </div>
+      </details>
 
-        <SelectInput
-          label="Work Days Per Week"
-          value={String(workDaysPerWeek)}
-          onChange={(v) => setWorkDaysPerWeek(Number(v))}
-          options={workDayOptions}
+      {/* Signature split-column live meter: GAS vs EV monthly commute */}
+      <SavingsMeter
+        leftLabel="GAS"
+        leftValue={results.monthlyGasCost}
+        rightLabel="EV"
+        rightValue={results.monthlyEvCost}
+        period="/mo"
+      />
+
+      <h2 className="cm-eyebrow mt-8 mb-3">Commute stats</h2>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <SavingsTile
+          label="MONTHLY SAVINGS"
+          value={Math.max(0, results.monthlySavings)}
+          prefix="$"
+          unit="/mo"
+          tier="good"
+          animate
         />
-
-        <NumberInput
-          label="Weeks Worked Per Year"
-          value={weeksPerYear}
-          onChange={setWeeksPerYear}
-          min={1}
-          max={52}
-          step={1}
-          helpText="Typically 48-50 after vacation"
+        <SavingsTile
+          label="ANNUAL SAVINGS"
+          value={Math.max(0, results.annualSavings)}
+          prefix="$"
+          unit="/yr"
+          tier="good"
+          animate
         />
-
-        <NumberInput
-          label="Gas Price"
-          value={gasPrice}
-          onChange={setGasPrice}
-          min={1}
-          max={10}
-          step={0.1}
-          unit="$/gal"
-          helpText="Current price at your local station"
+        <SavingsTile
+          label="RANGE USED/DAY"
+          value={results.rangeUsedPercent}
+          decimals={1}
+          unit={`% of ${vehicle.epaRangeMiles}mi`}
+          tier="brand"
+          animate
         />
-
-        <NumberInput
-          label="Gas Car MPG"
-          value={gasMpg}
-          onChange={setGasMpg}
-          min={10}
-          max={60}
-          step={1}
-          unit="MPG"
-          helpText="Combined city/highway for your gas car"
-        />
-
-        <NumberInput
-          label="Parking Cost Per Day"
-          value={parkingCostPerDay}
-          onChange={setParkingCostPerDay}
-          min={0}
-          max={100}
-          step={1}
-          unit="$/day"
-          helpText="Leave at 0 if parking is free"
-        />
-
-        <NumberInput
-          label="Tolls Per Day"
-          value={tollsPerDay}
-          onChange={setTollsPerDay}
-          min={0}
-          max={50}
-          step={0.5}
-          unit="$/day"
-          helpText="Round-trip toll costs"
+        <SavingsTile
+          label="ANNUAL MILES"
+          value={results.annualCommuteMiles}
+          unit=" mi/yr"
+          tier="mid"
+          animate
         />
       </div>
 
-      {/* Results */}
-      <div className="mt-10">
-        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
-          Your Commute Cost Breakdown
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <ResultCard
-            label="Daily Cost (EV)"
-            value={fmt.format(results.dailyEvCost)}
-            unit="/day"
-            highlight
-            icon="⚡"
-          />
-          <ResultCard
-            label="Daily Cost (Gas)"
-            value={fmt.format(results.dailyGasCost)}
-            unit="/day"
-            icon="⛽"
-          />
-          <ResultCard
-            label="Monthly Savings"
-            value={fmt.format(results.monthlySavings)}
-            unit="/month"
-            highlight
-            icon="💰"
-          />
-          <ResultCard
-            label="Range Used Per Day"
-            value={`${results.rangeUsedPercent.toFixed(1)}%`}
-            unit={`of ${vehicle.epaRangeMiles} mi`}
-            icon="🔋"
-          />
-        </div>
-
-        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <ResultCard
-            label="Annual Savings"
-            value={fmtShort.format(results.annualSavings)}
-            unit="/year"
-            highlight
-            icon="📅"
-          />
-          <ResultCard
-            label="5-Year Commute Savings"
-            value={fmtShort.format(results.fiveYearSavings)}
-            unit="over 5 years"
-            icon="🏦"
-          />
-          <ResultCard
-            label="Annual Commute Miles"
-            value={results.annualCommuteMiles.toLocaleString()}
-            unit="miles/year"
-            icon="🛣️"
-          />
-        </div>
-
-        {/* Comparison Bar */}
-        <div className="mt-8 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-5">
-          <h3 className="mb-4 text-sm font-semibold text-[var(--color-text)]">
-            Monthly Commute Fuel Cost Comparison
-          </h3>
-          <div className="space-y-3">
-            <div>
-              <div className="mb-1 flex items-center justify-between text-sm">
-                <span className="font-medium text-[var(--color-ev-green)]">
-                  EV (Electric)
-                </span>
-                <span className="font-semibold text-[var(--color-text)]">
-                  {fmt.format(results.monthlyEvCost)}
-                </span>
-              </div>
-              <div className="h-4 w-full overflow-hidden rounded-full bg-[var(--color-border)]">
-                <div
-                  className="h-full rounded-full bg-[var(--color-ev-green)] transition-all duration-500"
-                  style={{ width: `${evBarWidth}%` }}
-                />
-              </div>
-            </div>
-            <div>
-              <div className="mb-1 flex items-center justify-between text-sm">
-                <span className="font-medium text-[var(--color-gas-red)]">
-                  Gas ({gasMpg} MPG @ ${gasPrice.toFixed(2)}/gal)
-                </span>
-                <span className="font-semibold text-[var(--color-text)]">
-                  {fmt.format(results.monthlyGasCost)}
-                </span>
-              </div>
-              <div className="h-4 w-full overflow-hidden rounded-full bg-[var(--color-border)]">
-                <div
-                  className="h-full rounded-full bg-[var(--color-gas-red)] transition-all duration-500"
-                  style={{ width: `${gasBarWidth}%` }}
-                />
-              </div>
-            </div>
-          </div>
-          {results.monthlySavings > 0 ? (
-            <p className="mt-4 text-center text-sm font-semibold text-[var(--color-ev-green)]">
-              You save {fmt.format(results.monthlySavings)}/month commuting with an EV
-            </p>
-          ) : (
-            <p className="mt-4 text-center text-sm font-semibold text-amber-600">
-              Gas is cheaper by {fmt.format(Math.abs(results.monthlySavings))}/month for this commute
-            </p>
-          )}
-          {results.dailyFixedCost > 0 && (
-            <p className="mt-2 text-center text-xs text-[var(--color-text-muted)]">
-              Plus {fmt.format(results.dailyFixedCost)}/day in parking and tolls (same for both)
-            </p>
-          )}
-          <p className="mt-3 text-center text-xs text-[var(--color-text-muted)]">
-            For a full side-by-side breakdown, try our{" "}
-            <Link href="/gas-vs-electric" className="text-[var(--color-primary)] hover:underline">
-              Gas vs Electric calculator
-            </Link>.
-          </p>
-        </div>
-
-        {/* Contextual Cross-Links */}
-        <div className="mt-6 flex flex-wrap gap-3 text-sm">
-          <Link href="/ev-charging-cost" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
-            Total charging cost breakdown →
-          </Link>
-          <Link href="/bill-impact" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
-            See your electricity bill impact →
-          </Link>
-          <Link href="/charging-time" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
-            How long to charge after commuting? →
-          </Link>
-        </div>
-
-        <ShareResults
-          title={`EV Commute Savings: ${fmtShort.format(results.annualSavings)}/year`}
-          text={`My ${vehicle.year} ${vehicle.make} ${vehicle.model} costs ${fmt.format(results.dailyEvCost)}/day to commute (${oneWayMiles} mi each way) vs ${fmt.format(results.dailyGasCost)} for gas. That's ${fmtShort.format(results.annualSavings)}/year in savings!`}
-        />
+      {/* Contextual cross-links */}
+      <div className="mt-8 flex flex-wrap gap-3 text-sm">
+        <Link
+          href="/ev-charging-cost"
+          className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
+        >
+          Total charging cost breakdown
+        </Link>
+        <Link
+          href="/bill-impact"
+          className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
+        >
+          See your electricity bill impact
+        </Link>
+        <Link
+          href="/charging-time"
+          className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
+        >
+          How long to charge after commuting?
+        </Link>
       </div>
 
       <EducationalContent>
-        <h2>How We Calculate Commute Costs</h2>
+        <h2>How we calculate commute costs</h2>
         <p>
           This calculator takes your one-way commute distance, doubles it for the round trip, then multiplies by your work schedule to get monthly and annual commute miles. For the EV side, we use your selected vehicle&apos;s EPA-rated efficiency (kWh per 100 miles) and your state&apos;s residential electricity rate to calculate electricity costs. For gas, we divide commute miles by your car&apos;s MPG and multiply by the gas price.
         </p>
-        <h3>Why EV Commuting Is Cheaper</h3>
+        <h3>Why EV commuting is cheaper</h3>
         <p>
-          Electric motors are roughly 3-4 times more efficient than internal combustion engines at converting energy into motion. At the national average electricity rate of 16.11 cents/kWh, most EVs cost between $0.03-0.05 per mile. A gas car averaging 28 MPG at $3.50/gallon costs about $0.13 per mile. That efficiency gap adds up quickly over 250+ commute days per year.
+          Electric motors are roughly 3 to 4 times more efficient than internal combustion engines at converting energy into motion. At the national average electricity rate of 16.11 cents/kWh, most EVs cost between $0.03 and $0.05 per mile. A gas car averaging 28 MPG at $3.50/gallon costs about $0.13 per mile. That efficiency gap adds up quickly over 250+ commute days per year.
         </p>
-        <h3>Factors That Affect Your Real Commute Cost</h3>
+        <h3>Factors that affect your real commute cost</h3>
         <ul>
           <li>Highway vs city driving: EVs are more efficient at lower speeds, while gas cars often get better highway MPG. Stop-and-go commutes favor EVs even more due to regenerative braking.</li>
-          <li>Temperature: Cold weather increases EV energy use by 20-40%. Pre-conditioning while plugged in helps offset this.</li>
-          <li>Time-of-use rates: Many utilities charge less at night. Charging off-peak can reduce your commute electricity cost by 30-50%.</li>
+          <li>Temperature: Cold weather increases EV energy use by 20 to 40%. Pre-conditioning while plugged in helps offset this.</li>
+          <li>Time-of-use rates: Many utilities charge less at night. Charging off-peak can reduce your commute electricity cost by 30 to 50%.</li>
           <li>Workplace charging: Free or subsidized workplace charging can eliminate commute fuel costs entirely.</li>
         </ul>
       </EducationalContent>
@@ -479,6 +441,6 @@ export default function CommuteCostPage() {
       <FAQSection questions={commuteFAQ} />
       <EmailCapture source="commute-cost" />
       <RelatedCalculators currentPath="/commute-cost" />
-    </CalculatorLayout>
+    </CalculatorShell>
   );
 }

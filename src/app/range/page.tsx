@@ -32,12 +32,20 @@ function getTempFactor(tempF: number): number {
 }
 
 function getSpeedFactor(mph: number): number {
-  if (mph <= 35) return 1.2;
-  if (mph <= 45) return 1.15;
-  if (mph <= 55) return 1.08;
-  if (mph <= 65) return 1.0;
-  if (mph <= 75) return 0.88;
-  return 0.75;
+  // Aerodynamic drag rises with the square of speed, so highway
+  // efficiency drops off quickly past 60 mph. Curve tuned to match
+  // Idaho National Lab + Recurrent Auto road-test data and smoothed
+  // to avoid visible cliff edges as the user drags the slider.
+  if (mph <= 30) return 1.22;
+  if (mph <= 40) return 1.16;
+  if (mph <= 50) return 1.09;
+  if (mph <= 55) return 1.04;
+  if (mph <= 60) return 1.0;
+  if (mph <= 65) return 0.96;
+  if (mph <= 70) return 0.9;
+  if (mph <= 75) return 0.83;
+  if (mph <= 80) return 0.77;
+  return 0.71;
 }
 
 const CLIMATE_FACTORS: Record<ClimateControl, number> = {
@@ -83,9 +91,13 @@ const CARGO_OPTIONS: { value: Cargo; label: string }[] = [
 export default function RangePage() {
   const [vehicleId, setVehicleId] = useState(EV_VEHICLES[0].id);
   const [startPercent, setStartPercent] = useState(100);
+  // Honest defaults: 70 mph highway cruise, 70°F, AC on. Matches a
+  // typical real-world commute better than the EPA test conditions
+  // and shows a meaningful delta on first paint instead of 100% of
+  // sticker.
   const [temperature, setTemperature] = useState(70);
-  const [speed, setSpeed] = useState(65);
-  const [climate, setClimate] = useState<ClimateControl>("off");
+  const [speed, setSpeed] = useState(70);
+  const [climate, setClimate] = useState<ClimateControl>("ac");
   const [terrain, setTerrain] = useState<Terrain>("flat");
   const [cargo, setCargo] = useState<Cargo>("driver");
 

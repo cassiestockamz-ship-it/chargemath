@@ -1,33 +1,24 @@
 "use client";
 
-import CountUp from "./CountUp";
-
 interface Props {
-  /** Label for the left column (e.g. "GAS", "GRID", "PUBLIC") */
   leftLabel: string;
-  /** Left annual cost (the losing / more-expensive side) */
   leftValue: number;
-  /** Label for the right column (e.g. "EV", "SOLAR", "HOME") */
   rightLabel: string;
-  /** Right annual cost */
   rightValue: number;
-  /** Optional period suffix, default "/yr" */
   period?: string;
-  /** Optional middle caption, default "SAVES" */
   verb?: string;
   className?: string;
 }
 
 /**
- * The ChargeMath signature interaction. A split-column cost meter that
- * sits above the result grid and morphs as any input changes. Left
- * column is the "losing" option (gas, grid, public charging); right
- * column is the "winning" option (EV, solar, home charging). The
- * middle delta count-ups in volt yellow.
+ * The ChargeMath signature interaction. Split-column cost meter
+ * sitting above the result grid on cost-comparison calculators.
+ * Each digit rolls independently like a real split-flap odometer
+ * as the value changes, driven by a pure CSS transform transition.
  *
- * This is a pure re-render component: whenever leftValue / rightValue
- * change upstream, the CountUp components re-animate from the current
- * displayed number to the new target.
+ * Left column = losing option (gas, grid, public)
+ * Right column = winning option (EV, solar, home)
+ * Middle = volt-yellow delta
  */
 export default function SavingsMeter({
   leftLabel,
@@ -53,32 +44,28 @@ export default function SavingsMeter({
       ].join(" ")}
       aria-label="Live savings meter"
     >
-      {/* Top live indicator */}
       <div className="mb-4 flex items-center gap-2">
-        <span className="animate-live-dot grid h-2 w-2 place-items-center rounded-full bg-[var(--color-volt)] shadow-[0_0_8px_var(--color-volt)]" aria-hidden />
+        <span
+          className="animate-live-dot grid h-2 w-2 place-items-center rounded-full bg-[var(--color-volt)] shadow-[0_0_8px_var(--color-volt)]"
+          aria-hidden
+        />
         <span className="cm-eyebrow" style={{ color: "rgba(255,255,255,0.6)" }}>
           Live savings meter
         </span>
       </div>
 
-      {/* Three-column grid: left stack, middle delta flash, right stack */}
       <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 sm:gap-6">
         {/* LEFT */}
         <div className="flex flex-col items-start">
           <span className="cm-eyebrow mb-1" style={{ color: "rgba(255,255,255,0.55)" }}>
             {leftLabel}
           </span>
-          <span
-            className="font-bold leading-none tabular-nums"
-            style={{
-              fontFamily: "var(--font-display), var(--font-sans), sans-serif",
-              fontSize: "clamp(1.9rem, 7vw, 3rem)",
-              letterSpacing: "-0.02em",
-              color: "#ffffff",
-            }}
-          >
-            <CountUp value={leftValue} duration={700} prefix="$" />
-          </span>
+          <OdometerNumber
+            value={leftValue}
+            color="#ffffff"
+            size="clamp(1.9rem, 7vw, 3rem)"
+            prefix="$"
+          />
           <span className="cm-mono mt-1" style={{ color: "rgba(255,255,255,0.55)" }}>
             {period}
           </span>
@@ -89,16 +76,13 @@ export default function SavingsMeter({
           <div className="cm-eyebrow" style={{ color: "var(--color-volt)" }}>
             {verb}
           </div>
-          <div
-            className="mt-1 font-bold leading-none tabular-nums"
-            style={{
-              fontFamily: "var(--font-display), var(--font-sans), sans-serif",
-              fontSize: "clamp(1.6rem, 5.5vw, 2.4rem)",
-              color: "var(--color-volt)",
-              letterSpacing: "-0.02em",
-            }}
-          >
-            <CountUp value={delta} duration={700} prefix="$" />
+          <div className="mt-1">
+            <OdometerNumber
+              value={delta}
+              color="var(--color-volt)"
+              size="clamp(1.6rem, 5.5vw, 2.4rem)"
+              prefix="$"
+            />
           </div>
           <div className="cm-mono mt-1" style={{ color: "rgba(255,255,255,0.55)" }}>
             {period}
@@ -110,17 +94,12 @@ export default function SavingsMeter({
           <span className="cm-eyebrow mb-1" style={{ color: "var(--color-teal)" }}>
             {rightLabel}
           </span>
-          <span
-            className="font-bold leading-none tabular-nums"
-            style={{
-              fontFamily: "var(--font-display), var(--font-sans), sans-serif",
-              fontSize: "clamp(1.9rem, 7vw, 3rem)",
-              letterSpacing: "-0.02em",
-              color: "var(--color-teal)",
-            }}
-          >
-            <CountUp value={rightValue} duration={700} prefix="$" />
-          </span>
+          <OdometerNumber
+            value={rightValue}
+            color="var(--color-teal)"
+            size="clamp(1.9rem, 7vw, 3rem)"
+            prefix="$"
+          />
           <span className="cm-mono mt-1" style={{ color: "rgba(255,255,255,0.55)" }}>
             {period}
           </span>
@@ -149,7 +128,7 @@ export default function SavingsMeter({
         />
       </div>
 
-      {/* Glow accent in the background */}
+      {/* Glow accent */}
       <div
         aria-hidden
         className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full"
@@ -159,5 +138,94 @@ export default function SavingsMeter({
         }}
       />
     </section>
+  );
+}
+
+/* ————————————————————————————————————————————————
+   OdometerNumber — split-flap digit display
+   Each digit is a vertical column of 0-9 glyphs. The column
+   translates to the target digit via a CSS transition, so every
+   slider move looks like a real odometer roll.
+   ———————————————————————————————————————————————— */
+
+function OdometerNumber({
+  value,
+  color,
+  size,
+  prefix = "",
+}: {
+  value: number;
+  color: string;
+  size: string;
+  prefix?: string;
+}) {
+  const rounded = Math.max(0, Math.round(value));
+  const formatted = rounded.toLocaleString("en-US");
+  const chars = formatted.split("");
+
+  return (
+    <span
+      className="inline-flex items-baseline font-bold tabular-nums"
+      style={{
+        fontFamily: "var(--font-display), var(--font-sans), sans-serif",
+        fontSize: size,
+        lineHeight: 1,
+        letterSpacing: "-0.02em",
+        color,
+      }}
+      aria-label={`${prefix}${formatted}`}
+    >
+      {prefix && (
+        <span aria-hidden className="mr-[0.05em]">
+          {prefix}
+        </span>
+      )}
+      {chars.map((ch, i) => (
+        <DigitRoll key={`${i}-${chars.length}`} char={ch} />
+      ))}
+    </span>
+  );
+}
+
+function DigitRoll({ char }: { char: string }) {
+  const isDigit = /^[0-9]$/.test(char);
+  if (!isDigit) {
+    // comma, period, non-digit glyph — render inline
+    return (
+      <span aria-hidden style={{ display: "inline-block" }}>
+        {char}
+      </span>
+    );
+  }
+
+  const target = Number(char);
+
+  return (
+    <span
+      aria-hidden
+      className="relative inline-block overflow-hidden align-baseline"
+      style={{ height: "1em", lineHeight: 1 }}
+    >
+      {/* Width-holder: invisible 0, sized correctly by tabular-nums */}
+      <span style={{ visibility: "hidden" }}>0</span>
+      {/* Rolling column */}
+      <span
+        className="absolute left-0 top-0"
+        style={{
+          transform: `translateY(${-target * 100}%)`,
+          transition: "transform 420ms cubic-bezier(0.32, 0.72, 0, 1)",
+          willChange: "transform",
+        }}
+      >
+        {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((d) => (
+          <span
+            key={d}
+            style={{ display: "block", height: "1em", lineHeight: 1 }}
+          >
+            {d}
+          </span>
+        ))}
+      </span>
+    </span>
   );
 }

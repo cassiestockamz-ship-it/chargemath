@@ -3,6 +3,7 @@ import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import Link from "next/link";
 import MobileMenu from "@/components/MobileMenu";
 import NavDropdown from "@/components/NavDropdown";
+import CommandPalette from "@/components/CommandPalette";
 import "./globals.css";
 
 const inter = Inter({
@@ -106,13 +107,17 @@ export default function RootLayout({
               </span>
               ChargeMath
             </Link>
-            <nav className="vt-nav hidden items-center gap-1 md:flex">
+            <nav className="vt-nav hidden items-center gap-2 md:flex">
               <NavDropdown />
               <Link href="/guides" className="whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium text-[var(--color-ink-3)] transition-colors hover:bg-[var(--color-surface-alt)] hover:text-[var(--color-ink)]">
                 State Guides
               </Link>
+              <CommandPalette />
             </nav>
-            <MobileMenu />
+            <div className="flex items-center gap-2 md:hidden">
+              <CommandPalette />
+              <MobileMenu />
+            </div>
           </div>
         </header>
 
@@ -135,11 +140,11 @@ export default function RootLayout({
                 may vary based on your utility plan, charging habits, climate,
                 and driving conditions.
               </p>
-              <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-[var(--color-text-muted)]">
-                <Link href="/guides" className="hover:text-[var(--color-text)] transition-colors">State Guides</Link>
-                <Link href="/embed" className="hover:text-[var(--color-text)] transition-colors">Embed</Link>
-                <Link href="/about" className="hover:text-[var(--color-text)] transition-colors">About</Link>
-                <Link href="/methodology" className="hover:text-[var(--color-text)] transition-colors">Methodology</Link>
+              <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-[var(--color-ink-3)]">
+                <Link href="/guides" className="hover:text-[var(--color-ink)] transition-colors">State Guides</Link>
+                <Link href="/calculators" className="hover:text-[var(--color-ink)] transition-colors">All Calculators</Link>
+                <Link href="/embed" className="hover:text-[var(--color-ink)] transition-colors">Embed</Link>
+                <Link href="/about" className="hover:text-[var(--color-ink)] transition-colors">About</Link>
               </div>
               <p className="text-xs text-[var(--color-text-muted)]">
                 &copy; {new Date().getFullYear()} ChargeMath. All rights

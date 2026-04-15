@@ -12,6 +12,7 @@ import SliderInput from "@/components/SliderInput";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
+import HowToSchema from "@/components/HowToSchema";
 import FAQSection from "@/components/FAQSection";
 import EducationalContent from "@/components/EducationalContent";
 import EmailCapture from "@/components/EmailCapture";
@@ -251,6 +252,19 @@ export default function EVChargingCostPage() {
         name="EV Charging Cost Calculator"
         description="Calculate your monthly and annual EV charging costs based on your vehicle, state electricity rates, and daily driving habits."
         url="https://chargemath.com/ev-charging-cost"
+      />
+      <HowToSchema
+        name="How to estimate your monthly EV charging cost"
+        description="Work out how much your EV adds to your electric bill every month, using EPA efficiency data and your state's residential rate."
+        url="https://chargemath.com/ev-charging-cost"
+        totalTime="PT1M"
+        steps={[
+          { name: "Pick your EV", text: "Choose your vehicle. The calculator pulls its EPA efficiency in kilowatt-hours per 100 miles." },
+          { name: "Pick your state", text: "Your state selector sets the residential electricity rate (EIA averages). Rates vary by roughly 3x across the country, so this matters." },
+          { name: "Set daily driving miles", text: "Drag the slider to your typical daily mileage. The calculator multiplies by 365 to get annual kilowatt-hours." },
+          { name: "Optionally customize the rate", text: "If you know your actual cents per kilowatt-hour from a recent bill, open Advanced inputs and enter it. Time-of-use plans can be 30 to 50 percent below the state average." },
+          { name: "Read the monthly bill impact", text: "The hero shows the monthly cost. The Cost Per Mile tile shows how that compares to gas. The split meter below shows your fuel budget before and after going electric." },
+        ]}
       />
       <BreadcrumbSchema
         items={[

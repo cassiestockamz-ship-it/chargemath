@@ -10,6 +10,7 @@ import SliderInput from "@/components/SliderInput";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
+import HowToSchema from "@/components/HowToSchema";
 import FAQSection from "@/components/FAQSection";
 import EducationalContent from "@/components/EducationalContent";
 import EmailCapture from "@/components/EmailCapture";
@@ -219,6 +220,19 @@ export default function ChargingTimePage() {
         name="EV Charging Time Calculator"
         description="Calculate how long it takes to charge your EV from any battery level at Level 1, Level 2, or DC Fast charging speeds."
         url="https://chargemath.com/charging-time"
+      />
+      <HowToSchema
+        name="How to estimate EV charging time"
+        description="Figure out exactly how long an EV takes to charge from any starting battery level on Level 1, Level 2, or DC Fast charging."
+        url="https://chargemath.com/charging-time"
+        totalTime="PT1M"
+        steps={[
+          { name: "Pick your EV", text: "Select your vehicle. The calculator pulls battery capacity and onboard AC charger spec from EPA data." },
+          { name: "Pick a charger type", text: "Level 1 is a standard wall outlet. Level 2 is a 240V home charger. DC Fast is a public fast-charging station. Each has a different kilowatt rate." },
+          { name: "Set the starting battery level", text: "Drag the slider to your current state of charge. The default is 20 percent, which matches a typical come-home-and-plug-in scenario." },
+          { name: "Optionally set the target", text: "Open Advanced inputs and change the target from 80 percent. DC Fast only benefits up to 80 percent because the taper slows sharply after that." },
+          { name: "Read the plug-in time", text: "The hero shows how many hours to reach the target, plus how many miles of range that adds and what it costs you at your home rate." },
+        ]}
       />
       <BreadcrumbSchema
         items={[

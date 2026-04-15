@@ -327,7 +327,6 @@ body {
   footer,
   nav,
   [data-mobile-menu],
-  [data-affiliate-card],
   [data-share-results],
   .no-print {
     display: none !important;

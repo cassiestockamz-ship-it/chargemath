@@ -1,19 +1,20 @@
 "use client";
 
 import { useState, useMemo, useEffect, useCallback } from "react";
-import CalculatorLayout from "@/components/CalculatorLayout";
+import Link from "next/link";
+import CalculatorShell from "@/components/CalculatorShell";
+import SavingsVerdict from "@/components/SavingsVerdict";
+import SavingsTile from "@/components/SavingsTile";
+import SavingsMeter from "@/components/SavingsMeter";
 import SelectInput from "@/components/SelectInput";
 import NumberInput from "@/components/NumberInput";
 import SliderInput from "@/components/SliderInput";
-import ResultCard from "@/components/ResultCard";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import FAQSection from "@/components/FAQSection";
-import ShareResults from "@/components/ShareResults";
 import EducationalContent from "@/components/EducationalContent";
 import EmailCapture from "@/components/EmailCapture";
-import Link from "next/link";
 import { getDefaultStateCode } from "@/lib/useDefaultState";
 import { useUrlSync } from "@/lib/useUrlState";
 import { billImpactFAQ } from "@/data/faq-data";
@@ -22,15 +23,6 @@ import {
   NATIONAL_AVERAGE_RATE,
 } from "@/data/electricity-rates";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
-
-const fmt = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
-
-const fmtPct = (n: number) => `${n >= 0 ? "+" : ""}${n.toFixed(1)}%`;
 
 export default function BillImpactPage() {
   const [vehicleId, setVehicleId] = useState(EV_VEHICLES[0].id);
@@ -107,7 +99,7 @@ export default function BillImpactPage() {
       touSavings,
       effectiveRate,
     };
-  }, [vehicle, stateCode, currentBill, dailyMiles, chargingHome, rate, hasTOU, offPeakDiscount]);
+  }, [vehicle, currentBill, dailyMiles, chargingHome, rate, hasTOU, offPeakDiscount]);
 
   const vehicleOptions = EV_VEHICLES.map((v) => ({
     value: v.id,
@@ -126,68 +118,120 @@ export default function BillImpactPage() {
     { value: "yes", label: "Yes (time-of-use plan)" },
   ];
 
-  // Bill breakdown bar chart
-  const currentPct = results.newBill > 0 ? (currentBill / results.newBill) * 100 : 100;
-  const evPct = 100 - currentPct;
+  // Compact primary input strip
+  const inputs = (
+    <div className="grid gap-4 sm:grid-cols-3">
+      <SelectInput
+        label="Your EV"
+        value={vehicleId}
+        onChange={setVehicleId}
+        options={vehicleOptions}
+        helpText={`${vehicle.kwhPer100Miles} kWh/100mi`}
+      />
+      <SelectInput
+        label="Your state"
+        value={stateCode}
+        onChange={setStateCode}
+        options={stateOptions}
+      />
+      <NumberInput
+        label="Current monthly bill"
+        value={currentBill}
+        onChange={setCurrentBill}
+        min={0}
+        max={1000}
+        step={5}
+        unit="$"
+      />
+    </div>
+  );
+
+  const hero = (
+    <SavingsVerdict
+      headline="BILL GOES UP"
+      amount={results.monthlyEvCost}
+      amountUnit="/month"
+      sub={
+        <>
+          Adding a {vehicle.year} {vehicle.make} {vehicle.model} to your home charging raises your
+          bill from {`$${currentBill.toFixed(0)}`} to {`$${results.newBill.toFixed(0)}`} per month.
+        </>
+      }
+      dialPercent={Math.max(0, Math.min(100, results.evSharePercent))}
+      dialLabel="EV SHARE"
+    >
+      <SavingsTile
+        label="NEW MONTHLY BILL"
+        value={results.newBill}
+        prefix="$"
+        unit="/mo"
+        tier="brand"
+        animate
+      />
+      <SavingsTile
+        label="EV SHARE"
+        value={results.evSharePercent}
+        decimals={1}
+        unit="% of bill"
+        tier="volt"
+        animate
+      />
+      <SavingsTile
+        label="ANNUAL ADD"
+        value={results.annualEvCost}
+        prefix="$"
+        unit="/yr"
+        tier="good"
+        animate
+      />
+      <SavingsTile
+        label="kWh/MONTH"
+        value={Math.round(results.monthlyEvKwh)}
+        unit=" kWh"
+        tier="mid"
+        animate
+      />
+    </SavingsVerdict>
+  );
 
   return (
-    <CalculatorLayout
-      title="EV Electricity Bill Impact Calculator"
-      description="See exactly how much your monthly electricity bill will increase when you start charging an EV at home."
-      intro="Charging an EV at home typically adds $30-60 per month to your electricity bill, depending on how far you drive and your local rates. The average EV uses 25-35 kWh per 100 miles. At the national average of 16¢/kWh, that's about $4-6 per 100 miles added to your bill."
-      lastUpdated="March 2026"
+    <CalculatorShell
+      eyebrow="Bill impact"
+      title="EV Electricity Bill Impact"
+      quickAnswer="Charging an EV at home typically adds $30 to $60 per month to your electricity bill, depending on miles driven and local rates."
+      inputs={inputs}
+      hero={hero}
     >
       <CalculatorSchema
         name="EV Electricity Bill Impact Calculator"
         description="Calculate how much your electricity bill will increase when charging an EV at home. Includes time-of-use rate optimization."
         url="https://chargemath.com/bill-impact"
       />
-      <BreadcrumbSchema items={[{ name: "Home", url: "https://chargemath.com" }, { name: "Bill Impact Calculator", url: "https://chargemath.com/bill-impact" }]} />
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: "https://chargemath.com" },
+          { name: "Bill Impact Calculator", url: "https://chargemath.com/bill-impact" },
+        ]}
+      />
 
-      {/* Inputs */}
-      <div className="grid gap-6 sm:grid-cols-2">
-        <SelectInput
-          label="Select Your EV"
-          value={vehicleId}
-          onChange={setVehicleId}
-          options={vehicleOptions}
-          helpText={`${vehicle.kwhPer100Miles} kWh/100mi efficiency`}
-        />
-
-        <SelectInput
-          label="Your State"
-          value={stateCode}
-          onChange={setStateCode}
-          options={stateOptions}
-        />
-
-        <NumberInput
-          label="Current Monthly Electric Bill"
-          value={currentBill}
-          onChange={setCurrentBill}
-          min={0}
-          max={1000}
-          step={5}
-          unit="$"
-          helpText="Your electric bill before adding an EV"
-        />
-
-        <div className="sm:col-span-2">
+      {/* Advanced inputs (collapsed by default) */}
+      <details className="mb-6 rounded-2xl border border-[var(--color-border)] bg-white p-4 sm:p-5">
+        <summary className="cursor-pointer select-none text-sm font-semibold text-[var(--color-ink)]">
+          Advanced inputs
+        </summary>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <SliderInput
-            label="Daily Miles Driven"
+            label="Daily miles driven"
             value={dailyMiles}
             onChange={setDailyMiles}
             min={10}
             max={150}
             step={5}
-            unit="miles"
+            unit="mi"
             showValue
           />
-        </div>
-
-        <div className="sm:col-span-2">
           <SliderInput
-            label="% of Charging Done at Home"
+            label="Home charging share"
             value={chargingHome}
             onChange={setChargingHome}
             min={0}
@@ -196,180 +240,80 @@ export default function BillImpactPage() {
             unit="%"
             showValue
           />
-          <p className="mt-1 text-xs text-[var(--color-text-muted)]">
-            The rest is assumed to be at work, public chargers, etc. (not on your bill)
-          </p>
-        </div>
-
-        <SelectInput
-          label="Time-of-Use (TOU) Rate Plan?"
-          value={hasTOU}
-          onChange={setHasTOU}
-          options={touOptions}
-          helpText="TOU plans offer cheaper overnight rates, great for EV charging"
-        />
-
-        {hasTOU === "yes" && (
-          <SliderInput
-            label="Off-Peak Discount"
-            value={offPeakDiscount}
-            onChange={setOffPeakDiscount}
-            min={10}
-            max={70}
-            step={5}
-            unit="% cheaper"
-            showValue
-          />
-        )}
-      </div>
-
-      {/* Results */}
-      <div className="mt-10">
-        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
-          Your Bill Impact
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <ResultCard
-            label="EV Adds to Your Bill"
-            value={fmt.format(results.monthlyEvCost)}
-            unit="/month"
-            highlight
-            icon="⚡"
-          />
-          <ResultCard
-            label="New Monthly Bill"
-            value={fmt.format(results.newBill)}
-            unit={fmtPct(results.percentIncrease)}
-            icon="📄"
-          />
-          <ResultCard
-            label="Annual EV Charging Cost"
-            value={fmt.format(results.annualEvCost)}
-            unit="/year"
-            icon="📅"
-          />
-          <ResultCard
-            label="Monthly EV kWh Usage"
-            value={Math.round(results.monthlyEvKwh).toLocaleString()}
-            unit="kWh"
-            icon="🔌"
-          />
-          <ResultCard
-            label="EV Share of Total Usage"
-            value={results.evSharePercent.toFixed(1)}
-            unit="%"
-            icon="📊"
+          <SelectInput
+            label="Time-of-use rate plan?"
+            value={hasTOU}
+            onChange={setHasTOU}
+            options={touOptions}
+            helpText="TOU plans offer cheaper overnight rates"
           />
           {hasTOU === "yes" && (
-            <ResultCard
-              label="TOU Savings"
-              value={fmt.format(results.touSavings)}
-              unit="/month"
-              highlight
-              icon="🌙"
+            <SliderInput
+              label="Off-peak discount"
+              value={offPeakDiscount}
+              onChange={setOffPeakDiscount}
+              min={10}
+              max={70}
+              step={5}
+              unit="% cheaper"
+              showValue
             />
           )}
         </div>
+      </details>
 
-        {/* Bill Breakdown Visual */}
-        <div className="mt-8 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-5">
-          <h3 className="mb-4 text-sm font-semibold text-[var(--color-text)]">
-            Monthly Bill Breakdown
-          </h3>
+      {/* Signature split-column live meter: BEFORE vs AFTER monthly bill */}
+      <SavingsMeter
+        leftLabel="BEFORE"
+        leftValue={currentBill}
+        rightLabel="AFTER"
+        rightValue={results.newBill}
+        period="/mo"
+        verb="ADDS"
+      />
 
-          {/* Before */}
-          <div className="mb-3">
-            <div className="mb-1 flex items-center justify-between text-sm">
-              <span className="font-medium text-[var(--color-text-muted)]">Before EV</span>
-              <span className="font-semibold text-[var(--color-text)]">{fmt.format(currentBill)}</span>
-            </div>
-            <div className="h-6 w-full overflow-hidden rounded-full bg-[var(--color-border)]">
-              <div
-                className="h-full rounded-full bg-[#64748b] transition-all duration-500"
-                style={{ width: `${currentPct}%` }}
-              />
-            </div>
-          </div>
-
-          {/* After */}
-          <div>
-            <div className="mb-1 flex items-center justify-between text-sm">
-              <span className="font-medium text-[var(--color-text)]">After EV</span>
-              <span className="font-semibold text-[var(--color-text)]">{fmt.format(results.newBill)}</span>
-            </div>
-            <div className="flex h-6 w-full overflow-hidden rounded-full">
-              <div
-                className="h-full bg-[#64748b] transition-all duration-500"
-                style={{ width: `${currentPct}%` }}
-                title={`Existing usage: ${fmt.format(currentBill)}`}
-              />
-              <div
-                className="h-full bg-[var(--color-primary)] transition-all duration-500"
-                style={{ width: `${evPct}%` }}
-                title={`EV charging: ${fmt.format(results.monthlyEvCost)}`}
-              />
-            </div>
-            <div className="mt-2 flex items-center gap-4 text-xs text-[var(--color-text-muted)]">
-              <div className="flex items-center gap-1.5">
-                <div className="h-2.5 w-2.5 rounded-full bg-[#64748b]" />
-                Existing usage
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="h-2.5 w-2.5 rounded-full bg-[var(--color-primary)]" />
-                EV charging
-              </div>
-            </div>
-          </div>
-
-          <p className="mt-4 text-center text-sm text-[var(--color-text-muted)]">
-            Your bill increases by <span className="font-semibold text-[var(--color-text)]">{fmt.format(results.monthlyEvCost)}</span> ({fmtPct(results.percentIncrease)}).
-            {results.percentIncrease < 30
-              ? " A modest increase for most households."
-              : results.percentIncrease < 60
-                ? " A noticeable but manageable increase."
-                : " Significant. Consider a TOU rate plan to reduce costs."}
-          </p>
-        </div>
-
-        {/* Contextual Cross-Links */}
-        <div className="mt-6 flex flex-wrap gap-3 text-sm">
-          <Link href="/gas-vs-electric" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
-            Compare gas vs electric costs →
-          </Link>
-          <Link href="/ev-charging-cost" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
-            Break down your charging cost →
-          </Link>
-          <Link href="/charger-roi" className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5">
-            Is a home charger worth it? →
-          </Link>
-        </div>
-
-        <ShareResults
-          title={`EV Bill Impact: ${fmtPct(results.percentIncrease)}`}
-          text={`Adding a ${vehicle.year} ${vehicle.make} ${vehicle.model} to my home charging will increase my electric bill by ${fmt.format(results.monthlyEvCost)}/month (${fmtPct(results.percentIncrease)}). New bill: ${fmt.format(results.newBill)}/month.`}
-        />
+      {/* Contextual cross-links */}
+      <div className="mt-8 flex flex-wrap gap-3 text-sm">
+        <Link
+          href="/gas-vs-electric"
+          className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
+        >
+          Compare gas vs electric costs
+        </Link>
+        <Link
+          href="/ev-charging-cost"
+          className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
+        >
+          Break down your charging cost
+        </Link>
+        <Link
+          href="/charger-roi"
+          className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
+        >
+          Is a home charger worth it?
+        </Link>
       </div>
 
       <EducationalContent>
-        <h2>How We Estimate Your Bill Impact</h2>
+        <h2>How we estimate your bill impact</h2>
         <p>
-          This calculator converts your daily mileage into energy consumption using your vehicle&apos;s EPA efficiency rating, then multiplies by your state&apos;s average residential electricity rate from the EIA. The home charging percentage lets you account for workplace or public charging that wouldn&apos;t appear on your home bill.
+          This calculator converts your daily mileage into energy consumption using your vehicle&apos;s EPA efficiency rating, then multiplies by your state&apos;s average residential electricity rate from the EIA. The home charging percentage lets you account for workplace or public charging that would not appear on your home bill.
         </p>
-        <h3>Time-of-Use Plans Can Cut EV Costs 30-50%</h3>
+        <h3>Time-of-use plans can cut EV costs 30-50%</h3>
         <p>
-          Many utilities offer time-of-use (TOU) rate plans with heavily discounted overnight rates, exactly when most people charge their EVs. In California, PG&amp;E&apos;s EV rate charges 25¢/kWh off-peak versus 55¢/kWh peak. Most smart EV chargers can schedule charging to start automatically when off-peak rates begin.
+          Many utilities offer time-of-use (TOU) rate plans with heavily discounted overnight rates, exactly when most people charge their EVs. In California, PG&amp;E&apos;s EV rate charges 25&cent;/kWh off-peak versus 55&cent;/kWh peak. Most smart EV chargers can schedule charging to start automatically when off-peak rates begin.
         </p>
-        <h3>Reducing Your EV&apos;s Impact on Your Bill</h3>
+        <h3>Reducing your EV&apos;s impact on your bill</h3>
         <ul>
           <li>Switch to a TOU plan. This is the single biggest cost reduction available to most EV owners. Contact your utility to compare plan options.</li>
-          <li>Charge during off-peak hours (typically 9pm-6am). Even without a formal TOU plan, avoiding peak demand helps grid stability and may qualify for utility incentives.</li>
-          <li>A whole-home energy monitor ($100-300) can track exactly what your EV costs per charge and identify other energy savings opportunities.</li>
-          <li>Solar panels can offset 100% of EV charging costs for homeowners, with typical payback periods of 5-8 years depending on your state&apos;s solar resources.</li>
+          <li>Charge during off-peak hours (typically 9pm to 6am). Even without a formal TOU plan, avoiding peak demand helps grid stability and may qualify for utility incentives.</li>
+          <li>A whole-home energy monitor ($100 to $300) can track exactly what your EV costs per charge and identify other energy savings opportunities.</li>
+          <li>Solar panels can offset 100% of EV charging costs for homeowners, with typical payback periods of 5 to 8 years depending on your state&apos;s solar resources.</li>
         </ul>
       </EducationalContent>
       <FAQSection questions={billImpactFAQ} />
       <EmailCapture source="bill-impact" />
       <RelatedCalculators currentPath="/bill-impact" />
-    </CalculatorLayout>
+    </CalculatorShell>
   );
 }

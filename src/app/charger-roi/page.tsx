@@ -12,6 +12,7 @@ import SliderInput from "@/components/SliderInput";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
+import HowToSchema from "@/components/HowToSchema";
 import FAQSection from "@/components/FAQSection";
 import EducationalContent from "@/components/EducationalContent";
 import EmailCapture from "@/components/EmailCapture";
@@ -147,11 +148,15 @@ export default function ChargerROIPage() {
     { value: "50_50", label: "50% public / 50% Level 1" },
   ];
 
-  // For the dial: return percentage, capped at 100
+  // Dial: share of upfront cost recovered by the end of year 5.
+  // Always has signal, even when payback exceeds 60 months.
+  // At 100% the charger has paid off within 5 years; at 50% you are
+  // halfway there; at 0% the monthly savings are non-positive.
   const totalInvestment = Math.max(1, chargerCost + installCost);
+  const fiveYearRecovered = Math.max(0, results.monthlySavings) * 60;
   const returnPct = Math.min(
     100,
-    Math.max(0, Math.round((results.lifetimeSavings / totalInvestment) * 100))
+    Math.max(0, Math.round((fiveYearRecovered / totalInvestment) * 100))
   );
 
   // Payback amount shown in the hero: integer months, or 999 if never
@@ -252,7 +257,7 @@ export default function ChargerROIPage() {
       amountUnit=" months"
       sub="Versus using public fast chargers at $0.40 to $0.60 per kWh"
       dialPercent={returnPct}
-      dialLabel="RETURN"
+      dialLabel="RECOVERED BY YR 5"
     >
       <>
         <SavingsTile
@@ -263,10 +268,10 @@ export default function ChargerROIPage() {
           tier="good"
         />
         <SavingsTile
-          label="LIFETIME SAVINGS"
-          value={results.lifetimeSavings}
+          label="5 YEAR SAVINGS"
+          value={Math.max(0, results.monthlySavings) * 60}
           prefix="$"
-          unit=" total"
+          unit=" gross"
           tier="volt"
         />
         <SavingsTile
@@ -293,6 +298,19 @@ export default function ChargerROIPage() {
         name="Home EV Charger ROI Calculator"
         description="Calculate the payback period for installing a Level 2 home EV charger compared to public charging or Level 1 charging."
         url="https://chargemath.com/charger-roi"
+      />
+      <HowToSchema
+        name="How to calculate home charger ROI"
+        description="Figure out whether a Level 2 home EV charger pays for itself versus public charging, and how long it takes."
+        url="https://chargemath.com/charger-roi"
+        totalTime="PT2M"
+        steps={[
+          { name: "Pick your EV", text: "Select your EV from the dropdown. The calculator uses the EPA efficiency rating to estimate how many kilowatt-hours you need per day." },
+          { name: "Enter the charger price", text: "Type the price of the Level 2 home charger you are considering. Common units run $300 to $600. Leave installation at the $800 default, or set it higher for a panel upgrade." },
+          { name: "Set your daily miles", text: "Drag the slider to your typical daily driving miles. The calculator multiplies this by 365 for annual kilowatt-hours." },
+          { name: "Open advanced inputs if needed", text: "Adjust the public charging rate, the state electricity rate, or the public or Level 1 split you would use without a home charger." },
+          { name: "Read the verdict", text: "The hero shows the payback period in months. The dial shows the share of your upfront cost recovered by year 5. Anything above 80% means the charger is a clear win." },
+        ]}
       />
       <BreadcrumbSchema
         items={[

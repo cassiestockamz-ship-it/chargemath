@@ -2,16 +2,17 @@
 
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
-import CalculatorLayout from "@/components/CalculatorLayout";
+import CalculatorShell from "@/components/CalculatorShell";
+import SavingsVerdict from "@/components/SavingsVerdict";
+import SavingsTile from "@/components/SavingsTile";
+import SavingsMeter from "@/components/SavingsMeter";
 import SelectInput from "@/components/SelectInput";
 import NumberInput from "@/components/NumberInput";
 import SliderInput from "@/components/SliderInput";
-import ResultCard from "@/components/ResultCard";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import FAQSection from "@/components/FAQSection";
-import ShareResults from "@/components/ShareResults";
 import EducationalContent from "@/components/EducationalContent";
 import EmailCapture from "@/components/EmailCapture";
 import { getDefaultStateCode } from "@/lib/useDefaultState";
@@ -21,13 +22,6 @@ import {
   NATIONAL_AVERAGE_RATE,
 } from "@/data/electricity-rates";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
-
-const fmt = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
 
 const fmtShort = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -225,21 +219,114 @@ export default function TotalCostPage() {
       label: `${data.state} (${data.residential}\u00A2/kWh)`,
     }));
 
-  const evBarWidth = Math.min(
-    100,
-    (results.evTotal / Math.max(results.evTotal, results.gasTotal)) * 100
+  const evWins = results.totalSavings >= 0;
+  const heroAmount = Math.abs(results.totalSavings);
+  const dialPercent =
+    results.gasTotal > 0
+      ? Math.max(0, Math.min(100, (results.totalSavings / results.gasTotal) * 100))
+      : 0;
+
+  // Compact primary input strip (3 inputs: vehicle, state, daily miles)
+  const inputs = (
+    <div className="grid gap-4 sm:grid-cols-3">
+      <SelectInput
+        label="Your EV"
+        value={vehicleId}
+        onChange={setVehicleId}
+        options={vehicleOptions}
+        helpText={`${vehicle.kwhPer100Miles} kWh/100mi, ${vehicle.epaRangeMiles} mi range`}
+      />
+      <SelectInput
+        label="Your state"
+        value={stateCode}
+        onChange={setStateCode}
+        options={stateOptions}
+      />
+      <SliderInput
+        label="Daily miles driven"
+        value={dailyMiles}
+        onChange={setDailyMiles}
+        min={10}
+        max={150}
+        step={5}
+        unit="mi"
+        showValue
+      />
+    </div>
   );
-  const gasBarWidth = Math.min(
-    100,
-    (results.gasTotal / Math.max(results.evTotal, results.gasTotal)) * 100
+
+  const hero = (
+    <SavingsVerdict
+      headline={evWins ? "EV SAVES" : "GAS SAVES"}
+      amount={heroAmount}
+      amountUnit={` over ${ownershipYears} yrs`}
+      sub={
+        <>
+          Total cost of ownership for a {vehicle.year} {vehicle.make} {vehicle.model} vs a
+          comparable gas car. Includes purchase price, fuel, insurance, and maintenance.
+        </>
+      }
+      dialPercent={Math.max(0, dialPercent)}
+      dialLabel="TCO CUT"
+    >
+      <SavingsTile
+        label={`${ownershipYears} YEAR TOTAL`}
+        value={results.evTotal}
+        prefix="$"
+        unit=" EV"
+        tier="brand"
+        animate
+      />
+      <SavingsTile
+        label="PER YEAR"
+        value={results.evTotal / ownershipYears}
+        prefix="$"
+        unit="/yr"
+        tier="volt"
+        animate
+      />
+      <SavingsTile
+        label="PER MILE"
+        value={results.evCostPerMile}
+        prefix="$"
+        decimals={3}
+        unit=" EV"
+        tier="good"
+        compareBars={[
+          { label: "GAS", value: results.gasCostPerMile, color: "var(--color-warn)" },
+          { label: "EV", value: results.evCostPerMile, color: "var(--color-teal)" },
+        ]}
+      />
+      <SavingsTile
+        label="BREAKEVEN"
+        value={
+          results.breakevenYear === null
+            ? 0
+            : results.breakevenYear === 0
+              ? 0
+              : results.breakevenYear
+        }
+        decimals={1}
+        unit={
+          results.breakevenYear === null
+            ? " never"
+            : results.breakevenYear === 0
+              ? " day 1"
+              : " years"
+        }
+        tier={results.breakevenYear === null ? "warn" : "good"}
+        animate
+      />
+    </SavingsVerdict>
   );
 
   return (
-    <CalculatorLayout
-      title="EV vs Gas Total Cost of Ownership Calculator"
-      description="Compare the full cost of owning an EV versus a gas car over time, including purchase price, fuel, insurance, and maintenance."
-      lastUpdated="March 2026"
-      intro="The sticker price is only part of the story. When you factor in fuel savings, lower maintenance, and insurance differences, an EV can cost thousands less over a typical ownership period. This calculator breaks down every major cost category so you can see the real numbers side by side."
+    <CalculatorShell
+      eyebrow="Total cost of ownership"
+      title="EV vs Gas Total Cost"
+      quickAnswer="An average EV saves $5,000 to $12,000 over 5 years vs a comparable gas car, once fuel, insurance, and maintenance are counted."
+      inputs={inputs}
+      hero={hero}
     >
       <CalculatorSchema
         name="EV vs Gas Total Cost of Ownership Calculator"
@@ -253,62 +340,34 @@ export default function TotalCostPage() {
         ]}
       />
 
-      {/* Inputs */}
-      <div className="grid gap-6 sm:grid-cols-2">
-        <SelectInput
-          label="Select Your EV"
-          value={vehicleId}
-          onChange={setVehicleId}
-          options={vehicleOptions}
-          helpText={`${vehicle.kwhPer100Miles} kWh/100mi \u2022 ${vehicle.epaRangeMiles} mi EPA range`}
-        />
-
-        <SelectInput
-          label="Your State"
-          value={stateCode}
-          onChange={setStateCode}
-          options={stateOptions}
-          helpText="Used for your electricity rate"
-        />
-
-        <NumberInput
-          label="EV Purchase Price"
-          value={evPrice}
-          onChange={setEvPrice}
-          min={10000}
-          max={200000}
-          step={500}
-          unit="$"
-          helpText="Total price before trade-in"
-        />
-
-        <NumberInput
-          label="Gas Car Purchase Price"
-          value={gasPrice}
-          onChange={setGasPrice}
-          min={10000}
-          max={200000}
-          step={500}
-          unit="$"
-          helpText="Total price before trade-in"
-        />
-
-        <div className="sm:col-span-2">
-          <SliderInput
-            label="Daily Miles Driven"
-            value={dailyMiles}
-            onChange={setDailyMiles}
-            min={10}
-            max={150}
-            step={5}
-            unit="miles"
-            showValue
+      {/* Advanced inputs (collapsed by default) */}
+      <details className="mb-6 rounded-2xl border border-[var(--color-border)] bg-white p-4 sm:p-5">
+        <summary className="cursor-pointer select-none text-sm font-semibold text-[var(--color-ink)]">
+          Advanced inputs
+        </summary>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <NumberInput
+            label="EV purchase price"
+            value={evPrice}
+            onChange={setEvPrice}
+            min={10000}
+            max={200000}
+            step={500}
+            unit="$"
+            helpText="Total price before trade-in"
           />
-        </div>
-
-        <div className="sm:col-span-2">
+          <NumberInput
+            label="Gas car purchase price"
+            value={gasPrice}
+            onChange={setGasPrice}
+            min={10000}
+            max={200000}
+            step={500}
+            unit="$"
+            helpText="Total price before trade-in"
+          />
           <SliderInput
-            label="Ownership Period"
+            label="Ownership period"
             value={ownershipYears}
             onChange={setOwnershipYears}
             min={1}
@@ -317,290 +376,163 @@ export default function TotalCostPage() {
             unit="years"
             showValue
           />
+          <NumberInput
+            label="Gas price"
+            value={gasFuelPrice}
+            onChange={setGasFuelPrice}
+            min={1}
+            max={10}
+            step={0.1}
+            unit="$/gal"
+          />
+          <NumberInput
+            label="Gas car MPG"
+            value={gasMpg}
+            onChange={setGasMpg}
+            min={10}
+            max={60}
+            step={1}
+            unit="MPG"
+            helpText="Average US car: 28 MPG"
+          />
+          <NumberInput
+            label="Annual insurance (EV)"
+            value={insuranceEv}
+            onChange={setInsuranceEv}
+            min={0}
+            max={10000}
+            step={50}
+            unit="$/yr"
+          />
+          <NumberInput
+            label="Annual insurance (gas)"
+            value={insuranceGas}
+            onChange={setInsuranceGas}
+            min={0}
+            max={10000}
+            step={50}
+            unit="$/yr"
+          />
+          <NumberInput
+            label="Annual maintenance (EV)"
+            value={maintenanceEv}
+            onChange={setMaintenanceEv}
+            min={0}
+            max={5000}
+            step={50}
+            unit="$/yr"
+          />
+          <NumberInput
+            label="Annual maintenance (gas)"
+            value={maintenanceGas}
+            onChange={setMaintenanceGas}
+            min={0}
+            max={5000}
+            step={50}
+            unit="$/yr"
+          />
         </div>
+      </details>
 
-        <NumberInput
-          label="Gas Price"
-          value={gasFuelPrice}
-          onChange={setGasFuelPrice}
-          min={1}
-          max={10}
-          step={0.1}
-          unit="$/gal"
-          helpText="Current price per gallon"
-        />
+      {/* Signature split-column live meter: GAS vs EV total */}
+      <SavingsMeter
+        leftLabel="GAS TOTAL"
+        leftValue={results.gasTotal}
+        rightLabel="EV TOTAL"
+        rightValue={results.evTotal}
+        period={`/${ownershipYears}yr`}
+      />
 
-        <NumberInput
-          label="Gas Car MPG"
-          value={gasMpg}
-          onChange={setGasMpg}
-          min={10}
-          max={60}
-          step={1}
-          unit="MPG"
-          helpText="Combined city/highway rating"
-        />
-
-        <NumberInput
-          label="Annual Insurance (EV)"
-          value={insuranceEv}
-          onChange={setInsuranceEv}
-          min={0}
-          max={10000}
-          step={50}
-          unit="$/year"
-          helpText="EV insurance tends to be higher"
-        />
-
-        <NumberInput
-          label="Annual Insurance (Gas)"
-          value={insuranceGas}
-          onChange={setInsuranceGas}
-          min={0}
-          max={10000}
-          step={50}
-          unit="$/year"
-          helpText="Average annual premium"
-        />
-
-        <NumberInput
-          label="Annual Maintenance (EV)"
-          value={maintenanceEv}
-          onChange={setMaintenanceEv}
-          min={0}
-          max={5000}
-          step={50}
-          unit="$/year"
-          helpText="Tires, wipers, cabin filter, brakes"
-        />
-
-        <NumberInput
-          label="Annual Maintenance (Gas)"
-          value={maintenanceGas}
-          onChange={setMaintenanceGas}
-          min={0}
-          max={5000}
-          step={50}
-          unit="$/year"
-          helpText="Oil changes, brakes, belts, fluids"
-        />
+      <h2 className="cm-eyebrow mt-8 mb-3">Year by year</h2>
+      <div className="overflow-x-auto rounded-2xl border border-[var(--color-border)] bg-white p-4 sm:p-5">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-[var(--color-border)]">
+              <th className="py-2 pr-4 text-left font-semibold text-[var(--color-ink-3)]">Year</th>
+              <th className="py-2 pr-4 text-right font-semibold text-[var(--color-brand)]">EV total</th>
+              <th className="py-2 pr-4 text-right font-semibold text-[var(--color-warn-ink)]">Gas total</th>
+              <th className="py-2 text-right font-semibold text-[var(--color-ink-3)]">EV savings</th>
+            </tr>
+          </thead>
+          <tbody>
+            {results.yearlyBreakdown.map((row) => (
+              <tr
+                key={row.year}
+                className="border-b border-[var(--color-border)]/50"
+              >
+                <td className="py-2 pr-4 font-medium text-[var(--color-ink)]">
+                  Year {row.year}
+                </td>
+                <td className="py-2 pr-4 text-right tabular-nums text-[var(--color-ink)]">
+                  {fmtShort.format(row.evCumulative)}
+                </td>
+                <td className="py-2 pr-4 text-right tabular-nums text-[var(--color-ink)]">
+                  {fmtShort.format(row.gasCumulative)}
+                </td>
+                <td
+                  className={`py-2 text-right tabular-nums font-semibold ${
+                    row.savings > 0
+                      ? "text-[var(--color-good-ink)]"
+                      : row.savings < 0
+                        ? "text-[var(--color-warn-ink)]"
+                        : "text-[var(--color-ink-3)]"
+                  }`}
+                >
+                  {row.savings >= 0 ? "+" : ""}
+                  {fmtShort.format(row.savings)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
-      {/* Results */}
-      <div className="mt-10">
-        <h2 className="mb-5 text-lg font-bold text-[var(--color-text)]">
-          {ownershipYears}-Year Ownership Cost Comparison
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <ResultCard
-            label="EV Total Cost"
-            value={fmtShort.format(results.evTotal)}
-            unit={`over ${ownershipYears} years`}
-            highlight={results.totalSavings > 0}
-            icon="⚡"
-          />
-          <ResultCard
-            label="Gas Car Total Cost"
-            value={fmtShort.format(results.gasTotal)}
-            unit={`over ${ownershipYears} years`}
-            highlight={results.totalSavings < 0}
-            icon="⛽"
-          />
-          <ResultCard
-            label={results.totalSavings >= 0 ? "EV Savings" : "Gas Savings"}
-            value={fmtShort.format(Math.abs(results.totalSavings))}
-            unit={`over ${ownershipYears} years`}
-            highlight
-            icon="💰"
-          />
-          <ResultCard
-            label="EV Cost Per Mile"
-            value={`$${results.evCostPerMile.toFixed(3)}`}
-            unit="/mile (total)"
-            icon="🔋"
-          />
-          <ResultCard
-            label="Gas Cost Per Mile"
-            value={`$${results.gasCostPerMile.toFixed(3)}`}
-            unit="/mile (total)"
-            icon="⛽"
-          />
-          <ResultCard
-            label="Breakeven Point"
-            value={
-              results.breakevenYear === null
-                ? "Never"
-                : results.breakevenYear === 0
-                  ? "Day 1"
-                  : `Year ${results.breakevenYear}`
-            }
-            unit={
-              results.breakevenYear === null
-                ? "Gas stays cheaper"
-                : results.breakevenYear === 0
-                  ? "EV is cheaper from the start"
-                  : "when EV becomes cheaper"
-            }
-            highlight={results.breakevenYear !== null}
-            icon="📍"
-          />
-        </div>
-
-        {/* Total Cost Comparison Bar */}
-        <div className="mt-8 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-5">
-          <h3 className="mb-4 text-sm font-semibold text-[var(--color-text)]">
-            Total Cost Comparison ({ownershipYears} Years)
-          </h3>
-          <div className="space-y-3">
-            <div>
-              <div className="mb-1 flex items-center justify-between text-sm">
-                <span className="font-medium text-[var(--color-ev-green)]">
-                  EV (Electric)
-                </span>
-                <span className="font-semibold text-[var(--color-text)]">
-                  {fmtShort.format(results.evTotal)}
-                </span>
-              </div>
-              <div className="h-4 w-full overflow-hidden rounded-full bg-[var(--color-border)]">
-                <div
-                  className="h-full rounded-full bg-[var(--color-ev-green)] transition-all duration-500"
-                  style={{ width: `${evBarWidth}%` }}
-                />
-              </div>
-            </div>
-            <div>
-              <div className="mb-1 flex items-center justify-between text-sm">
-                <span className="font-medium text-[var(--color-gas-red)]">
-                  Gas Car
-                </span>
-                <span className="font-semibold text-[var(--color-text)]">
-                  {fmtShort.format(results.gasTotal)}
-                </span>
-              </div>
-              <div className="h-4 w-full overflow-hidden rounded-full bg-[var(--color-border)]">
-                <div
-                  className="h-full rounded-full bg-[var(--color-gas-red)] transition-all duration-500"
-                  style={{ width: `${gasBarWidth}%` }}
-                />
-              </div>
-            </div>
-          </div>
-          {results.totalSavings > 0 ? (
-            <p className="mt-4 text-center text-sm font-semibold text-[var(--color-ev-green)]">
-              The EV saves you {fmtShort.format(results.totalSavings)} over {ownershipYears} years
-            </p>
-          ) : results.totalSavings < 0 ? (
-            <p className="mt-4 text-center text-sm font-semibold text-amber-600">
-              The gas car saves you {fmtShort.format(Math.abs(results.totalSavings))} over {ownershipYears} years
-            </p>
-          ) : (
-            <p className="mt-4 text-center text-sm font-semibold text-[var(--color-text-muted)]">
-              Both options cost the same over {ownershipYears} years
-            </p>
-          )}
-        </div>
-
-        {/* Year-by-Year Breakdown */}
-        <div className="mt-8 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-5">
-          <h3 className="mb-4 text-sm font-semibold text-[var(--color-text)]">
-            Year-by-Year Cumulative Cost
-          </h3>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-[var(--color-border)]">
-                  <th className="py-2 pr-4 text-left font-semibold text-[var(--color-text-muted)]">Year</th>
-                  <th className="py-2 pr-4 text-right font-semibold text-[var(--color-ev-green)]">EV Total</th>
-                  <th className="py-2 pr-4 text-right font-semibold text-[var(--color-gas-red)]">Gas Total</th>
-                  <th className="py-2 text-right font-semibold text-[var(--color-text-muted)]">EV Savings</th>
-                </tr>
-              </thead>
-              <tbody>
-                {results.yearlyBreakdown.map((row) => (
-                  <tr
-                    key={row.year}
-                    className="border-b border-[var(--color-border)]/50"
-                  >
-                    <td className="py-2 pr-4 font-medium text-[var(--color-text)]">
-                      Year {row.year}
-                    </td>
-                    <td className="py-2 pr-4 text-right tabular-nums text-[var(--color-text)]">
-                      {fmtShort.format(row.evCumulative)}
-                    </td>
-                    <td className="py-2 pr-4 text-right tabular-nums text-[var(--color-text)]">
-                      {fmtShort.format(row.gasCumulative)}
-                    </td>
-                    <td
-                      className={`py-2 text-right tabular-nums font-semibold ${
-                        row.savings > 0
-                          ? "text-[var(--color-ev-green)]"
-                          : row.savings < 0
-                            ? "text-[var(--color-gas-red)]"
-                            : "text-[var(--color-text-muted)]"
-                      }`}
-                    >
-                      {row.savings >= 0 ? "+" : ""}
-                      {fmtShort.format(row.savings)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Contextual Cross-Links */}
-        <div className="mt-6 flex flex-wrap gap-3 text-sm">
-          <Link
-            href="/ev-charging-cost"
-            className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5"
-          >
-            Calculate your charging cost in detail →
-          </Link>
-          <Link
-            href="/tax-credits"
-            className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5"
-          >
-            Check available EV tax credits →
-          </Link>
-          <Link
-            href="/gas-vs-electric"
-            className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/5"
-          >
-            Side-by-side fuel cost comparison →
-          </Link>
-        </div>
-
-        <ShareResults
-          title={`EV vs Gas TCO: ${fmtShort.format(Math.abs(results.totalSavings))} ${results.totalSavings >= 0 ? "saved" : "more"} with ${results.totalSavings >= 0 ? "EV" : "gas"}`}
-          text={`Over ${ownershipYears} years, a ${vehicle.year} ${vehicle.make} ${vehicle.model} costs ${fmtShort.format(results.evTotal)} total vs ${fmtShort.format(results.gasTotal)} for a gas car. That's ${fmtShort.format(Math.abs(results.totalSavings))} in ${results.totalSavings >= 0 ? "EV savings" : "extra cost"}!`}
-        />
+      {/* Contextual cross-links */}
+      <div className="mt-8 flex flex-wrap gap-3 text-sm">
+        <Link
+          href="/ev-charging-cost"
+          className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
+        >
+          Calculate your charging cost in detail
+        </Link>
+        <Link
+          href="/tax-credits"
+          className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
+        >
+          Check available EV tax credits
+        </Link>
+        <Link
+          href="/gas-vs-electric"
+          className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
+        >
+          Side by side fuel cost comparison
+        </Link>
       </div>
 
       <EducationalContent>
-        <h2>How We Calculate Total Cost of Ownership</h2>
+        <h2>How we calculate total cost of ownership</h2>
         <p>
           This calculator adds up four major cost categories for each vehicle over your chosen ownership period: purchase price, fuel (electricity for the EV, gasoline for the gas car), insurance, and maintenance. The sum gives you a realistic picture of what each vehicle actually costs to own, not just buy.
         </p>
-        <h3>Fuel Cost Methodology</h3>
+        <h3>Fuel cost methodology</h3>
         <p>
           EV fuel costs are calculated using the EPA-rated efficiency of your selected vehicle (kWh per 100 miles) multiplied by your state&apos;s residential electricity rate from the EIA. Gas fuel costs use the price per gallon you enter divided by the gas car&apos;s MPG rating. Both assume consistent daily driving across the full ownership period.
         </p>
-        <h3>Why Maintenance Differs So Much</h3>
+        <h3>Why maintenance differs so much</h3>
         <p>
           EVs have far fewer wear parts than gas cars. There is no engine oil to change, no transmission fluid, no timing belt, no spark plugs, and no exhaust system. Regenerative braking significantly extends brake pad life. Consumer Reports and AAA studies consistently find EV maintenance costs 40-60% lower than comparable gas vehicles over the first 10 years of ownership.
         </p>
-        <h3>Factors Not Included</h3>
+        <h3>Factors not included</h3>
         <ul>
           <li>Depreciation and resale value vary widely by make, model, and market conditions.</li>
           <li>Financing costs (interest) depend on your credit score, loan term, and down payment.</li>
           <li>Tax credits and rebates can reduce the EV&apos;s effective purchase price by $2,500 to $7,500.</li>
-          <li>Tire costs are slightly higher for EVs due to added weight, but the difference is modest ($50-100/year).</li>
+          <li>Tire costs are slightly higher for EVs due to added weight, but the difference is modest ($50 to $100 per year).</li>
         </ul>
       </EducationalContent>
       <FAQSection questions={tcoFAQ} />
       <EmailCapture source="total-cost" />
       <RelatedCalculators currentPath="/total-cost" />
-    </CalculatorLayout>
+    </CalculatorShell>
   );
 }
