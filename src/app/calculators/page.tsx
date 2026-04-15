@@ -1,5 +1,4 @@
 import Link from "next/link";
-import CalculatorSearch from "@/components/CalculatorSearch";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -88,43 +87,46 @@ export default function CalculatorsPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
-      <h1 className="text-3xl font-extrabold text-[var(--color-text)]">
-        All EV Calculators
+      <span className="cm-eyebrow">Directory</span>
+      <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-[var(--color-ink)] sm:text-4xl">
+        All EV calculators
       </h1>
-      <p className="mt-2 text-[var(--color-text-muted)]">
-        {totalCalcs} free calculators powered by real EPA data and state electricity rates.
+      <p className="mt-2 max-w-prose text-[var(--color-ink-3)]">
+        {totalCalcs} free calculators powered by real EPA data and state electricity rates. Tap any tool to open it, or press{" "}
+        <kbd className="cm-mono rounded border border-[var(--color-border)] bg-[var(--color-surface-alt)] px-1.5 py-0.5 text-[11px] font-bold text-[var(--color-ink-2)]">
+          ⌘K
+        </kbd>{" "}
+        to search.
       </p>
 
-      <div className="mt-6 mb-10">
-        <CalculatorSearch />
+      <div className="mt-10 flex flex-col gap-10">
+        {categories.map((cat) => (
+          <section key={cat.id} id={cat.id}>
+            <div className="mb-3 flex flex-col gap-0.5 border-l-2 border-[var(--color-brand)] pl-3">
+              <span className="cm-eyebrow" style={{ color: "var(--color-brand)" }}>
+                {cat.icon} {cat.label}
+              </span>
+              <p className="mt-1 text-sm text-[var(--color-ink-3)]">{cat.description}</p>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {cat.calculators.map((calc) => (
+                <Link
+                  key={calc.href}
+                  href={calc.href}
+                  className="group flex flex-col gap-0.5 rounded-xl border border-[var(--color-border)] bg-white px-4 py-3 transition-colors hover:border-[var(--color-brand)] hover:bg-[var(--color-brand-soft)]"
+                >
+                  <span className="text-sm font-semibold text-[var(--color-ink)] group-hover:text-[var(--color-brand)]">
+                    {calc.title}
+                  </span>
+                  <span className="text-xs text-[var(--color-ink-3)]">
+                    {calc.description}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        ))}
       </div>
-
-      {categories.map((cat) => (
-        <section key={cat.id} id={cat.id} className="mb-10">
-          <div className="mb-4 flex h-8 items-end border-b-2 border-[var(--color-primary)]/20 pb-2">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--color-primary)]">
-              <span className="mr-1.5">{cat.icon}</span>{cat.label}
-            </h2>
-          </div>
-          <p className="mb-3 text-xs text-[var(--color-text-muted)]">{cat.description}</p>
-          <div className="grid gap-x-8 gap-y-1 sm:grid-cols-2 lg:grid-cols-3">
-            {cat.calculators.map((calc) => (
-              <Link
-                key={calc.href}
-                href={calc.href}
-                className="group rounded-lg py-2 transition-colors"
-              >
-                <div className="text-sm font-medium text-[var(--color-text)] group-hover:text-[var(--color-primary)]">
-                  {calc.title}
-                </div>
-                <div className="text-xs text-[var(--color-text-muted)]">
-                  {calc.description}
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
-      ))}
     </div>
   );
 }

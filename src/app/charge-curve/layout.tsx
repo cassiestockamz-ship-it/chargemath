@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "EV Charge Curve Simulator: 16 models, real DCFC data | ChargeMath",
+  title: "EV Charge Curve Simulator: 16 models, real DCFC data",
   description:
     "Simulate any popular EV's DC fast-charging curve at any charger. See kW vs SOC, total session time, and energy added. Data from InsideEVs, Out of Spec, and Fastned.",
   alternates: { canonical: "https://chargemath.com/charge-curve" },

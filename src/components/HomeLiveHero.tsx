@@ -7,6 +7,7 @@ import SavingsTile from "./SavingsTile";
 import SavingsMeter from "./SavingsMeter";
 import SelectInput from "./SelectInput";
 import SliderInput from "./SliderInput";
+import NumberInput from "./NumberInput";
 import { getDefaultStateCode } from "@/lib/useDefaultState";
 import {
   ELECTRICITY_RATES,
@@ -19,10 +20,13 @@ const DEFAULT_GAS_PRICE = 3.5;
 
 /**
  * Live homepage hero. Runs a real SavingsVerdict on first paint with
- * sensible defaults (geo-IP state, 2024 Tesla Model 3, 35 daily miles).
- * Any input change re-animates the result via CountUp. The whole hero
- * is one signature interaction: "the answer you see before you finish
- * typing."
+ * sensible defaults (geo-IP state, 2024 Tesla Model 3, 35 daily miles,
+ * national-average gas price and a 28 MPG reference car). Any input
+ * change re-animates the result via CountUp and digit rolls.
+ *
+ * The advanced inputs section lets the user override gas price and
+ * gas-car MPG so the answer reflects their specific comparison,
+ * without forcing a navigation to the full Gas vs Electric calculator.
  */
 export default function HomeLiveHero() {
   const defaultVehicleId =
@@ -32,6 +36,8 @@ export default function HomeLiveHero() {
   const [vehicleId, setVehicleId] = useState(defaultVehicleId);
   const [stateCode, setStateCode] = useState("CA");
   const [dailyMiles, setDailyMiles] = useState(35);
+  const [gasPrice, setGasPrice] = useState(DEFAULT_GAS_PRICE);
+  const [gasMpg, setGasMpg] = useState(DEFAULT_MPG);
 
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => {
@@ -47,16 +53,17 @@ export default function HomeLiveHero() {
   const rate =
     (ELECTRICITY_RATES[stateCode]?.residential ?? NATIONAL_AVERAGE_RATE) / 100;
   const stateName = ELECTRICITY_RATES[stateCode]?.state ?? "your state";
+  const vehicleLabel = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
 
   const results = useMemo(() => {
     const annualMiles = dailyMiles * 365;
     const annualKwh = (annualMiles / 100) * vehicle.kwhPer100Miles;
     const evAnnual = annualKwh * rate;
-    const gasAnnual = (annualMiles / DEFAULT_MPG) * DEFAULT_GAS_PRICE;
+    const gasAnnual = (annualMiles / gasMpg) * gasPrice;
     const annualSavings = Math.max(0, gasAnnual - evAnnual);
     const fiveYear = annualSavings * 5;
     const evPerMile = rate * (vehicle.kwhPer100Miles / 100);
-    const gasPerMile = DEFAULT_GAS_PRICE / DEFAULT_MPG;
+    const gasPerMile = gasPrice / gasMpg;
     const fuelCut =
       gasAnnual > 0
         ? Math.max(0, Math.min(100, Math.round((annualSavings / gasAnnual) * 100)))
@@ -71,7 +78,7 @@ export default function HomeLiveHero() {
       fuelCut,
       annualKwh,
     };
-  }, [dailyMiles, vehicle, rate]);
+  }, [dailyMiles, vehicle, rate, gasPrice, gasMpg]);
 
   const vehicleOptions = EV_VEHICLES.map((v) => ({
     value: v.id,
@@ -87,7 +94,7 @@ export default function HomeLiveHero() {
 
   const deepLink = `/gas-vs-electric?vehicle=${encodeURIComponent(
     vehicleId
-  )}&state=${encodeURIComponent(stateCode)}&miles=${dailyMiles}`;
+  )}&state=${encodeURIComponent(stateCode)}&miles=${dailyMiles}&gas=${gasPrice}&mpg=${gasMpg}`;
 
   return (
     <section className="mx-auto max-w-5xl px-4 pb-8 pt-6 sm:px-6 sm:pt-10">
@@ -101,7 +108,7 @@ export default function HomeLiveHero() {
           data-speakable="true"
         >
           Preloaded with {hydrated ? stateName : "your state"} electricity rates
-          and a 2024 EV. Tune anything below, the answer tunes with you.
+          and a {vehicleLabel}. Change any input, the answer changes with you.
         </p>
       </div>
 
@@ -130,6 +137,33 @@ export default function HomeLiveHero() {
             showValue
           />
         </div>
+        <details className="group mt-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-3">
+          <summary className="cursor-pointer text-sm font-medium text-[var(--color-ink-2)]">
+            Compare to a different gas car
+          </summary>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <NumberInput
+              label="Gas price"
+              value={gasPrice}
+              onChange={setGasPrice}
+              min={1}
+              max={10}
+              step={0.1}
+              unit="$/gal"
+              helpText="Your local price, national average 3.50"
+            />
+            <NumberInput
+              label="Gas car MPG"
+              value={gasMpg}
+              onChange={setGasMpg}
+              min={10}
+              max={60}
+              step={1}
+              unit="MPG"
+              helpText="28 avg, 35 Corolla, 18 pickup"
+            />
+          </div>
+        </details>
       </div>
 
       <SavingsVerdict
@@ -138,7 +172,8 @@ export default function HomeLiveHero() {
         amountUnit="/year"
         sub={
           <>
-            Versus a 28 MPG gas car in {stateName}. Over 5 years, that is $
+            Versus a {gasMpg} MPG gas car in {stateName} at ${gasPrice.toFixed(2)}
+            /gal. Over 5 years, that is $
             {Math.round(results.fiveYear).toLocaleString()} you keep in your
             pocket.
           </>

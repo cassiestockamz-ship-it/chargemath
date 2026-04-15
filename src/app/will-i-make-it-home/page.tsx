@@ -400,6 +400,28 @@ export default function WillIMakeItHomePage() {
         }}
       />
 
+      {/* Related-tool chips for a panicked user who wants more context */}
+      <div className="mt-6 flex flex-wrap gap-3 text-sm">
+        <Link
+          href="/range"
+          className="rounded-lg border border-[var(--color-border)] bg-white px-3 py-2 font-medium text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
+        >
+          Real-world range calculator
+        </Link>
+        <Link
+          href="/winter-range-forecast"
+          className="rounded-lg border border-[var(--color-border)] bg-white px-3 py-2 font-medium text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
+        >
+          7-day winter range forecast
+        </Link>
+        <Link
+          href="/road-trip"
+          className="rounded-lg border border-[var(--color-border)] bg-white px-3 py-2 font-medium text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
+        >
+          Plan your next road trip
+        </Link>
+      </div>
+
       <EducationalContent>
         <h2>What Makes This Different From Your Car&apos;s GOM</h2>
         <p>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "EV Tire Cost Calculator: The Hidden Tire Tax | ChargeMath",
+  title: "EV Tire Cost Calculator: The Hidden Tire Tax",
   description:
     "EV tires wear 20% faster than ICE tires and cost more. Calculate your 5-year EV tire spend, the hidden tire tax, and when premium low-rolling-resistance tires actually pay off.",
   alternates: { canonical: "https://chargemath.com/ev-tire-cost" },

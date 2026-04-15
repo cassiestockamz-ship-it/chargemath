@@ -1,6 +1,6 @@
 import Link from "next/link";
 import HomeLiveHero from "@/components/HomeLiveHero";
-import CalculatorSearch from "@/components/CalculatorSearch";
+import StateJump from "@/components/StateJump";
 
 const categories = [
   {
@@ -99,11 +99,6 @@ export default function HomePage() {
       {/* Live hero — the answer is already on screen before the user does anything */}
       <HomeLiveHero />
 
-      {/* Calculator search */}
-      <section className="mx-auto max-w-5xl px-4 pb-10 sm:px-6">
-        <CalculatorSearch />
-      </section>
-
       {/* Directory — every tool on one page, no burial */}
       <section className="border-t border-[var(--color-border)] bg-[var(--color-surface-alt)]">
         <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
@@ -153,12 +148,15 @@ export default function HomePage() {
           <p className="mx-auto mt-3 max-w-xl text-sm text-[var(--color-ink-3)] sm:text-base">
             Electricity rates vary by 3x across the country. Your state decides how fast the math works in your favor.
           </p>
-          <Link
-            href="/guides"
-            className="mt-6 inline-block rounded-xl bg-[var(--color-brand)] px-6 py-3 text-sm font-semibold text-white shadow-md transition-colors hover:bg-[var(--color-brand-hi)]"
-          >
-            View all 51 state guides
-          </Link>
+          <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Link
+              href="/guides"
+              className="inline-block rounded-xl bg-[var(--color-brand)] px-6 py-3 text-sm font-semibold text-white shadow-md transition-colors hover:bg-[var(--color-brand-hi)]"
+            >
+              View all 51 state guides
+            </Link>
+            <StateJump />
+          </div>
         </div>
       </section>
     </>

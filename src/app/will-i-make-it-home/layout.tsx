@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Will I Make It Home? EV Range Panic Calculator | ChargeMath",
+  title: "Will I Make It Home? EV Range Panic Calculator",
   description:
     "17°F and 23% battery left, 40 miles to go? Find out right now. Real-world EV arrival SOC calculator with temperature, speed, and elevation. Free, no signup.",
   alternates: { canonical: "https://chargemath.com/will-i-make-it-home" },
