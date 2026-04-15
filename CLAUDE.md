@@ -1,7 +1,9 @@
 # ChargeMath — EV Calculator Hub
 
-## What This Is
-EV charging calculator hub at **chargemath.com**. Free interactive calculators for EV owners and shoppers, monetized with Amazon affiliate links and Google AdSense (ca-pub-7557739369186741, added 2026-03-29, pending review).
+## Thesis
+**ChargeMath is the verdict you see before you finish typing.** The answer is already on screen on first paint, hydrated from geo-IP state plus a sensible default EV. Every form is optional tuning on top of a pre-computed answer. Every calculator answers a question with a one-screen verdict, not a form-then-number waterfall.
+
+Design language: **Voltline** — deep electric indigo (`#2f3dff`) + lightning yellow (`#ffd60a`) + circuit teal (`#17c2a6`) on a near-white instrument panel, with one deep `#0b0f1a` strip for the SavingsMeter. Positive/affirmative, post-§30D correct, opinionated.
 
 ## Live URLs
 - **Production:** https://chargemath.com
@@ -9,181 +11,160 @@ EV charging calculator hub at **chargemath.com**. Free interactive calculators f
 - **GitHub:** https://github.com/cassiestockamz-ship-it/chargemath
 
 ## Stack
-- **Framework:** Next.js 16 (App Router, Turbopack)
-- **Styling:** Tailwind CSS 4 (CSS-based config, not tailwind.config.js)
-- **Language:** TypeScript (strict)
+- **Framework:** Next.js 16.2.1 (App Router, Turbopack)
+- **React:** 19.2.4
+- **Styling:** Tailwind CSS 4 (`@theme inline` in globals.css, no tailwind.config.js)
+- **Language:** TypeScript strict
+- **Fonts:** Space Grotesk (display, hero numbers), Inter (body), JetBrains Mono (units, labels), all via `next/font/google`
+- **View Transitions:** `experimental.viewTransition: true` in next.config, persistent chrome morphs via `.vt-header`, `.vt-header-logo`, `.vt-nav`, `.vt-hero-number`, `.vt-savings-meter`, `.vt-footer` class names
 - **Hosting:** Vercel (hobby plan, scope: taylors-projects-6d8e0bd8)
 - **DNS:** Cloudflare (zone: 37b6c2f9e4582ca7e7b1787ad719462d)
 - **Domain:** chargemath.com (non-www canonical, www→non-www redirect in next.config.ts)
 
-## Project Structure
+## The Voltline design system
+
+### Atomic unit: `SavingsTile`
+[`src/components/SavingsTile.tsx`](src/components/SavingsTile.tsx). Every result number on every anchor page flows through this one component. Props: `label`, `value`, `unit`, `prefix`, `decimals`, `icon`, `variant` (default | hero | compare), `tier` (brand | volt | good | mid | warn), optional `delta` pill, optional `compareBars` footer, `animate` default true. Count-up on mount. `heroMorph` flag applies `vt-hero-number` for cross-route morphs.
+
+The non-anchor pages still render through the legacy [`ResultCard.tsx`](src/components/ResultCard.tsx), which has been repainted in Voltline tokens so it matches visually without a codemod.
+
+### Signature live interaction: `SavingsMeter`
+[`src/components/SavingsMeter.tsx`](src/components/SavingsMeter.tsx). The split-column cost meter that sits above the result grid on cost-comparison calculators. Left column = losing option (gas, grid, public), right column = winning option (EV, solar, home), middle = volt-yellow delta. Proportional fill bar underneath. Reused on `/gas-vs-electric`, `/ev-charging-cost`, `/charger-roi`, `/solar-ev`, and the homepage. One component, one visual signature.
+
+### One-screen hero: `SavingsVerdict`
+[`src/components/SavingsVerdict.tsx`](src/components/SavingsVerdict.tsx). Mirrors recallscanner's `SafetyVerdict`. Volt rail, eyebrow + headline + giant count-up number (`amountPrefix` default `"$"`, override to `""` for non-currency like months/miles/hours), optional `PayoffDial` on the right, optional 4-tile grid slot via `children`. Used on all 6 anchor calculators, the homepage, and every state guide.
+
+### Circular dial: `PayoffDial`
+[`src/components/PayoffDial.tsx`](src/components/PayoffDial.tsx). Pure SVG. CSS keyframe arc sweep + `CountUp` number inside. Ported from recallscanner's `ScoreDial`, repainted Voltline.
+
+### Count-up: `CountUp`
+[`src/components/CountUp.tsx`](src/components/CountUp.tsx). Single `requestAnimationFrame` loop, ease-out cubic, respects `prefers-reduced-motion`. Re-animates from current displayed number to new target when props change. Supports `decimals` prop for fractional values.
+
+### Tool-first layout: `CalculatorShell`
+[`src/components/CalculatorShell.tsx`](src/components/CalculatorShell.tsx). Used on the 6 anchor calculators. Compact header (eyebrow + tight left-aligned H1 + one-line quickAnswer with `data-speakable="true"`), compact input strip (3 primaries + collapsed Advanced details), hero slot, below-fold children slot. Above-the-fold budget at 390w mobile: inputs AND hero answer both visible within the first 500px.
+
+### Legacy layout: `CalculatorLayout`
+[`src/components/CalculatorLayout.tsx`](src/components/CalculatorLayout.tsx) was upgraded in place so the ~34 non-anchor pages inherit the tool-first fix automatically: left-aligned tight H1, no centered hero text, QuickAnswer demoted to a "How this number is calculated" methodology footer below the widget.
+
+## Key pages
+
+### Homepage (`/`)
+[`src/components/HomeLiveHero.tsx`](src/components/HomeLiveHero.tsx) runs a real `SavingsVerdict` + `SavingsMeter` on first paint with geo-IP state detection + 2024 Tesla Model 3 + 35 daily miles. Any input change re-animates the whole stack. Below the hero: calculator search, full 5-category directory (every tool visible, no burial), state guides CTA.
+
+### Anchor calculators (6)
+Rebuilt with full `CalculatorShell` + `SavingsVerdict` + `SavingsMeter` where applicable:
+- [`/gas-vs-electric`](src/app/gas-vs-electric/page.tsx) — flagship, YOU SAVE $/year, fuel-cut dial, full SavingsMeter
+- [`/ev-charging-cost`](src/app/ev-charging-cost/page.tsx) — YOU PAY $/month, GRID vs GAS SavingsMeter
+- [`/charger-roi`](src/app/charger-roi/page.tsx) — PAYS OFF IN N months, PUBLIC vs HOME SavingsMeter
+- [`/charging-time`](src/app/charging-time/page.tsx) — PLUG IN FOR N hours, battery-percent dial
+- [`/range`](src/app/range/page.tsx) — YOU GET N miles, % of EPA dial
+- [`/solar-ev`](src/app/solar-ev/page.tsx) — SOLAR POWERS N miles/day, coverage dial, GRID vs SOLAR SavingsMeter
+
+### Non-anchor calculators (~34)
+Still use `CalculatorLayout` + `ResultCard` but inherit the Voltline palette + tool-first fix automatically. If you want to upgrade any specific one to the full `SavingsVerdict` treatment, follow the anchor pattern.
+
+### State guides (`/guides/[state]`)
+[`src/app/guides/[state]/page.tsx`](src/app/guides/[state]/page.tsx) + [`src/components/StateCalculatorEmbed.tsx`](src/components/StateCalculatorEmbed.tsx). Every state guide is now a real live calculator with the state rate locked from the EIA data. SavingsVerdict + 4 SavingsTiles + SavingsMeter + editorial rail + FAQ. Dataset JSON-LD per state with EIA as sourceOrganization, CC0 license, temporalCoverage, spatialCoverage, variableMeasured.
+
+## Schema stack
+
+Central pattern, emitted per page type:
+- **Homepage:** WebSite + Organization + SearchAction + FAQPage+Speakable (when FAQ present)
+- **Calculator page:** WebApplication + FAQPage+Speakable + BreadcrumbList
+- **State guide:** Article + BreadcrumbList + Dataset + FAQPage+Speakable
+- **Speakable selector:** `[data-speakable="true"]` used on the QuickAnswer row of every calculator, the hero H1, and the first FAQ question+answer
+
+## Prose discipline
+
+Every user-visible string across the site has been swept against the banned-patterns list at `~/.claude/fiction-patterns/banned_patterns.md`. **Zero em dashes** and **zero banned AI words** (delve, utilize, leverage, ultimately, moreover, furthermore, essentially, multifaceted, nuanced, foster, underscore, cornerstone, actionable, etc.) in any user-facing surface. Code comments retain em dashes per policy. The noindex `/dashboard/scorecard` admin page retains em dashes as "no data" glyphs.
+
+## Federal tax credit (§30D)
+The federal Clean Vehicle Credit was repealed for vehicles placed in service after September 30, 2025. [`src/data/ev-incentives.ts`](src/data/ev-incentives.ts) has `FEDERAL_CREDITS.newVehicle.active: false` with the expiration note. All prose that references credits is post-§30D-correct.
+
+## Project structure
 ```
 src/
 ├── app/
-│   ├── page.tsx              # Homepage
-│   ├── layout.tsx            # Root layout (nav, footer, WebSite+Organization JSON-LD)
-│   ├── opengraph-image.tsx   # Dynamic OG image (homepage)
-│   ├── globals.css           # CSS variables + Tailwind + print styles
-│   ├── icon.svg              # Favicon
-│   ├── robots.ts             # robots.txt generator
-│   ├── sitemap.ts            # sitemap.xml generator
-│   ├── ev-charging-cost/     # Calculator 1 (page + layout + opengraph-image)
-│   ├── gas-vs-electric/      # Calculator 2
-│   ├── charging-time/        # Calculator 3
-│   ├── charger-roi/          # Calculator 4
-│   ├── range/                # Calculator 5
-│   ├── tax-credits/          # Calculator 6
-│   ├── bill-impact/          # Calculator 7
-│   ├── about/                # About page
-│   ├── disclosure/           # Affiliate disclosure
-│   └── dashboard/            # Analytics dashboard (noindex)
+│   ├── page.tsx              # Homepage (HomeLiveHero + directory)
+│   ├── layout.tsx            # Root layout (fonts, vt-* classes, nav, footer)
+│   ├── globals.css           # Voltline @theme inline + animations + View Transitions
+│   ├── ev-charging-cost/, gas-vs-electric/, charger-roi/,
+│   │   charging-time/, range/, solar-ev/ — 6 anchor calculators
+│   ├── guides/
+│   │   ├── page.tsx          # State guides hub
+│   │   └── [state]/page.tsx  # Live calculator per state + Dataset schema
+│   ├── calculators/          # Full catalog directory
+│   ├── will-i-make-it-home/, winter-range-forecast/, charge-curve/,
+│   │   panel-load-check/, ev-tire-cost/ — unique tools
+│   ├── battery-degradation/, bill-impact/, carbon-footprint/, commute-cost/,
+│   │   ev-vs-hybrid/, fleet/, lease-vs-buy/, payback-period/, public-charging/,
+│   │   road-trip/, solar-battery-ev/, solar-ev-sizing/, solar-payback/,
+│   │   solar-vs-grid-ev/, tax-credits/, total-cost/, tou-optimizer/,
+│   │   towing-range/, used-ev-value/, winter-range/ — standard calculators
+│   ├── about/, disclosure/, methodology/, embed/, dashboard/
+│   ├── api/{analytics,og-result,scorecard,subscribe}/
+│   ├── opengraph-image.tsx, robots.ts, sitemap.ts, icon.svg, not-found.tsx
 ├── components/
-│   ├── CalculatorLayout.tsx   # Shared page wrapper
-│   ├── CalculatorSchema.tsx   # JSON-LD WebApplication + Organization schema
-│   ├── BreadcrumbSchema.tsx   # Breadcrumb JSON-LD
-│   ├── RelatedCalculators.tsx # Cross-links footer (6 other calculators)
-│   ├── ResultCard.tsx         # Metric display card (aria-live)
-│   ├── AffiliateCard.tsx      # Amazon product recommendation (data-affiliate-card for print)
-│   ├── FAQSection.tsx         # Collapsible FAQ with FAQPage schema
-│   ├── ShareResults.tsx       # Share/copy results button
-│   ├── EducationalContent.tsx # Below-the-fold educational content wrapper
-│   ├── AffiliateDisclosure.tsx# Inline disclosure notice
-│   ├── SelectInput.tsx        # Dropdown (useId, aria-describedby)
-│   ├── NumberInput.tsx        # Number input with unit (useId, aria-describedby)
-│   ├── SliderInput.tsx        # Range slider (useId, aria-*, startTransition)
-│   └── MobileMenu.tsx         # Mobile hamburger nav
+│   ├── CalculatorShell.tsx   # Tool-first template for anchors
+│   ├── CalculatorLayout.tsx  # Legacy template, upgraded in place
+│   ├── SavingsVerdict.tsx    # One-screen hero
+│   ├── SavingsMeter.tsx      # Split-column live cost meter
+│   ├── SavingsTile.tsx       # Atomic result unit
+│   ├── PayoffDial.tsx        # Circular dial
+│   ├── CountUp.tsx           # Count-up animation
+│   ├── HomeLiveHero.tsx      # Homepage live calculator
+│   ├── StateCalculatorEmbed.tsx  # State-locked live calc
+│   ├── ResultCard.tsx        # Legacy tile (repainted Voltline)
+│   ├── CalculatorSchema.tsx, BreadcrumbSchema.tsx, FAQSection.tsx,
+│   │   NavDropdown.tsx, MobileMenu.tsx, CalculatorSearch.tsx,
+│   │   EducationalContent.tsx, AffiliateCard.tsx, AffiliateDisclosure.tsx,
+│   │   EcoFlowCard.tsx, EmailCapture.tsx, ShareResults.tsx,
+│   │   SelectInput.tsx, NumberInput.tsx, SliderInput.tsx, RelatedCalculators.tsx
 ├── data/
-│   ├── electricity-rates.ts   # 50 states + DC EIA rates
-│   ├── ev-vehicles.ts         # 22 EVs with EPA data
-│   ├── ev-incentives.ts       # Federal + state tax credits
-│   ├── solar-data.ts          # 50 states: peak sun hours, kWh/kW/yr, install $/W, home batteries
-│   └── faq-data.ts            # FAQ questions per calculator
+│   ├── electricity-rates.ts  # 50 states + DC EIA
+│   ├── ev-vehicles.ts        # 22 EVs
+│   ├── ev-incentives.ts      # Federal (30D repealed) + state credits
+│   ├── solar-data.ts         # Peak sun hours, install $/W
+│   ├── state-guides.ts       # Pre-computed per-state cost math
+│   └── faq-data.ts
 └── lib/
-    ├── useDefaultState.ts     # Timezone → state code detection
-    ├── useUrlState.ts         # URL param sync for shareable calculator links
-    └── ogImage.tsx            # Shared OG image generator
+    ├── useDefaultState.ts, useUrlState.ts, ogImage.tsx
 ```
-
-## Calculators (26 total)
-
-### Cost & Savings (9)
-| Calculator | Path |
-|-----------|------|
-| EV Charging Cost | `/ev-charging-cost` |
-| Gas vs Electric | `/gas-vs-electric` |
-| EV vs Hybrid | `/ev-vs-hybrid` |
-| Total Cost of Ownership | `/total-cost` |
-| Lease vs Buy | `/lease-vs-buy` |
-| Payback Period | `/payback-period` |
-| Commute Cost | `/commute-cost` |
-| Used EV Value | `/used-ev-value` |
-| Tax Credits | `/tax-credits` |
-
-### Charging (5)
-| Calculator | Path |
-|-----------|------|
-| Charging Time | `/charging-time` |
-| Charger ROI | `/charger-roi` |
-| Bill Impact | `/bill-impact` |
-| Public Charging | `/public-charging` |
-| TOU Optimizer | `/tou-optimizer` |
-
-### Range & Trips (4)
-| Calculator | Path |
-|-----------|------|
-| Range Calculator | `/range` |
-| Winter Range | `/winter-range` |
-| Towing Range | `/towing-range` |
-| Road Trip Planner | `/road-trip` |
-
-### Solar & Energy (8)
-| Calculator | Path |
-|-----------|------|
-| Solar + EV | `/solar-ev` |
-| Solar Panel Sizing | `/solar-ev-sizing` |
-| Solar Payback | `/solar-payback` |
-| Solar + Battery | `/solar-battery-ev` |
-| Solar vs Grid Cost | `/solar-vs-grid-ev` |
-| Battery Degradation | `/battery-degradation` |
-| Carbon Footprint | `/carbon-footprint` |
-| Fleet Calculator | `/fleet` |
-
-## Monetization
-- **Amazon Associates** tag: `kawaiiguy0f-cm-20`
-- Affiliate links embedded contextually in calculator results
-- Products: Level 2 chargers ($250-600), portable chargers, adapters, cable organizers, energy monitors
-- ROI calculator links to specific products: ChargePoint Home Flex, Emporia Smart, Grizzl-E Classic
-- Per-page tracking via `ascsubtag={slug}`
-- **EcoFlow via CJ Affiliate:** 5% commission, 7-day cookie. Publisher ID: 101714807, Link ID: 15735883
-  - Deep link format: `https://www.tkqlhce.com/click-101714807-15735883?url={encoded_url}&sid={page_slug}`
-  - Impression pixel: `https://www.lduhtrp.net/image-101714807-15735883`
-  - Products: DELTA Pro Ultra X, DELTA Pro Ultra, DELTA Pro 3, 400W Solar Panel, 220W Bifacial, PowerPulse EV Charger
-  - Component: `src/components/EcoFlowCard.tsx` (product catalog in ECOFLOW_PRODUCTS export)
-  - Pages: solar-battery-ev, solar-ev, solar-payback, solar-vs-grid-ev, charger-roi
-  - EcoFlow also in `HOME_BATTERIES` array in `src/data/solar-data.ts` (comparison table on solar-battery-ev)
-- **Google AdSense:** `ca-pub-7557739369186741` (added 2026-03-29, pending review)
-- **Display ads:** Apply for Raptive/Mediavine at 50K sessions/month
-- **Solar lead gen:** TODO: Sign up for Profitise (embeddable solar quote forms, pays per lead)
-
-## Important: Solar Tax Credit (2026)
-The residential solar ITC (Section 25D) was eliminated by the OBBBA (July 4, 2025).
-- Homeowner-owned systems: NO federal tax credit in 2026+
-- Lease/PPA (Section 48E): 30% credit available through 2027 (installer claims it)
-- All solar calculators reflect this change. The tax credit toggle defaults to OFF.
-
-## Data Sources
-- **EPA FuelEconomy.gov:** Vehicle efficiency, range, battery capacity (no API key needed)
-- **EIA:** State residential electricity rates (manually updated, currently 2024/2025 averages)
-- **AFDC:** Federal + state EV incentive data
-- Data stored as TypeScript constants in `src/data/` — update annually
-
-## Key Patterns
-- All calculator pages are `"use client"` components (React state for interactivity)
-- Each calculator has its own `layout.tsx` for page-specific metadata + `opengraph-image.tsx`
-- `CalculatorSchema` component adds JSON-LD WebApplication structured data with Organization sameAs
-- Root layout includes WebSite + Organization JSON-LD schema graph
-- `RelatedCalculators` component shows 6 other calculators at page bottom
-- `EducationalContent` wrapper adds SEO-rich methodology/tips content below each calculator
-- Contextual internal cross-links in results section of every calculator (3 per page)
-- `AffiliateCard` builds Amazon search URLs with affiliate tag
-- CSS variables in `globals.css` for consistent theming
-- Print styles hide nav/footer/ads, show clean results with chargemath.com branding
-- URL state sync: all calculator inputs serialize to URL params for shareable links
-- Auto state detection from browser timezone (falls back to CA)
-- `startTransition` on slider inputs for better INP performance
-- Accessibility: all inputs have proper htmlFor/id, aria-describedby, aria-live on results
 
 ## Deploy
 ```bash
 cd ~/chargemath
 source ~/.claude/tokens.env
 TK=$(echo "$VERCEL_TOKEN" | tr -d '\r\n')
-npx vercel --prod --token "$TK" --scope taylors-projects-6d8e0bd8 --yes
+"C:/Users/Amazon IRL/AppData/Roaming/npm/vercel.cmd" --prod --token "$TK" --scope taylors-projects-6d8e0bd8 --yes
 ```
 
-## Adding a New Calculator
-1. Create `src/app/<slug>/page.tsx` ("use client", import shared components, add useUrlSync + getDefaultStateCode)
-2. Create `src/app/<slug>/layout.tsx` (metadata with canonical + openGraph)
-3. Create `src/app/<slug>/opengraph-image.tsx` (use makeOgImage from lib)
-4. Add EducationalContent section (methodology, data sources, tips)
-5. Add contextual cross-links to 3 related calculators
-6. Add FAQ data in `src/data/faq-data.ts`
-7. Add to `ALL_CALCULATORS` in `src/components/RelatedCalculators.tsx`
-8. Add to homepage `calculators` array in `src/app/page.tsx`
-9. Add nav link in `src/app/layout.tsx` + `src/components/MobileMenu.tsx`
-10. Add to `src/app/sitemap.ts`
-11. Build + deploy
+## Session rules when working on this repo
+- **Never spawn `next dev` for QA without killing it before reporting done.** Next.js leaks postcss workers that orphan on parent kill. Prefer `next build && next start` for final visual QA, or run visual QA on the live deployed URL via Playwright. See `feedback_kill_dev_servers.md` in memory.
+- **Zero em dashes in user-visible prose.** Sweep before every deploy.
+- **Tool-first layout.** If you add a calculator, the input strip and the first result number must both be visible within 500px of the top on mobile 390w. Use `CalculatorShell` + `SavingsVerdict` for the full treatment, or `CalculatorLayout` + `ResultCard` to inherit the baseline.
+- **Use the Voltline tokens, not raw colors.** Every color the user sees flows through the `--color-*` variables in [`src/app/globals.css`](src/app/globals.css).
+- **Monetization is out of scope until the next dedicated session.** See `followups.md` in the project root for the list of deferred affiliate + ad work.
 
-## SEO Status
-- robots.txt: ✅
-- sitemap.xml: ✅ (10 pages)
-- Structured data (JSON-LD): ✅ WebApplication + FAQPage + BreadcrumbList + WebSite + Organization
-- Page-specific meta titles + descriptions: ✅
-- OpenGraph images: ✅ dynamic per-page OG images via next/og
-- FAQPage schema: ✅ all 7 calculator pages
-- Canonical URLs: ✅ non-www, www→non-www redirect
-- Internal cross-links: ✅ 3 contextual links per calculator
-- Educational content: ✅ methodology + data sources + tips per calculator
-- Print styles: ✅
-- Accessibility (ARIA): ✅ labels, live regions, keyboard nav
-- Google Search Console: ✅ verified + sitemap submitted
+## Monetization (status quo, out of scope this session)
+- Amazon Associates tag: `kawaiiguy0f-cm-20` (existing, in `AffiliateCard`)
+- EcoFlow via CJ Affiliate (existing, in `EcoFlowCard` on solar/charger pages)
+- Google AdSense: `ca-pub-7557739369186741` (pending review, script in `layout.tsx`)
+- The 6 rebuilt anchor pages currently have NO affiliate cards. When AdSense approves, reintroduce via the `SavingsTile` pattern below the fold.
+
+## Data sources
+- EPA FuelEconomy.gov (vehicle efficiency, range, battery capacity)
+- EIA (state residential electricity rates)
+- AFDC (federal + state EV incentive data)
+- Data is stored as TypeScript constants in `src/data/` and updated annually.
+
+## SEO status (post-revamp)
+- WebApplication + FAQPage + BreadcrumbList on every calculator
+- Article + Dataset + BreadcrumbList + FAQPage+Speakable on every state guide
+- WebSite + Organization + SearchAction on homepage
+- Speakable selectors on Quick Answer rows, hero H1s, first FAQ items
+- OG images: dynamic per-page via next/og
+- Canonical URLs: non-www, www→non-www redirect
+- Sitemap: auto-generated from static routes + 51 state guides
+- robots.txt present
+- Google Search Console verified + sitemap submitted
