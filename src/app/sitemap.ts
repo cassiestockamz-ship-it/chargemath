@@ -60,5 +60,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/embed`, lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
     { url: `${baseUrl}/about`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
     { url: `${baseUrl}/methodology`, lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
+    { url: `${baseUrl}/privacy`, lastModified: now, changeFrequency: 'yearly', priority: 0.2 },
   ]
 }

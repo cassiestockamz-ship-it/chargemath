@@ -146,6 +146,7 @@ export default function RootLayout({
                 <Link href="/methodology" className="hover:text-[var(--color-ink)] transition-colors">Methodology</Link>
                 <Link href="/embed" className="hover:text-[var(--color-ink)] transition-colors">Embed</Link>
                 <Link href="/about" className="hover:text-[var(--color-ink)] transition-colors">About</Link>
+                <Link href="/privacy" className="hover:text-[var(--color-ink)] transition-colors">Privacy</Link>
               </div>
               <p className="text-xs text-[var(--color-text-muted)]">
                 &copy; {new Date().getFullYear()} ChargeMath. All rights
