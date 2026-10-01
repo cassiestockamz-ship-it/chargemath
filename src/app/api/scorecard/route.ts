@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAnalyticsKey } from "@/lib/apiAuth";
 
 const SITES = [
   {
@@ -162,6 +163,9 @@ function dateFmt(d: Date): string {
 }
 
 export async function GET(request: NextRequest) {
+  const denied = requireAnalyticsKey(request);
+  if (denied) return denied;
+
   const range = request.nextUrl.searchParams.get("range") || "28";
   const days = Math.min(Math.max(parseInt(range) || 28, 1), 480);
 

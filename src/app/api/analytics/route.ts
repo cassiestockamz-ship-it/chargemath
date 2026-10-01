@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAnalyticsKey } from "@/lib/apiAuth";
 
 const PATH_LABELS: Record<string, string> = {
   "/": "Homepage",
@@ -54,7 +55,10 @@ async function getAccessToken(): Promise<string> {
 }
 
 export async function GET(request: NextRequest) {
-  const site = request.nextUrl.searchParams.get("site") || "chargemath.com";
+  const denied = requireAnalyticsKey(request);
+  if (denied) return denied;
+
+  const site = "chargemath.com";
   const siteUrl = `sc-domain:${site}`;
 
   const endDate = new Date();
