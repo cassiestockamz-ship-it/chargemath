@@ -120,32 +120,13 @@ export default function TaxCreditsPage() {
       });
     }
 
-    // Federal used vehicle credit (25E)
+    // Federal used vehicle credit (25E) - expired Sept 30 2025
     if (vehicleType === "used") {
-      const usedCredit = FEDERAL_CREDITS.usedVehicle;
-      const incomeLimit = usedCredit.incomeLimit[filingStatus];
-      const overIncome = agi > incomeLimit;
-      const overPrice = purchasePrice > usedCredit.priceLimit;
-      const creditAmount = Math.min(
-        usedCredit.maxAmount,
-        Math.round(purchasePrice * 0.3)
-      );
-
-      let status: CreditStatus = "eligible";
-      let notes = usedCredit.notes || "";
-      if (overIncome) {
-        status = "over_income";
-        notes = `AGI exceeds ${fmt.format(incomeLimit)} limit for ${filingStatus === "married" ? "married filing jointly" : filingStatus === "headOfHousehold" ? "head of household" : "single"} filers.`;
-      } else if (overPrice) {
-        status = "over_price";
-        notes = `Vehicle price exceeds the $25,000 limit for used EV credit.`;
-      }
-
       rows.push({
-        name: `Federal ${usedCredit.name}`,
-        amount: status === "eligible" ? creditAmount : 0,
-        status,
-        notes,
+        name: `Federal ${FEDERAL_CREDITS.usedVehicle.name}`,
+        amount: 0,
+        status: "expired",
+        notes: FEDERAL_CREDITS.usedVehicle.expirationNote,
       });
     }
 
@@ -163,19 +144,14 @@ export default function TaxCreditsPage() {
       }
     }
 
-    // Charger installation credit (30C)
+    // Charger installation credit (30C) - expired for property placed in service after June 30 2026
     if (wantsCharger === "yes") {
       const charger30C = FEDERAL_CREDITS.chargerInstallation;
-      const creditAmount = Math.min(
-        charger30C.maxAmount,
-        Math.round(chargerCost * 0.3)
-      );
-
       rows.push({
         name: `Federal ${charger30C.name}`,
-        amount: creditAmount,
-        status: "eligible",
-        notes: charger30C.notes || "",
+        amount: 0,
+        status: "expired",
+        notes: charger30C.expirationNote,
       });
     }
 
@@ -255,13 +231,12 @@ export default function TaxCreditsPage() {
           <>
             The federal Section 30D new EV credit was repealed for vehicles placed in service after September 30, 2025.
             State and utility programs in {stateName} may still apply.
-            The Section 30C home charger credit remains active through 2032.
+            The Section 30C home charger credit also ended for chargers placed in service after June 30, 2026.
           </>
         ) : (
           <>
-            The federal Section 25E used EV credit is still active (30% of price up to $4,000).
-            Eligibility depends on AGI, filing status, and a $25,000 price cap.
-            Check {stateName} state and utility programs for additional savings.
+            The federal Section 25E used EV credit ended for vehicles acquired after September 30, 2025.
+            Check {stateName} state and utility programs for savings that still apply.
           </>
         )
       }
@@ -272,7 +247,7 @@ export default function TaxCreditsPage() {
         label="FEDERAL"
         value={federalVehicleCredit}
         prefix="$"
-        unit={vehicleType === "new" ? " (30D repealed)" : " (25E used)"}
+        unit={vehicleType === "new" ? " (30D repealed)" : " (25E ended)"}
         tier={federalVehicleCredit > 0 ? "good" : "warn"}
         animate
       />
@@ -294,7 +269,7 @@ export default function TaxCreditsPage() {
         label="CHARGER"
         value={chargerCredit}
         prefix="$"
-        unit=" (30C)"
+        unit=" (30C ended)"
         tier={chargerCredit > 0 ? "volt" : "mid"}
         animate
       />
@@ -305,7 +280,7 @@ export default function TaxCreditsPage() {
     <CalculatorShell
       eyebrow="Tax credits"
       title="EV Tax Credit Estimator"
-      quickAnswer="The federal new EV credit (30D) was repealed Sept 30 2025. Used EVs (25E, up to $4,000) and home charger installs (30C, up to $1,000) still qualify."
+      quickAnswer="The federal EV credits are over: 30D (new) and 25E (used) ended for vehicles acquired after Sept 30 2025, and 30C (home charger) ended for chargers placed in service after June 30 2026. State and utility incentives may still apply."
       inputs={inputs}
       hero={hero}
     >
@@ -319,7 +294,7 @@ export default function TaxCreditsPage() {
       {/* Post-30D disclaimer banner */}
       <div className="mb-6 rounded-xl border border-amber-300 bg-amber-50 p-4">
         <p className="text-sm font-medium text-amber-800">
-          The federal Section 30D new EV credit was repealed by the OBBBA for vehicles placed in service after September 30, 2025. If you are buying a 2026 or newer EV, expect $0 from the federal new-vehicle credit. The Section 25E used EV credit (30% up to $4,000) and Section 30C home charger credit (30% up to $1,000, through 2032) remain active. Consult a tax professional for your specific situation.
+          The federal Section 30D new EV credit was repealed by the OBBBA for vehicles placed in service after September 30, 2025. The Section 25E used EV credit also ended for vehicles acquired after that date, and the Section 30C home charger credit ended for property placed in service after June 30, 2026. If you are buying now, expect $0 from all three federal credits; state and utility incentives below may still apply. Consult a tax professional for your specific situation.
         </p>
       </div>
 
@@ -464,7 +439,7 @@ export default function TaxCreditsPage() {
         </p>
         <h3>Current Federal Credit Status (2026)</h3>
         <p>
-          The Section 30D new vehicle credit was repealed by the One Big Beautiful Bill Act for vehicles placed in service after September 30, 2025. It has not been renewed. If you bought a new EV in late 2025 or 2026, the federal new-vehicle credit is $0. The Section 25E used vehicle credit remains active: 30% of the purchase price up to $4,000 for qualifying used EVs priced under $25,000, subject to income limits. The Section 30C charger installation credit also remains active through 2032: 30% of equipment and installation costs up to $1,000 for residential installs.
+          The One Big Beautiful Bill Act (P.L. 119-21) ended three federal credits. Section 30D (new vehicles, up to $7,500) and Section 25E (used vehicles, 30% up to $4,000) ended for vehicles acquired after September 30, 2025. Section 30C (home charger installation, 30% up to $1,000) ended for property placed in service after June 30, 2026. If you are buying a vehicle or installing a charger now, the federal credit is $0. Vehicles acquired on or before the cutoff may still be claimed on that year&apos;s return with Form 8936; confirm details with IRS.gov or a tax professional.
         </p>
         <h3>State Incentives Vary Widely</h3>
         <ul>

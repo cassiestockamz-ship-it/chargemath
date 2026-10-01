@@ -475,8 +475,9 @@ export default function EvVsHybridPage() {
         <h3>Total cost of ownership factors not shown</h3>
         <ul>
           <li>
-            Purchase price: EVs have a higher MSRP but federal tax credits up to
-            $7,500 can close the gap. Hybrids are typically priced between gas
+            Purchase price: EVs have a higher MSRP, and the federal tax credit that
+            used to close the gap ended for vehicles acquired after September
+            30, 2025. State and utility rebates may still help. Hybrids are typically priced between gas
             and EV models.
           </li>
           <li>

@@ -172,27 +172,27 @@ export const taxCreditFAQ = [
   {
     question: "Is the federal EV tax credit still available in 2026?",
     answer:
-      "The federal Clean Vehicle Credit (Section 30D) for new EVs expired on September 30, 2025 for vehicles acquired after that date. However, the Used Clean Vehicle Credit (Section 25E) for used EVs is still active, offering up to $4,000 or 30% of the purchase price, whichever is less.",
+      "No. The One Big Beautiful Bill Act ended the Clean Vehicle Credit (Section 30D, new EVs) and the Used Clean Vehicle Credit (Section 25E) for vehicles acquired after September 30, 2025. State, local, and utility incentives may still apply, so check your state program.",
   },
   {
-    question: "How much is the EV tax credit for used vehicles?",
+    question: "Is there still a federal tax credit for used EVs?",
     answer:
-      "The Used Clean Vehicle Credit (25E) provides 30% of the purchase price, up to a maximum of $4,000. The vehicle must be at least 2 model years old, priced at $25,000 or less, and purchased from a licensed dealer. Income limits apply: $75,000 AGI for single filers, $150,000 for married filing jointly.",
+      "No. The Used Clean Vehicle Credit (25E) was 30% of the purchase price, up to $4,000, and ended for vehicles acquired after September 30, 2025. If you acquired a qualifying used EV on or before that date, you can still claim it on that year\'s return with IRS Form 8936.",
   },
   {
     question: "Is the EV charger installation tax credit still available?",
     answer:
-      "Yes, the Alternative Fuel Vehicle Refueling Property Credit (Section 30C) remains active through 2032. It covers 30% of charger equipment and installation costs, up to $1,000 for residential installations. The property must be located in an eligible census tract to qualify.",
+      "No. The Alternative Fuel Vehicle Refueling Property Credit (Section 30C) ended for property placed in service after June 30, 2026. It covered 30% of charger equipment and installation costs, up to $1,000 for residential installs in eligible census tracts. Some utilities and states still offer charger rebates.",
   },
   {
     question: "Do state EV incentives stack with federal credits?",
     answer:
-      "Yes, state incentives can generally be combined with federal credits. For example, a used EV buyer in Colorado could potentially receive the $4,000 federal credit plus $2,500 from the state. However, some state programs have their own income limits, waiting lists, or limited funding pools.",
+      "Yes, state incentives were designed to stack with the old federal credits and now stand on their own. Some state programs have their own income limits, waiting lists, or limited funding pools.",
   },
   {
     question: "What income limits apply to EV tax credits?",
     answer:
-      "For the Used Clean Vehicle Credit (25E): $75,000 AGI for single filers, $112,500 for head of household, and $150,000 for married filing jointly. The expired 30D credit had higher limits: $150,000 single, $225,000 head of household, $300,000 married filing jointly. State incentive income limits vary by program.",
+      "The federal credits no longer apply to new purchases. For reference, the expired 25E used credit capped AGI at $75,000 single, $112,500 head of household, and $150,000 married filing jointly, and the expired 30D credit at $150,000, $225,000, and $300,000. State incentive income limits vary by program.",
   },
 ];
 

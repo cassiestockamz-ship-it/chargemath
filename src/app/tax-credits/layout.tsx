@@ -3,14 +3,14 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "EV Tax Credit Estimator",
   description:
-    "Estimate your EV tax credits, rebates, and incentives. Check federal and state credits for new and used electric vehicles, plus charger installation credits.",
+    "Federal EV credits 30D, 25E and 30C have ended. See what ended and when, and check state and utility EV incentives and rebates for your state.",
   alternates: {
     canonical: "/tax-credits",
   },
   openGraph: {
     title: "EV Tax Credit Estimator",
     description:
-      "Calculate your federal and state EV tax credits. Check eligibility for new/used vehicle credits, state rebates, and charger installation credits.",
+      "Which federal EV credits ended and when, plus state and utility EV rebates that still apply.",
     type: "website",
   },
 };

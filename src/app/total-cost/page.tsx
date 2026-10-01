@@ -49,7 +49,7 @@ const tcoFAQ = [
   {
     question: "Does this calculator account for federal or state tax credits?",
     answer:
-      "No. Tax credits can reduce the effective purchase price of an EV by $2,500 to $7,500 depending on the vehicle and your tax situation. To factor in credits, subtract the credit amount from the EV purchase price input. Use our Tax Credit Estimator for details.",
+      "No. The federal EV credits ended for vehicles acquired after September 30, 2025, but some state, local, and utility rebates still apply. To factor in a rebate, subtract it from the EV purchase price input. Use our Tax Credit Estimator for details.",
   },
   {
     question: "Should I include my trade-in or down payment in the purchase price?",
@@ -526,7 +526,7 @@ export default function TotalCostPage() {
         <ul>
           <li>Depreciation and resale value vary widely by make, model, and market conditions.</li>
           <li>Financing costs (interest) depend on your credit score, loan term, and down payment.</li>
-          <li>Tax credits and rebates can reduce the EV&apos;s effective purchase price by $2,500 to $7,500.</li>
+          <li>The federal EV credits have ended, but state and utility rebates can still reduce the EV&apos;s effective purchase price.</li>
           <li>Tire costs are slightly higher for EVs due to added weight, but the difference is modest ($50 to $100 per year).</li>
         </ul>
       </EducationalContent>

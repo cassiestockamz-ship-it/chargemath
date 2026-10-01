@@ -8,7 +8,7 @@ export const contentType = "image/png";
 export default function Image() {
   return makeOgImage(
     "EV Tax Credit Estimator",
-    "Check federal and state EV tax credits, rebates, and charger installation incentives",
+    "What ended federally, and the state EV rebates that still apply",
     "🏛️"
   );
 }

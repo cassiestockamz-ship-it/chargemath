@@ -25,7 +25,7 @@ const leaseVsBuyFAQ = [
   {
     question: "Can you claim the EV tax credit when leasing?",
     answer:
-      "When you lease, the leasing company (not you) technically claims the federal EV tax credit because they own the vehicle. However, many lessors pass the savings on to you as a reduced capitalized cost or lower monthly payment. Check your lease terms carefully to see if the $7,500 credit is reflected in your deal.",
+      "The federal EV credit (including the leasing route, Section 45W) ended for vehicles acquired after September 30, 2025, so new leases no longer carry a lessor pass-through. Some state or utility rebates may still reduce your capitalized cost, so check your lease terms for what is reflected in your deal.",
   },
   {
     question: "What happens if I go over the mileage limit on an EV lease?",
@@ -454,7 +454,7 @@ export default function LeaseVsBuyPage() {
         <h3>Key Factors to Consider</h3>
         <ul>
           <li>Depreciation is the biggest factor. EVs with strong resale values (like Tesla) tend to favor buying because you retain more equity. Models with steep depreciation curves favor leasing since you avoid that loss.</li>
-          <li>The federal EV tax credit ($7,500) can apply to both options, but works differently. When buying, you claim it directly. When leasing, the lessor claims it and may or may not pass the savings to you.</li>
+          <li>The federal EV tax credit ended for vehicles acquired after September 30, 2025, so it no longer favors either option. State and utility rebates may still apply to both; ask whether a lessor passes any rebate through.</li>
           <li>Mileage matters significantly for leases. If you consistently drive over 12,000 miles per year, excess mileage fees add up quickly. High-mileage drivers almost always benefit from buying.</li>
           <li>Interest rates change the math. Low loan rates make buying more attractive. If rates are high, leasing effectively lets the manufacturer subsidize your cost through competitive lease rates.</li>
         </ul>

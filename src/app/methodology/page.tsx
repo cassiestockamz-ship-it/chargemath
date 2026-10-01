@@ -242,17 +242,17 @@ export default function MethodologyPage() {
             it back as a lower lease payment.
           </p>
           <p>
-            <strong>Section 30C (charger installation credit).</strong> Extended
-            through 2032 by the IRA, but subject to census tract eligibility.
-            Thirty percent of equipment plus installation, capped at $1,000 for
-            residential. Check the IRS&apos;s census tract lookup before
-            assuming you qualify.
+            <strong>Section 30C (charger installation credit).</strong> Ended by
+            the One Big Beautiful Bill Act (P.L. 119-21) for property placed in
+            service after June 30, 2026. It was 30 percent of equipment plus
+            installation, capped at $1,000 for residential. Our calculators
+            treat it as $0.
           </p>
           <p>
-            <strong>Section 25E (used clean vehicle credit).</strong> Still
-            alive. Thirty percent of the purchase price up to $4,000 on used
-            EVs at least two model years old, with income caps of $75,000
-            single or $150,000 married filing jointly.
+            <strong>Section 25E (used clean vehicle credit).</strong> Ended by
+            the One Big Beautiful Bill Act for vehicles acquired after
+            September 30, 2025. It was 30 percent of the purchase price up to
+            $4,000. Our calculators treat it as $0.
           </p>
 
           <h2 id="excluded">What we do not include</h2>

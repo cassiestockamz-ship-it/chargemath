@@ -96,7 +96,7 @@ const usedEvFAQ = [
     question:
       "Why do EVs depreciate faster than gas cars in the first few years?",
     answer:
-      "EVs have historically depreciated faster in years 1-3 due to rapidly improving technology, increasing range in newer models, and federal tax credits that effectively lower the price of new vehicles. However, depreciation is slowing as the used EV market matures and buyers become more comfortable with the technology. Some popular models like the Tesla Model 3 and Model Y now hold their value comparably to gas equivalents.",
+      "EVs have historically depreciated faster in years 1-3 due to rapidly improving technology, increasing range in newer models, and past federal tax credits that effectively lowered the price of new vehicles. However, depreciation is slowing as the used EV market matures and buyers become more comfortable with the technology. Some popular models like the Tesla Model 3 and Model Y now hold their value comparably to gas equivalents.",
   },
 ];
 
@@ -403,10 +403,10 @@ export default function UsedEvValuePage() {
         </p>
         <h3>Factor in Available Tax Credits</h3>
         <p>
-          Used EVs may qualify for a federal tax credit of up to $4,000 under
-          current IRS rules (Section 25E), but there are income and price caps.
-          Check IRS.gov for the latest eligibility requirements, as this can
-          significantly offset the purchase price.
+          The federal used EV credit (Section 25E, up to $4,000) ended for
+          vehicles acquired after September 30, 2025, so budget the full price.
+          Some states and utilities still offer used-EV incentives; check your
+          state program and IRS.gov for current rules.
         </p>
       </EducationalContent>
 

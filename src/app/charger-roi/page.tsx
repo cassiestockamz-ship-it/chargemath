@@ -369,7 +369,7 @@ export default function ChargerROIPage() {
           <ul>
             <li>High daily mileage: the more you drive, the faster a home charger pays off. Commuters driving 50+ miles per day typically break even in under a year.</li>
             <li>Time-of-use electricity plans: many utilities offer overnight rates 30 to 50% below standard rates, making home charging even cheaper.</li>
-            <li>The federal 30C charger tax credit covers 30% of equipment and installation costs (up to $1,000), reducing your payback period by nearly a third.</li>
+            <li>The federal 30C charger tax credit ended for chargers placed in service after June 30, 2026, so payback is now figured on full cost. Check your utility and state for charger rebates that can still shorten it.</li>
             <li>Home chargers can increase property value. A 2024 Zillow study found homes with EV chargers sold for 3.3% more on average.</li>
           </ul>
         </EducationalContent>

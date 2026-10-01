@@ -42,7 +42,7 @@ const fleetFAQ = [
   {
     question: "Are there tax incentives for fleet electrification?",
     answer:
-      "Yes. The federal Commercial Clean Vehicle Credit (Section 45W) offers up to $7,500 per light-duty EV or $40,000 per heavy-duty EV with no manufacturer cap. The Alternative Fuel Vehicle Refueling Property Credit (30C) covers 30 percent of charging equipment costs up to $100,000 per location. Many states offer additional fleet incentives, grants, and utility rate discounts for commercial EV charging.",
+      "The federal credits for fleets have ended. The Commercial Clean Vehicle Credit (Section 45W, up to $7,500 per light-duty EV or $40,000 per heavy-duty EV) ended for vehicles acquired after September 30, 2025, and the Alternative Fuel Vehicle Refueling Property Credit (Section 30C) ended for property placed in service after June 30, 2026. Many states offer additional fleet incentives, grants, and utility rate discounts for commercial EV charging.",
   },
 ];
 
@@ -474,7 +474,7 @@ export default function FleetElectrificationPage() {
           <li>Charging infrastructure is the biggest upfront cost beyond vehicles. Budget $2,000 to $5,000 per Level 2 charging station plus electrical panel upgrades if needed.</li>
           <li>Route planning matters. EVs with 250+ mile range cover most fleet use cases, but vehicles running 200+ miles per day may need midday charging or DC fast chargers.</li>
           <li>Resale values for fleet EVs are still developing. Battery degradation is minimal for modern EVs (typically 85 to 90 percent capacity after 200,000 miles), which supports strong residual values.</li>
-          <li>Federal tax credits (Section 45W) can offset $7,500 per light-duty vehicle with no manufacturer cap for commercial buyers, significantly reducing the purchase premium.</li>
+          <li>The federal commercial credit (Section 45W) ended for vehicles acquired after September 30, 2025, so model the purchase premium without it. State grants and utility programs may still offset it.</li>
           <li>Driver training is minimal since EVs are simpler to operate, but fleet managers should train staff on charging procedures and range management.</li>
         </ul>
       </EducationalContent>

@@ -26,7 +26,7 @@ const categories = [
       { title: "Payback Period", href: "/payback-period", blurb: "When the EV premium pays for itself." },
       { title: "Commute Cost", href: "/commute-cost", blurb: "Per-trip fuel and wear math for your route." },
       { title: "Used EV Value", href: "/used-ev-value", blurb: "Residual, battery health, and fair-price math." },
-      { title: "Tax Credits", href: "/tax-credits", blurb: "Federal and state credits, post-September 2025 rules." },
+      { title: "Tax Credits", href: "/tax-credits", blurb: "What ended federally, and state incentives that still apply." },
     ],
   },
   {

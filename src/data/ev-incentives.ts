@@ -252,19 +252,20 @@ export const FEDERAL_CREDITS = {
   usedVehicle: {
     name: "Used Clean Vehicle Credit (25E)",
     maxAmount: 4000,
-    active: true,
+    active: false,
+    expirationNote: "Expired for vehicles acquired after September 30, 2025",
     notes:
-      "30% of purchase price, up to $4,000. Vehicle must be at least 2 model years old.",
+      "Ended by the One Big Beautiful Bill Act (P.L. 119-21) for vehicles acquired after September 30, 2025. It was 30% of price, up to $4,000.",
     incomeLimit: { single: 75000, headOfHousehold: 112500, married: 150000 },
     priceLimit: 25000,
   },
   chargerInstallation: {
     name: "EV Charger Tax Credit (30C)",
     maxAmount: 1000,
-    active: true,
+    active: false,
     notes:
-      "30% of cost, up to $1,000 for residential. Must be in eligible census tract.",
+      "Ended by the One Big Beautiful Bill Act (P.L. 119-21) for property placed in service after June 30, 2026. It was 30% of cost, up to $1,000 for residential in eligible census tracts.",
     expirationNote:
-      "Extended through 2032 by IRA, but subject to census tract eligibility",
+      "Expired for property placed in service after June 30, 2026",
   },
 };
