@@ -1,11 +1,14 @@
 # ChargeMath — EV Calculator Hub
 
+> **Operated by site-ops since 2026-09-30.** This repo is maintained by an autonomous team (`~/site-ops/`, runs on the VPS). Before working here by hand, read `~/site-ops/CLAUDE.md`, `~/site-ops/STRATEGY.md`, and this site's playbook `~/site-ops/playbooks/chargemath.md`, and `git pull` first: the VPS pushes here.
+
 ## Thesis
 **ChargeMath is the verdict you see before you finish typing.** The answer is already on screen on first paint, hydrated from geo-IP state plus a sensible default EV. Every form is optional tuning on top of a pre-computed answer. Every calculator answers a question with a one-screen verdict, not a form-then-number waterfall.
 
 Design language: **Voltline** — deep electric indigo (`#2f3dff`) + lightning yellow (`#ffd60a`) + circuit teal (`#17c2a6`) on a near-white instrument panel, with one deep `#0b0f1a` strip for the SavingsMeter. Positive/affirmative, post-§30D correct, opinionated.
 
 ## Live URLs
+(updated 2026-10-02): ChargeMath is one of only two sites (with PlantingCalc) that have real search traffic.
 - **Production:** https://chargemath.com
 - **Vercel:** https://chargemath.vercel.app
 - **GitHub:** https://github.com/cassiestockamz-ship-it/chargemath
@@ -17,7 +20,7 @@ Design language: **Voltline** — deep electric indigo (`#2f3dff`) + lightning y
 - **Language:** TypeScript strict
 - **Fonts:** Space Grotesk (display, hero numbers), Inter (body), JetBrains Mono (units, labels), all via `next/font/google`
 - **View Transitions:** `experimental.viewTransition: true` in next.config, persistent chrome morphs via `.vt-header`, `.vt-header-logo`, `.vt-nav`, `.vt-hero-number`, `.vt-savings-meter`, `.vt-footer` class names
-- **Hosting:** Vercel (hobby plan, scope: taylors-projects-6d8e0bd8)
+- **Hosting:** Vercel (hobby plan, scope: taylors-projects-6d8e0bd8). (updated 2026-10-02): no auto-deploy on git push; site-ops deploys with `bin/deploy.sh chargemath` (Vercel CLI, remote build, live check, auto-rollback).
 - **DNS:** Cloudflare (zone: 37b6c2f9e4582ca7e7b1787ad719462d)
 - **Domain:** chargemath.com (non-www canonical, www→non-www redirect in next.config.ts)
 
@@ -132,6 +135,7 @@ src/
 ```
 
 ## Deploy
+(updated 2026-10-02): site-ops deploys with `bin/deploy.sh chargemath` (Vercel CLI, remote build, live check, auto-rollback); the project does not auto-deploy on git push. Manual fallback:
 ```bash
 cd ~/chargemath
 source ~/.claude/tokens.env
