@@ -45,12 +45,12 @@ export const gasVsElectricFAQ = [
   {
     question: "Is the total cost of ownership lower for EVs?",
     answer:
-      "Generally yes. Besides lower fuel costs, EVs have fewer moving parts and lower maintenance costs\u2014no oil changes, fewer brake replacements due to regenerative braking, and no transmission service. Over 5 years, total ownership savings can reach $6,000\u2013$10,000 compared to a gas car.",
+      "Generally yes. Besides lower fuel costs, EVs have fewer moving parts and lower maintenance costs: no oil changes, fewer brake replacements due to regenerative braking, and no transmission service. Over 5 years, total ownership savings can reach $6,000\u2013$10,000 compared to a gas car.",
   },
   {
     question: "How do EV fuel costs compare when electricity is expensive?",
     answer:
-      "Even at California\u2019s high residential rate of about 27.6\u00A2/kWh, an EV costs roughly $0.07 per mile\u2014still cheaper than a 28 MPG gas car at $3.50/gallon ($0.125/mile). The break-even point where EVs lose their fuel advantage is around 45\u201350\u00A2/kWh, which virtually no US residential rate reaches.",
+      "Even at California\u2019s high residential rate of about 27.6\u00A2/kWh, an EV costs roughly $0.07 per mile, still cheaper than a 28 MPG gas car at $3.50/gallon ($0.125/mile). The break-even point where EVs lose their fuel advantage is around 45\u201350\u00A2/kWh, which virtually no US residential rate reaches.",
   },
 ];
 
@@ -69,12 +69,12 @@ export const chargingTimeFAQ = [
   {
     question: "Can you charge an EV with a regular household outlet?",
     answer:
-      "Yes, every EV comes with a Level 1 charging cable that plugs into a standard 120V outlet. It\u2019s slow\u2014adding only 3\u20135 miles of range per hour\u2014but it works fine for drivers who travel less than 30\u201340 miles per day and can charge overnight.",
+      "Yes, every EV comes with a Level 1 charging cable that plugs into a standard 120V outlet. It\u2019s slow, adding only 3\u20135 miles of range per hour, but it works fine for drivers who travel less than 30\u201340 miles per day and can charge overnight.",
   },
   {
     question: "Why does DC fast charging slow down above 80%?",
     answer:
-      "Battery chemistry requires slower charging at high states of charge to prevent overheating and degradation. Above 80%, the charging speed typically drops by 50% or more. This is why most fast-charging sessions target 80% rather than 100%\u2014the last 20% can take as long as the first 70%.",
+      "Battery chemistry requires slower charging at high states of charge to prevent overheating and degradation. Above 80%, the charging speed typically drops by 50% or more. This is why most fast-charging sessions target 80% rather than 100%: the last 20% can take as long as the first 70%.",
   },
   {
     question: "How many miles of range do you get per hour of charging?",
@@ -121,7 +121,7 @@ export const rangeFAQ = [
   {
     question: "How much range do electric cars lose in cold weather?",
     answer:
-      "At 20\u00B0F, expect to lose about 25\u201335% of your EPA-rated range. Below 0\u00B0F, range loss can exceed 40%. Using seat heaters instead of cabin heat helps\u2014seat heaters use about 75 watts versus 3,000\u20135,000 watts for full cabin heating. Pre-conditioning the cabin while plugged in also helps.",
+      "At 20\u00B0F, expect to lose about 25\u201335% of your EPA-rated range. Below 0\u00B0F, range loss can exceed 40%. Using seat heaters instead of cabin heat helps: seat heaters use about 75 watts versus 3,000\u20135,000 watts for full cabin heating. Pre-conditioning the cabin while plugged in also helps.",
   },
   {
     question: "Does driving fast reduce EV range?",
@@ -131,7 +131,7 @@ export const rangeFAQ = [
   {
     question: "How does towing affect electric vehicle range?",
     answer:
-      "Towing dramatically reduces EV range\u2014typically by 40\u201350% depending on the trailer weight and aerodynamics. A Tesla Model Y rated at 310 miles might only get 150\u2013180 miles while towing. Plan charging stops more frequently and stick to lower speeds when towing with an EV.",
+      "Towing dramatically reduces EV range, typically by 40\u201350% depending on the trailer weight and aerodynamics. A Tesla Model Y rated at 310 miles might only get 150\u2013180 miles while towing. Plan charging stops more frequently and stick to lower speeds when towing with an EV.",
   },
   {
     question: "Why is my EV's real-world range less than the EPA rating?",

@@ -77,7 +77,7 @@ const HOME_CHARGE_TABLE = EV_VEHICLES.map((v) => ({
 
 const DC_FAST_TABLE = CHARGE_CURVES.map((c) => ({
   id: c.id,
-  name: `${c.make} ${c.model}`,
+  name: c.model.startsWith(c.make) ? c.model : `${c.make} ${c.model}`,
   minutes: Math.round(simulateChargeSession(c, 10, 80, 350).totalMinutes),
   peak: Math.max(...c.curve.map(([, kw]) => kw)),
 }));
@@ -323,7 +323,7 @@ export default function ChargingTimePage() {
           </div>
           <h2 className="mt-8 mb-3 text-xl font-bold text-[var(--color-text)]">DC Fast Charging Time, 10 to 80 Percent</h2>
           <p className="mb-4 text-sm text-[var(--color-text-muted)]">
-            Estimated minutes from 10 to 80 percent on a 350 kW charger, using each car&apos;s published charging curve with a warm, preconditioned battery. A cold battery or a slower station takes longer. See the full curves on the <Link href="/charge-curve" className="text-[var(--color-primary)] underline">charge curve calculator</Link>.
+            Estimated minutes from 10 to 80 percent on a 350 kW charger, using each car&apos;s published charging curve with a warm, preconditioned battery. A cold battery or a slower station takes longer, and automaker figures are often a few minutes faster than these estimates. See the full curves on the <Link href="/charge-curve" className="text-[var(--color-primary)] underline">charge curve calculator</Link>.
           </p>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">

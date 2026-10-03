@@ -266,7 +266,7 @@ export const CHARGE_CURVES: ChargeCurve[] = [
   {
     id: "polestar-2-lr-2024",
     make: "Polestar",
-    model: "Polestar 2 LR Single",
+    model: "2 LR Single",
     year: 2024,
     batteryKwh: 82,
     voltageArchitecture: 400,
