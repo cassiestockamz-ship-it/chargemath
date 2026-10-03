@@ -18,6 +18,7 @@ import { useUrlSync } from "@/lib/useUrlState";
 import { chargingTimeFAQ } from "@/data/faq-data";
 import { NATIONAL_AVERAGE_RATE } from "@/data/electricity-rates";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
+import { CHARGE_CURVES, simulateChargeSession } from "@/data/charge-curves";
 
 type ChargingLevel = "level1" | "level2" | "dcfast";
 
@@ -56,6 +57,30 @@ function calcChargeTime(
   const kwhNeeded = (batteryKwh * (targetPct - startPct)) / 100;
   return kwhNeeded / powerKW;
 }
+
+function formatHours(hours: number): string {
+  const h = Math.floor(hours);
+  const m = Math.round((hours - h) * 60);
+  if (m === 60) return `${h + 1} hr`;
+  return m === 0 ? `${h} hr` : `${h} hr ${m} min`;
+}
+
+// Static reference tables, rendered into the page HTML.
+const HOME_CHARGE_TABLE = EV_VEHICLES.map((v) => ({
+  id: v.id,
+  name: `${v.make} ${v.model}`,
+  battery: v.batteryCapacityKwh,
+  l1Hours: v.batteryCapacityKwh / v.chargerTypes.level1KW,
+  l2KW: v.chargerTypes.level2KW,
+  l2Hours: v.batteryCapacityKwh / v.chargerTypes.level2KW,
+}));
+
+const DC_FAST_TABLE = CHARGE_CURVES.map((c) => ({
+  id: c.id,
+  name: `${c.make} ${c.model}`,
+  minutes: Math.round(simulateChargeSession(c, 10, 80, 350).totalMinutes),
+  peak: Math.max(...c.curve.map(([, kw]) => kw)),
+}));
 
 export default function ChargingTimePage() {
   const [vehicleId, setVehicleId] = useState(EV_VEHICLES[0].id);
@@ -242,7 +267,7 @@ export default function ChargingTimePage() {
       />
       <CalculatorShell
         eyebrow="Charging time"
-        title="EV Charging Time"
+        title="EV Charging Time Calculator"
         quickAnswer="Level 1 adds 3 to 5 miles per hour. Level 2 adds 20 to 30. DC fast charging gets you from 10 to 80 percent in 20 to 40 minutes."
         inputs={inputs}
         hero={hero}
@@ -268,6 +293,59 @@ export default function ChargingTimePage() {
             Is a home charger worth it?
           </Link>
         </div>
+
+        <section className="mb-10">
+          <h2 className="mb-3 text-xl font-bold text-[var(--color-text)]">EV Charging Time by Vehicle: Level 1 and Level 2</h2>
+          <p className="mb-4 text-sm text-[var(--color-text-muted)]">
+            Time to charge from empty to full: usable battery divided by charging power. Level 1 assumes a standard 120V outlet at 1.4 kW. Level 2 assumes a 240V charger that can supply the car&apos;s full onboard charger rating. Real sessions run about 10 percent longer because of charging losses, and most owners charge from around 20 percent, which is faster.
+          </p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="border-b border-[var(--color-border)]">
+                  <th className="py-2 pr-3">Vehicle</th>
+                  <th className="py-2 pr-3">Battery</th>
+                  <th className="py-2 pr-3">Level 1 (1.4 kW)</th>
+                  <th className="py-2 pr-3">Level 2</th>
+                </tr>
+              </thead>
+              <tbody>
+                {HOME_CHARGE_TABLE.map((row) => (
+                  <tr key={row.id} className="border-b border-[var(--color-border)]">
+                    <td className="py-2 pr-3">{row.name}</td>
+                    <td className="py-2 pr-3">{row.battery} kWh</td>
+                    <td className="py-2 pr-3">{Math.round(row.l1Hours)} hr</td>
+                    <td className="py-2 pr-3">{formatHours(row.l2Hours)} at {row.l2KW} kW</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <h2 className="mt-8 mb-3 text-xl font-bold text-[var(--color-text)]">DC Fast Charging Time, 10 to 80 Percent</h2>
+          <p className="mb-4 text-sm text-[var(--color-text-muted)]">
+            Estimated minutes from 10 to 80 percent on a 350 kW charger, using each car&apos;s published charging curve with a warm, preconditioned battery. A cold battery or a slower station takes longer. See the full curves on the <Link href="/charge-curve" className="text-[var(--color-primary)] underline">charge curve calculator</Link>.
+          </p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="border-b border-[var(--color-border)]">
+                  <th className="py-2 pr-3">Vehicle</th>
+                  <th className="py-2 pr-3">Peak power</th>
+                  <th className="py-2 pr-3">10 to 80 percent</th>
+                </tr>
+              </thead>
+              <tbody>
+                {DC_FAST_TABLE.map((row) => (
+                  <tr key={row.id} className="border-b border-[var(--color-border)]">
+                    <td className="py-2 pr-3">{row.name}</td>
+                    <td className="py-2 pr-3">{row.peak} kW</td>
+                    <td className="py-2 pr-3">about {row.minutes} min</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
 
         <EducationalContent>
           <h2>How EV Charging Time Is Calculated</h2>

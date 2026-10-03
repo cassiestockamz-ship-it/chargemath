@@ -68,6 +68,20 @@ const CARGO_FACTORS: Record<Cargo, number> = {
   towing: 0.55,
 };
 
+// EPA to real-world range converter scenarios, built from the same factors as the calculator.
+const CONVERTER_SCENARIOS = [
+  { key: "mild", label: "Mild highway (70°F, 70 mph)", factor: getSpeedFactor(70) * getTempFactor(70) },
+  { key: "summer", label: "Hot highway (90°F, 70 mph, AC on)", factor: getSpeedFactor(70) * getTempFactor(90) * CLIMATE_FACTORS.ac },
+  { key: "winter", label: "Cold highway (25°F, 70 mph, heat on)", factor: getSpeedFactor(70) * getTempFactor(25) * CLIMATE_FACTORS.heat },
+];
+
+const CONVERTER_TABLE = EV_VEHICLES.map((v) => ({
+  id: v.id,
+  name: `${v.make} ${v.model}`,
+  epa: v.epaRangeMiles,
+  real: CONVERTER_SCENARIOS.map((sc) => Math.round(v.epaRangeMiles * sc.factor)),
+}));
+
 const CLIMATE_OPTIONS: { value: ClimateControl; label: string }[] = [
   { value: "off", label: "Off" },
   { value: "ac", label: "AC On" },
@@ -284,7 +298,7 @@ export default function RangePage() {
       <CalculatorShell
         eyebrow="Real range"
         title="EV Range Calculator"
-        quickAnswer="Real world EV range typically falls 10 to 30 percent below the EPA sticker, depending on speed, temperature, and terrain."
+        quickAnswer="To convert EPA range to real-world range, multiply by about 0.9 for mild highway driving at 70 mph, or about 0.5 for 70 mph in freezing weather with the heat on. Pick your car and conditions below."
         inputs={inputs}
         hero={hero}
       >
@@ -309,6 +323,37 @@ export default function RangePage() {
             Compare gas vs electric costs
           </Link>
         </div>
+
+        <section className="mb-10">
+          <h2 className="mb-3 text-xl font-bold text-[var(--color-text)]">EPA to Real-World EV Range Converter</h2>
+          <p className="mb-4 text-sm text-[var(--color-text-muted)]">
+            Each row converts the EPA rated range into an estimated real-world highway range, using the same speed, temperature and climate factors as the calculator above. Multipliers: {CONVERTER_SCENARIOS.map((sc, i) => `${i ? "; " : ""}${sc.label.split(" (")[0].toLowerCase()} x${sc.factor.toFixed(2)}`).join("")}. These are estimates, not test results; use the calculator for your own conditions.
+          </p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="border-b border-[var(--color-border)]">
+                  <th className="py-2 pr-3">Vehicle</th>
+                  <th className="py-2 pr-3">EPA range</th>
+                  {CONVERTER_SCENARIOS.map((sc) => (
+                    <th key={sc.key} className="py-2 pr-3">{sc.label}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {CONVERTER_TABLE.map((row) => (
+                  <tr key={row.id} className="border-b border-[var(--color-border)]">
+                    <td className="py-2 pr-3">{row.name}</td>
+                    <td className="py-2 pr-3">{row.epa} mi</td>
+                    {row.real.map((mi, i) => (
+                      <td key={CONVERTER_SCENARIOS[i].key} className="py-2 pr-3">{mi} mi</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
 
         <EducationalContent>
           <h2>How Real-World EV Range Is Calculated</h2>
