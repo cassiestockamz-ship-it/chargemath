@@ -197,8 +197,8 @@ export default function BillImpactPage() {
   return (
     <CalculatorShell
       eyebrow="Bill impact"
-      title="EV Electricity Bill Impact"
-      quickAnswer="Charging an EV at home typically adds $30 to $60 per month to your electricity bill, depending on miles driven and local rates."
+      title="How Much Will an EV Raise My Electric Bill?"
+      quickAnswer="A Tesla Model 3 driven 35 miles a day adds about $42 a month at the 16.11\u00A2 national average rate, or about $72 in California (27.57\u00A2). Enter your own bill and state below."
       inputs={inputs}
       hero={hero}
     >

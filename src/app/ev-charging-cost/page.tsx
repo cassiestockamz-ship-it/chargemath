@@ -274,7 +274,7 @@ export default function EVChargingCostPage() {
       />
       <CalculatorShell
         eyebrow="EV charging"
-        title="EV Charging Cost"
+        title="Cost to Charge an Electric Car Calculator"
         quickAnswer="The typical EV costs $40 to $80 per month to charge at home. Your exact number depends on your car, state rate, and miles driven."
         inputs={inputs}
         hero={hero}
