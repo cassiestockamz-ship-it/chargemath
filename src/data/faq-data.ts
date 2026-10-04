@@ -215,7 +215,7 @@ export const paybackPeriodFAQ = [
   {
     question: "Should I include tax credits in my payback calculation?",
     answer:
-      "Yes, if you qualify. The federal 30D clean vehicle credit expired in early 2026, but many states still offer EV rebates or tax credits ranging from $1,000 to $7,500. These incentives directly reduce the effective price premium of the EV, shortening your payback period. Check your state's current programs before purchasing.",
+      "Yes, if you qualify. The federal 30D clean vehicle credit ended for vehicles acquired after September 30, 2025, but many states still offer EV rebates or tax credits ranging from $1,000 to $7,500. These incentives directly reduce the effective price premium of the EV, shortening your payback period. Check your state's current programs before purchasing.",
   },
   {
     question: "Is an EV worth it if I only drive 20 miles a day?",
