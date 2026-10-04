@@ -7,7 +7,7 @@ export const contentType = "image/png";
 export default function Image() {
   return makeOgImage(
     "EV Charge Curve Simulator",
-    "16 EVs, real DCFC data, one-chart session visualization.",
+    "15 EVs, real DCFC data, one-chart session visualization.",
     "📈"
   );
 }

@@ -23,7 +23,7 @@ const ALL_CALCULATORS: Calc[] = [
   { title: "Charging Time", description: "How long to charge at any level", href: "/charging-time", icon: "⏱️", category: "charging" },
   { title: "Charger ROI", description: "Home charger payback calculator", href: "/charger-roi", icon: "🏠", category: "charging" },
   { title: "Panel Load Check", description: "NEC 220.83 permit worksheet", href: "/panel-load-check", icon: "🔌", category: "charging" },
-  { title: "Charge Curve Simulator", description: "Real DCFC curves for 16 EVs", href: "/charge-curve", icon: "📈", category: "charging" },
+  { title: "Charge Curve Simulator", description: "Real DCFC curves for 15 EVs", href: "/charge-curve", icon: "📈", category: "charging" },
   { title: "Bill Impact", description: "How much your electric bill goes up", href: "/bill-impact", icon: "📄", category: "charging" },
   { title: "Public Charging", description: "Public vs home charging costs", href: "/public-charging", icon: "⚡", category: "charging" },
   { title: "TOU Optimizer", description: "Find the cheapest time to charge", href: "/tou-optimizer", icon: "🕐", category: "charging" },

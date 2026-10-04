@@ -120,7 +120,7 @@ export default function ChargeCurvePage() {
   return (
     <CalculatorLayout
       title="EV Charge Curve Simulator"
-      description="Simulate a full DC fast-charging session on 16 popular EVs. Real curve data, any charger speed, any SOC window. See the whole session in one chart."
+      description="Simulate a full DC fast-charging session on 15 popular EVs. Real curve data, any charger speed, any SOC window. See the whole session in one chart."
       answerBlock={
         <p>
           <strong>Quick answer:</strong> Charge curves collapse after about 60% SOC on
@@ -135,7 +135,7 @@ export default function ChargeCurvePage() {
     >
       <CalculatorSchema
         name="EV Charge Curve Simulator"
-        description="Simulate DC fast-charging sessions for 16 popular EVs using real curve data from InsideEVs, Out of Spec, and Fastned. Free."
+        description="Simulate DC fast-charging sessions for 15 popular EVs using real curve data from InsideEVs, Out of Spec, and Fastned. Free."
         url="https://chargemath.com/charge-curve"
       />
       <BreadcrumbSchema

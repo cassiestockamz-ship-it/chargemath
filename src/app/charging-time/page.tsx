@@ -350,7 +350,7 @@ export default function ChargingTimePage() {
         <EducationalContent>
           <h2>How EV Charging Time Is Calculated</h2>
           <p>
-            Charging time is determined by dividing the energy needed (kWh) by the charger&apos;s power output (kW). For example, adding 40 kWh to a battery using a 10 kW Level 2 charger takes 4 hours. Each vehicle in this calculator uses its manufacturer-rated maximum charging power for each level, sourced from EPA testing data.
+            Charging time is determined by dividing the energy needed (kWh) by the charger&apos;s power output (kW). For example, adding 40 kWh to a battery using a 10 kW Level 2 charger takes 4 hours. Each vehicle in this calculator uses its manufacturer-rated maximum charging power for each level, from automaker specifications.
           </p>
           <h3>Why DC Fast Charging Slows Above 80%</h3>
           <p>

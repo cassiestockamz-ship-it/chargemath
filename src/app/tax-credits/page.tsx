@@ -437,14 +437,14 @@ export default function TaxCreditsPage() {
         <p>
           Federal EV tax credits reduce your federal income tax liability dollar-for-dollar. A $4,000 credit means $4,000 less in taxes owed. These are nonrefundable credits, meaning they can reduce your tax bill to zero but won&apos;t generate a refund beyond that. Credits are claimed when you file your annual tax return using IRS Form 8936.
         </p>
-        <h3>Current Federal Credit Status (2026)</h3>
+        <h3>Current Federal Credit Status</h3>
         <p>
           The One Big Beautiful Bill Act (P.L. 119-21) ended three federal credits. Section 30D (new vehicles, up to $7,500) and Section 25E (used vehicles, 30% up to $4,000) ended for vehicles acquired after September 30, 2025. Section 30C (home charger installation, 30% up to $1,000) ended for property placed in service after June 30, 2026. If you are buying a vehicle or installing a charger now, the federal credit is $0. Vehicles acquired on or before the cutoff may still be claimed on that year&apos;s return with Form 8936; confirm details with IRS.gov or a tax professional.
         </p>
         <h3>State Incentives Vary Widely</h3>
         <ul>
-          <li>California offers rebates up to $7,500 through CVRP for lower-income buyers, plus utility-specific programs worth $500-1,000.</li>
-          <li>Colorado provides $5,000 state tax credits for new EVs, one of the most generous state programs.</li>
+          <li>California&apos;s statewide Clean Vehicle Rebate Project (CVRP) closed to new applications on November 8, 2023. Income-qualified Californians can still look at Clean Cars 4 All and their electric utility&apos;s own EV rebates.</li>
+          <li>Colorado offers a state income tax credit for new EVs; the amount has stepped down over time, so check the Colorado Energy Office for the current figure.</li>
           <li>Some states (Connecticut, Delaware, Maine) offer point-of-sale rebates that reduce the purchase price directly, rather than tax credits claimed later.</li>
           <li>State programs change frequently. Check your state&apos;s energy office website for the most current information before purchasing.</li>
         </ul>

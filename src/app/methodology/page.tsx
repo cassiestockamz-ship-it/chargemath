@@ -5,7 +5,7 @@ import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 export const metadata: Metadata = {
   title: "Methodology: How ChargeMath calculates everything",
   description:
-    "The exact formulas, data sources, and assumptions behind every ChargeMath calculator. EPA FuelEconomy.gov efficiency, EIA state electricity rates, Recurrent cold-weather retention curves, and the 2026 post-30D tax-credit reality.",
+    "The exact formulas, data sources, and assumptions behind every ChargeMath calculator. EPA FuelEconomy.gov efficiency, EIA state electricity rates, Recurrent cold-weather retention curves, and the federal tax credits after Section 30D ended.",
   alternates: { canonical: "/methodology" },
   openGraph: {
     title: "ChargeMath Methodology: formulas, sources, assumptions",

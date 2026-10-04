@@ -17,7 +17,7 @@ const categories = [
     calculators: [
       { title: "Will I Make It Home?", description: "EV panic calculator with real-world arrival SOC", href: "/will-i-make-it-home" },
       { title: "Winter Range Forecast", description: "Live 7-day range forecast by ZIP", href: "/winter-range-forecast" },
-      { title: "Charge Curve Simulator", description: "Real DCFC curves for 16 popular EVs", href: "/charge-curve" },
+      { title: "Charge Curve Simulator", description: "Real DCFC curves for 15 popular EVs", href: "/charge-curve" },
       { title: "Panel Load Check", description: "Free NEC 220.83 + 625.42 permit worksheet", href: "/panel-load-check" },
       { title: "EV Tire Cost", description: "The hidden tire tax nobody told you about", href: "/ev-tire-cost" },
     ],

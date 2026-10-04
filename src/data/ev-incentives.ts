@@ -22,8 +22,8 @@ export const STATE_INCENTIVES: StateIncentive[] = [
         amount: "Up to $7,500",
         type: "rebate",
         notes:
-          "Income-qualified. Standard rebate $2,000 for BEVs, increased rebate up to $7,500 for low-income applicants. Apply at cleanvehiclerebate.org.",
-        active: true,
+          "Closed to new applications on November 8, 2023 (cleanvehiclerebate.org).",
+        active: false,
       },
       {
         name: "Clean Fuel Reward",
