@@ -61,7 +61,6 @@ function calcChargeTime(
 
 // Vehicles that have a measured curve on /charge-curve.
 const CURVE_FOR_VEHICLE: Record<string, string> = {
-  "tesla-model-3-2024": "tesla-model-3-lr-2024",
   "tesla-model-y-2024": "tesla-model-y-lr-2024",
   "chevy-equinox-ev-2024": "equinox-ev-lt-2024",
   "ford-mustang-mach-e-2024": "ford-mustang-mach-e-2024",
@@ -410,11 +409,11 @@ export default function ChargingTimePage() {
         <EducationalContent>
           <h2>How EV Charging Time Is Calculated</h2>
           <p>
-            Charging time is determined by dividing the energy needed (kWh) by the charger&apos;s power output (kW). For example, adding 40 kWh to a battery using a 10 kW Level 2 charger takes 4 hours. Each vehicle in this calculator uses its manufacturer-rated maximum charging power for each level, from automaker specifications.
+            Charging time is determined by dividing the energy needed (kWh) by the charger&apos;s power output (kW). For example, adding 40 kWh to a battery using a 10 kW Level 2 charger takes 4 hours. For Level 1 and Level 2, each vehicle uses its manufacturer-rated onboard charging power. DC fast charging is different: power changes as the battery fills, so the DC fast result follows the car&apos;s charging curve minute by minute on a 350 kW charger. Where we have a published curve for the car we use it; otherwise we use the average curve shape of the cars on our <Link href="/charge-curve">charging curve page</Link>, scaled to the car&apos;s rated peak.
           </p>
           <h3>Why DC Fast Charging Slows Above 80%</h3>
           <p>
-            Lithium-ion batteries accept charge more slowly as they approach full capacity. This is a physical limitation of the chemistry, not a software restriction. Between 80 and 100 percent, the battery management system reduces charging power by roughly 50% to prevent overheating and degradation. This is why most charging networks price sessions by the minute above 80%, and why daily charging to 80% is standard practice.
+            Lithium-ion batteries accept charge more slowly as they approach full capacity. This is a physical limitation of the chemistry, not a software restriction. Power usually peaks early in the session, starts tapering well before 80 percent, and falls to a small share of the peak near 100 percent, as the battery management system protects the cells from heat and wear. The calculator follows that taper, so the last 20 percent can take about as long as the 60 percent before it. This is why most charging networks price sessions by the minute above 80%, and why daily charging to 80% is standard practice.
           </p>
           <h3>Real-World Factors That Affect Charging Speed</h3>
           <ul>
