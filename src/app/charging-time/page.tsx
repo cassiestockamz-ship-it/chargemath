@@ -73,6 +73,16 @@ const CURVE_FOR_VEHICLE: Record<string, string> = {
   "lucid-air-2024": "lucid-air-pure-2024",
 };
 
+// Published DC fast session times for vehicles without a measured curve
+// (checked 2026-10-05). Tesla, Rivian, GM, BMW and Mercedes US pages gave no
+// window we could read, so those cars use the averaged shape at their peak kW.
+const DC_FAST_CLAIMS: Record<string, { from: number; to: number; minutes: number; source: string }> = {
+  "hyundai-ioniq-6-2024": { from: 10, to: 80, minutes: 18, source: "hyundaiusa.com Ioniq 6 specs, 350 kW" },
+  "kia-ev9-2024": { from: 10, to: 80, minutes: 24, source: "kia.com/us/en/ev9, 350 kW" },
+  "nissan-ariya-2024": { from: 10, to: 80, minutes: 37, source: "nissanusa.com Ariya FAQ, 35 to 40 min" },
+  "ford-f150-lightning-2024": { from: 15, to: 80, minutes: 41, source: "Ford launch figure, InsideEVs tests 38 to 43 min" },
+};
+
 // Average curve shape (share of peak kW at each SOC) across all measured curves,
 // used for vehicles without a measured curve.
 const SOC_POINTS = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
@@ -109,7 +119,17 @@ function dcFastHours(
     ...curve,
     curve: curve.curve.map(([soc, kw]) => [soc, Math.max(kw, peak * 0.1)]),
   };
-  return simulateChargeSession(floored, startPct, targetPct, 350).totalMinutes / 60;
+  // Where the maker (or a published test) gives a session time, scale the curve so
+  // that window matches it. The averaged shape runs slow for flat-curve cars.
+  const claim = measured ? undefined : DC_FAST_CLAIMS[vehicle.id];
+  const calibrated: ChargeCurve = claim
+    ? (() => {
+        const raw = simulateChargeSession(floored, claim.from, claim.to, 350).totalMinutes;
+        const k = raw / claim.minutes;
+        return { ...floored, curve: floored.curve.map(([soc, kw]) => [soc, kw * k]) };
+      })()
+    : floored;
+  return simulateChargeSession(calibrated, startPct, targetPct, 350).totalMinutes / 60;
 }
 
 function formatHours(hours: number): string {
