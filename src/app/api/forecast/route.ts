@@ -41,7 +41,8 @@ export async function GET(req: NextRequest) {
     const tmin: number[] = [];
     const tmax: number[] = [];
     for (const [d, temps] of byDate) {
-      // A day with a single period (today after sunset) has no real min/max spread; keep it, both equal.
+      // A day with a single period has no real low/high pair; skip it rather than show low=high.
+      if (temps.length < 2) continue;
       dates.push(d);
       tmin.push(Math.min(...temps));
       tmax.push(Math.max(...temps));
