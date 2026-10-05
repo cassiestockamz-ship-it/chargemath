@@ -12,7 +12,7 @@ interface Calc {
 
 const ALL_CALCULATORS: Calc[] = [
   { title: "Will I Make It Home?", description: "EV panic calculator, real-world arrival SOC", href: "/will-i-make-it-home", icon: "🚨" },
-  { title: "Winter Range Forecast", description: "Live 7-day range forecast by ZIP", href: "/winter-range-forecast", icon: "🌨️" },
+  { title: "Winter Range Forecast", description: "Live range forecast by ZIP", href: "/winter-range-forecast", icon: "🌨️" },
   { title: "Charge Curve Simulator", description: "Real DCFC curves for 15 EVs", href: "/charge-curve", icon: "📈" },
   { title: "Panel Load Check", description: "NEC 220.83 permit worksheet", href: "/panel-load-check", icon: "🔌" },
   { title: "EV Tire Cost", description: "The hidden tire tax nobody told you about", href: "/ev-tire-cost", icon: "🛞" },

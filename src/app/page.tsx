@@ -8,7 +8,7 @@ const categories = [
     eyebrow: "Only on ChargeMath",
     items: [
       { title: "Will I Make It Home?", href: "/will-i-make-it-home", blurb: "Real-world arrival SOC with temperature, speed, and heat load." },
-      { title: "Winter Range Forecast", href: "/winter-range-forecast", blurb: "7-day range forecast by ZIP with cold-weather retention data." },
+      { title: "Winter Range Forecast", href: "/winter-range-forecast", blurb: "Range forecast by ZIP with cold-weather retention data." },
       { title: "Charge Curve Simulator", href: "/charge-curve", blurb: "Real DCFC curves for 15 popular EVs, full-session chart." },
       { title: "Panel Load Check", href: "/panel-load-check", blurb: "NEC 220.83 + 625.42 worksheet. Can your panel take a Level 2?" },
       { title: "EV Tire Cost", href: "/ev-tire-cost", blurb: "The hidden line item on the EV ledger nobody tells you about." },
