@@ -37,7 +37,7 @@ export default function EmailCapture({ source }: EmailCaptureProps) {
     return (
       <div className="mt-10 rounded-xl border border-[var(--color-ev-green)]/30 bg-[var(--color-ev-green)]/5 p-6 text-center">
         <p className="text-sm font-semibold text-[var(--color-ev-green)]">
-          You&apos;re in! We&apos;ll send you EV savings tips and calculator updates.
+          You&apos;re in. We&apos;ll send you these results once, and nothing else.
         </p>
       </div>
     );
@@ -47,10 +47,10 @@ export default function EmailCapture({ source }: EmailCaptureProps) {
     <div className="mt-10 rounded-xl border border-[var(--color-primary)]/20 bg-[var(--color-primary)]/5 p-6">
       <div className="text-center">
         <h3 className="text-base font-bold text-[var(--color-text)]">
-          Get EV Savings Tips
+          Email me these results
         </h3>
         <p className="mt-1 text-sm text-[var(--color-text-muted)]">
-          Free updates on electricity rates, new calculators, and ways to save on EV ownership. No spam.
+          We&apos;ll send these results once. No newsletter, no other emails.
         </p>
       </div>
       <form onSubmit={handleSubmit} className="mt-4 flex gap-2 sm:mx-auto sm:max-w-md">
