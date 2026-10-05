@@ -18,7 +18,8 @@ import { useUrlSync } from "@/lib/useUrlState";
 import { chargingTimeFAQ } from "@/data/faq-data";
 import { NATIONAL_AVERAGE_RATE } from "@/data/electricity-rates";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
-import { CHARGE_CURVES, simulateChargeSession } from "@/data/charge-curves";
+import { CHARGE_CURVES, simulateChargeSession, interpolateKw } from "@/data/charge-curves";
+import type { ChargeCurve } from "@/data/charge-curves";
 
 type ChargingLevel = "level1" | "level2" | "dcfast";
 
@@ -56,6 +57,60 @@ function calcChargeTime(
 
   const kwhNeeded = (batteryKwh * (targetPct - startPct)) / 100;
   return kwhNeeded / powerKW;
+}
+
+// Vehicles that have a measured curve on /charge-curve.
+const CURVE_FOR_VEHICLE: Record<string, string> = {
+  "tesla-model-3-2024": "tesla-model-3-lr-2024",
+  "tesla-model-y-2024": "tesla-model-y-lr-2024",
+  "chevy-equinox-ev-2024": "equinox-ev-lt-2024",
+  "ford-mustang-mach-e-2024": "ford-mustang-mach-e-2024",
+  "hyundai-ioniq-5-2024": "hyundai-ioniq-5-2024",
+  "kia-ev6-2024": "kia-ev6-2024",
+  "bmw-i4-2024": "bmw-i4-m50-2024",
+  "rivian-r1t-2024": "rivian-r1t-lg-2024",
+  "vw-id4-2024": "vw-id4-pro-2024",
+  "polestar-2-2024": "polestar-2-lr-2024",
+  "lucid-air-2024": "lucid-air-pure-2024",
+};
+
+// Average curve shape (share of peak kW at each SOC) across all measured curves,
+// used for vehicles without a measured curve.
+const SOC_POINTS = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+const AVG_SHAPE: Array<[number, number]> = SOC_POINTS.map((soc) => [
+  soc,
+  CHARGE_CURVES.reduce((sum, c) => {
+    const peak = Math.max(...c.curve.map(([, kw]) => kw));
+    return sum + interpolateKw(c.curve, soc) / peak;
+  }, 0) / CHARGE_CURVES.length,
+]);
+
+// Realistic DC fast session time in hours, following the car's charge curve
+// on a 350 kW charger instead of assuming peak power the whole way.
+function dcFastHours(
+  vehicle: (typeof EV_VEHICLES)[number],
+  startPct: number,
+  targetPct: number
+): number {
+  const measured = CHARGE_CURVES.find((c) => c.id === CURVE_FOR_VEHICLE[vehicle.id]);
+  const curve: ChargeCurve = measured
+    ? { ...measured, batteryKwh: vehicle.batteryCapacityKwh }
+    : {
+        id: vehicle.id,
+        make: vehicle.make,
+        model: vehicle.model,
+        year: 0,
+        batteryKwh: vehicle.batteryCapacityKwh,
+        voltageArchitecture: 400,
+        curve: AVG_SHAPE.map(([soc, share]) => [soc, share * vehicle.chargerTypes.dcFastKW]),
+      };
+  // Curves end at 0 kW at 100%; keep a small taper floor so a session to 100% finishes.
+  const peak = Math.max(...curve.curve.map(([, kw]) => kw));
+  const floored: ChargeCurve = {
+    ...curve,
+    curve: curve.curve.map(([soc, kw]) => [soc, Math.max(kw, peak * 0.1)]),
+  };
+  return simulateChargeSession(floored, startPct, targetPct, 350).totalMinutes / 60;
 }
 
 function formatHours(hours: number): string {
@@ -110,13 +165,16 @@ export default function ChargingTimePage() {
     const kwhNeeded =
       (vehicle.batteryCapacityKwh * (effectiveTarget - startPercent)) / 100;
     const power = getChargingPower(vehicle, chargingLevel);
-    const chargeTimeHours = calcChargeTime(
-      vehicle.batteryCapacityKwh,
-      startPercent,
-      effectiveTarget,
-      power,
-      chargingLevel
-    );
+    const chargeTimeHours =
+      chargingLevel === "dcfast"
+        ? dcFastHours(vehicle, startPercent, effectiveTarget)
+        : calcChargeTime(
+            vehicle.batteryCapacityKwh,
+            startPercent,
+            effectiveTarget,
+            power,
+            chargingLevel
+          );
     const milesAdded =
       ((effectiveTarget - startPercent) / 100) * vehicle.epaRangeMiles;
     const milesPerHour =
@@ -196,14 +254,16 @@ export default function ChargingTimePage() {
     </div>
   );
 
+  const showMinutes = results.chargeTimeHours < 1;
+
   const hero = (
     <SavingsVerdict
       eyebrow="Charging time"
       headline="PLUG IN FOR"
-      amount={results.chargeTimeHours}
+      amount={showMinutes ? Math.round(results.chargeTimeHours * 60) : results.chargeTimeHours}
       amountPrefix=""
-      amountDecimals={1}
-      amountUnit=" hours"
+      amountDecimals={showMinutes ? 0 : 1}
+      amountUnit={showMinutes ? " minutes" : " hours"}
       sub={`From ${startPercent}% to ${effectiveTarget}% on a ${chargerLabel}. That is about ${Math.round(results.milesAdded)} miles of range added.`}
       dialPercent={effectiveTarget}
       dialLabel="FULL"
@@ -211,9 +271,9 @@ export default function ChargingTimePage() {
     >
       <SavingsTile
         label="TIME TO FULL"
-        value={results.chargeTimeHours}
-        unit=" hr"
-        decimals={1}
+        value={showMinutes ? Math.round(results.chargeTimeHours * 60) : results.chargeTimeHours}
+        unit={showMinutes ? " min" : " hr"}
+        decimals={showMinutes ? 0 : 1}
         tier="brand"
       />
       <SavingsTile
