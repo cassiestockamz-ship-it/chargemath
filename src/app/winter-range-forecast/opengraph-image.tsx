@@ -7,7 +7,7 @@ export const contentType = "image/png";
 export default function Image() {
   return makeOgImage(
     "Winter Range Forecast",
-    "Live 7-day EV range forecast by ZIP. Real temperatures. Real %.",
+    "Live EV range forecast by ZIP. Real temperatures. Real %.",
     "❄️"
   );
 }

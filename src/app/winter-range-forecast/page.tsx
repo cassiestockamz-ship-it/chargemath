@@ -207,12 +207,12 @@ export default function WinterRangeForecastPage() {
   return (
     <CalculatorLayout
       title="Winter Range Forecast"
-      description="Live 7-day EV range forecast by ZIP. Enter your car and ZIP, get the next 7 days of expected range in miles, based on real forecast temperatures and published cold-weather retention curves."
+      description="Live EV range forecast by ZIP. Enter your car and ZIP, get this week's expected range in miles, based on real forecast temperatures and published cold-weather retention curves."
       answerBlock={
         <p>
           <strong>Quick answer:</strong> EV range losses follow temperature, not date. A
           typical EV retains about 86% of rated range at 30°F, 76% at 20°F, 60% at 0°F, and
-          45% at -20°F vs its 70°F baseline. This tool pulls your actual 7-day forecast
+          45% at -20°F vs its 70°F baseline. This tool pulls your actual forecast for the coming days
           from the National Weather Service, applies the Recurrent Motors 2023 cold-weather curve, and
           outputs expected daily range in miles. If this week&apos;s worst day shows under
           65% retention, precondition before you leave.
@@ -222,7 +222,7 @@ export default function WinterRangeForecastPage() {
     >
       <CalculatorSchema
         name="Winter Range Forecast"
-        description="Live 7-day EV range forecast by ZIP. Uses National Weather Service forecast data and published cold-weather retention curves. Free."
+        description="Live EV range forecast by ZIP. Uses National Weather Service forecast data and published cold-weather retention curves. Free."
         url="https://chargemath.com/winter-range-forecast"
       />
       <BreadcrumbSchema
@@ -307,16 +307,16 @@ export default function WinterRangeForecastPage() {
             />
           </div>
 
-          {/* 7-day chart */}
+          {/* forecast chart */}
           <div className="mt-8 overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-sm">
             <h2 className="mb-3 text-lg font-bold text-[var(--color-text)]">
-              7-day range forecast
+              Range forecast for the week ahead
             </h2>
             <svg
               viewBox={`0 0 ${chartWidth} ${chartHeight}`}
               className="h-auto w-full"
               role="img"
-              aria-label="7-day range retention chart"
+              aria-label="Range retention chart for the week ahead"
             >
               {/* Grid */}
               {[0.6, 0.75, 0.9, 1].map((r) => (
