@@ -412,7 +412,7 @@ export default function WillIMakeItHomePage() {
           href="/winter-range-forecast"
           className="rounded-lg border border-[var(--color-border)] bg-white px-3 py-2 font-medium text-[var(--color-brand)] transition-colors hover:bg-[var(--color-brand-soft)]"
         >
-          7-day winter range forecast
+          Winter range forecast
         </Link>
         <Link
           href="/road-trip"
