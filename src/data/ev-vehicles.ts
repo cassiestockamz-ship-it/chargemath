@@ -22,7 +22,7 @@ export const EV_VEHICLES: EVVehicle[] = [
     batteryCapacityKwh: 60,
     epaRangeMiles: 272,
     kwhPer100Miles: 25,
-    chargerTypes: { level1KW: 1.4, level2KW: 11.5, dcFastKW: 250 },
+    chargerTypes: { level1KW: 1.4, level2KW: 11.5, dcFastKW: 170 },
   },
   {
     id: "tesla-model-y-2024",

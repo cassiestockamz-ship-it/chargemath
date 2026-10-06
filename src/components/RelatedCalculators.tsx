@@ -29,7 +29,7 @@ const ALL_CALCULATORS: Calc[] = [
   { title: "TOU Optimizer", description: "Find the cheapest time to charge", href: "/tou-optimizer", icon: "🕐", category: "charging" },
   // Range & Trips
   { title: "Will I Make It Home?", description: "EV panic calculator, real-world arrival SOC", href: "/will-i-make-it-home", icon: "🚨", category: "range" },
-  { title: "Winter Range Forecast", description: "Live 7-day range forecast by ZIP", href: "/winter-range-forecast", icon: "🌨️", category: "range" },
+  { title: "Winter Range Forecast", description: "Live range forecast by ZIP", href: "/winter-range-forecast", icon: "🌨️", category: "range" },
   { title: "Range Calculator", description: "Real-world range by conditions", href: "/range", icon: "🗺️", category: "range" },
   { title: "Winter Range", description: "Cold weather range impact", href: "/winter-range", icon: "❄️", category: "range" },
   { title: "Towing Range", description: "Range while towing a trailer", href: "/towing-range", icon: "🚛", category: "range" },

@@ -18,7 +18,8 @@ import { useUrlSync } from "@/lib/useUrlState";
 import { chargingTimeFAQ } from "@/data/faq-data";
 import { NATIONAL_AVERAGE_RATE } from "@/data/electricity-rates";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
-import { CHARGE_CURVES, simulateChargeSession } from "@/data/charge-curves";
+import { CHARGE_CURVES, simulateChargeSession, interpolateKw } from "@/data/charge-curves";
+import type { ChargeCurve } from "@/data/charge-curves";
 
 type ChargingLevel = "level1" | "level2" | "dcfast";
 
@@ -56,6 +57,79 @@ function calcChargeTime(
 
   const kwhNeeded = (batteryKwh * (targetPct - startPct)) / 100;
   return kwhNeeded / powerKW;
+}
+
+// Vehicles that have a measured curve on /charge-curve.
+const CURVE_FOR_VEHICLE: Record<string, string> = {
+  "tesla-model-y-2024": "tesla-model-y-lr-2024",
+  "chevy-equinox-ev-2024": "equinox-ev-lt-2024",
+  "ford-mustang-mach-e-2024": "ford-mustang-mach-e-2024",
+  "hyundai-ioniq-5-2024": "hyundai-ioniq-5-2024",
+  "kia-ev6-2024": "kia-ev6-2024",
+  "bmw-i4-2024": "bmw-i4-m50-2024",
+  "rivian-r1t-2024": "rivian-r1t-lg-2024",
+  "vw-id4-2024": "vw-id4-pro-2024",
+  "polestar-2-2024": "polestar-2-lr-2024",
+  "lucid-air-2024": "lucid-air-pure-2024",
+};
+
+// Published DC fast session times for vehicles without a measured curve
+// (checked 2026-10-05). Tesla, Rivian, GM, BMW and Mercedes US pages gave no
+// window we could read, so those cars use the averaged shape at their peak kW.
+const DC_FAST_CLAIMS: Record<string, { from: number; to: number; minutes: number; source: string }> = {
+  "hyundai-ioniq-6-2024": { from: 10, to: 80, minutes: 18, source: "hyundaiusa.com Ioniq 6 specs, 350 kW" },
+  "kia-ev9-2024": { from: 10, to: 80, minutes: 24, source: "kia.com/us/en/ev9, 350 kW" },
+  "nissan-ariya-2024": { from: 10, to: 80, minutes: 37, source: "nissanusa.com Ariya FAQ, 35 to 40 min" },
+  "ford-f150-lightning-2024": { from: 15, to: 80, minutes: 41, source: "Ford launch figure, InsideEVs tests 38 to 43 min" },
+};
+
+// Average curve shape (share of peak kW at each SOC) across all measured curves,
+// used for vehicles without a measured curve.
+const SOC_POINTS = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+const AVG_SHAPE: Array<[number, number]> = SOC_POINTS.map((soc) => [
+  soc,
+  CHARGE_CURVES.reduce((sum, c) => {
+    const peak = Math.max(...c.curve.map(([, kw]) => kw));
+    return sum + interpolateKw(c.curve, soc) / peak;
+  }, 0) / CHARGE_CURVES.length,
+]);
+
+// Realistic DC fast session time in hours, following the car's charge curve
+// on a 350 kW charger instead of assuming peak power the whole way.
+function dcFastHours(
+  vehicle: (typeof EV_VEHICLES)[number],
+  startPct: number,
+  targetPct: number
+): number {
+  const measured = CHARGE_CURVES.find((c) => c.id === CURVE_FOR_VEHICLE[vehicle.id]);
+  const curve: ChargeCurve = measured
+    ? { ...measured, batteryKwh: vehicle.batteryCapacityKwh }
+    : {
+        id: vehicle.id,
+        make: vehicle.make,
+        model: vehicle.model,
+        year: 0,
+        batteryKwh: vehicle.batteryCapacityKwh,
+        voltageArchitecture: 400,
+        curve: AVG_SHAPE.map(([soc, share]) => [soc, share * vehicle.chargerTypes.dcFastKW]),
+      };
+  // Curves end at 0 kW at 100%; keep a small taper floor so a session to 100% finishes.
+  const peak = Math.max(...curve.curve.map(([, kw]) => kw));
+  const floored: ChargeCurve = {
+    ...curve,
+    curve: curve.curve.map(([soc, kw]) => [soc, Math.max(kw, peak * 0.1)]),
+  };
+  // Where the maker (or a published test) gives a session time, scale the curve so
+  // that window matches it. The averaged shape runs slow for flat-curve cars.
+  const claim = measured ? undefined : DC_FAST_CLAIMS[vehicle.id];
+  const calibrated: ChargeCurve = claim
+    ? (() => {
+        const raw = simulateChargeSession(floored, claim.from, claim.to, 350).totalMinutes;
+        const k = raw / claim.minutes;
+        return { ...floored, curve: floored.curve.map(([soc, kw]) => [soc, kw * k]) };
+      })()
+    : floored;
+  return simulateChargeSession(calibrated, startPct, targetPct, 350).totalMinutes / 60;
 }
 
 function formatHours(hours: number): string {
@@ -110,13 +184,16 @@ export default function ChargingTimePage() {
     const kwhNeeded =
       (vehicle.batteryCapacityKwh * (effectiveTarget - startPercent)) / 100;
     const power = getChargingPower(vehicle, chargingLevel);
-    const chargeTimeHours = calcChargeTime(
-      vehicle.batteryCapacityKwh,
-      startPercent,
-      effectiveTarget,
-      power,
-      chargingLevel
-    );
+    const chargeTimeHours =
+      chargingLevel === "dcfast"
+        ? dcFastHours(vehicle, startPercent, effectiveTarget)
+        : calcChargeTime(
+            vehicle.batteryCapacityKwh,
+            startPercent,
+            effectiveTarget,
+            power,
+            chargingLevel
+          );
     const milesAdded =
       ((effectiveTarget - startPercent) / 100) * vehicle.epaRangeMiles;
     const milesPerHour =
@@ -196,14 +273,16 @@ export default function ChargingTimePage() {
     </div>
   );
 
+  const showMinutes = results.chargeTimeHours < 1;
+
   const hero = (
     <SavingsVerdict
       eyebrow="Charging time"
       headline="PLUG IN FOR"
-      amount={results.chargeTimeHours}
+      amount={showMinutes ? Math.round(results.chargeTimeHours * 60) : results.chargeTimeHours}
       amountPrefix=""
-      amountDecimals={1}
-      amountUnit=" hours"
+      amountDecimals={showMinutes ? 0 : 1}
+      amountUnit={showMinutes ? " minutes" : " hours"}
       sub={`From ${startPercent}% to ${effectiveTarget}% on a ${chargerLabel}. That is about ${Math.round(results.milesAdded)} miles of range added.`}
       dialPercent={effectiveTarget}
       dialLabel="FULL"
@@ -211,9 +290,9 @@ export default function ChargingTimePage() {
     >
       <SavingsTile
         label="TIME TO FULL"
-        value={results.chargeTimeHours}
-        unit=" hr"
-        decimals={1}
+        value={showMinutes ? Math.round(results.chargeTimeHours * 60) : results.chargeTimeHours}
+        unit={showMinutes ? " min" : " hr"}
+        decimals={showMinutes ? 0 : 1}
         tier="brand"
       />
       <SavingsTile
@@ -350,11 +429,11 @@ export default function ChargingTimePage() {
         <EducationalContent>
           <h2>How EV Charging Time Is Calculated</h2>
           <p>
-            Charging time is determined by dividing the energy needed (kWh) by the charger&apos;s power output (kW). For example, adding 40 kWh to a battery using a 10 kW Level 2 charger takes 4 hours. Each vehicle in this calculator uses its manufacturer-rated maximum charging power for each level, from automaker specifications.
+            Charging time is determined by dividing the energy needed (kWh) by the charger&apos;s power output (kW). For example, adding 40 kWh to a battery using a 10 kW Level 2 charger takes 4 hours. For Level 1 and Level 2, each vehicle uses its manufacturer-rated onboard charging power. DC fast charging is different: power changes as the battery fills, so the DC fast result follows the car&apos;s charging curve minute by minute on a 350 kW charger. Where we have a published curve for the car we use it; otherwise we use the average curve shape of the cars on our <Link href="/charge-curve">charging curve page</Link>, scaled to the car&apos;s rated peak.
           </p>
           <h3>Why DC Fast Charging Slows Above 80%</h3>
           <p>
-            Lithium-ion batteries accept charge more slowly as they approach full capacity. This is a physical limitation of the chemistry, not a software restriction. Between 80 and 100 percent, the battery management system reduces charging power by roughly 50% to prevent overheating and degradation. This is why most charging networks price sessions by the minute above 80%, and why daily charging to 80% is standard practice.
+            Lithium-ion batteries accept charge more slowly as they approach full capacity. This is a physical limitation of the chemistry, not a software restriction. Power usually peaks early in the session, starts tapering well before 80 percent, and falls to a small share of the peak near 100 percent, as the battery management system protects the cells from heat and wear. The calculator follows that taper, so the last 20 percent can take about as long as the 60 percent before it. This is why most charging networks price sessions by the minute above 80%, and why daily charging to 80% is standard practice.
           </p>
           <h3>Real-World Factors That Affect Charging Speed</h3>
           <ul>

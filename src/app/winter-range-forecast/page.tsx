@@ -83,14 +83,13 @@ async function fetchForecast(
   lng: number
 ): Promise<{ dates: string[]; tmin: number[]; tmax: number[] } | null> {
   try {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&daily=temperature_2m_min,temperature_2m_max&temperature_unit=fahrenheit&timezone=auto&forecast_days=7`;
-    const r = await fetch(url);
+    const r = await fetch(`/api/forecast?lat=${lat}&lng=${lng}`);
     if (!r.ok) return null;
     const j = await r.json();
     return {
-      dates: j.daily?.time ?? [],
-      tmin: j.daily?.temperature_2m_min ?? [],
-      tmax: j.daily?.temperature_2m_max ?? [],
+      dates: j.dates ?? [],
+      tmin: j.tmin ?? [],
+      tmax: j.tmax ?? [],
     };
   } catch {
     return null;
@@ -208,13 +207,13 @@ export default function WinterRangeForecastPage() {
   return (
     <CalculatorLayout
       title="Winter Range Forecast"
-      description="Live 7-day EV range forecast by ZIP. Enter your car and ZIP, get the next 7 days of expected range in miles, based on real forecast temperatures and published cold-weather retention curves."
+      description="Live EV range forecast by ZIP. Enter your car and ZIP, get this week's expected range in miles, based on real forecast temperatures and published cold-weather retention curves."
       answerBlock={
         <p>
           <strong>Quick answer:</strong> EV range losses follow temperature, not date. A
           typical EV retains about 86% of rated range at 30°F, 76% at 20°F, 60% at 0°F, and
-          45% at -20°F vs its 70°F baseline. This tool pulls your actual 7-day forecast
-          from Open-Meteo, applies the Recurrent Motors 2023 cold-weather curve, and
+          45% at -20°F vs its 70°F baseline. This tool pulls your actual forecast for the coming days
+          from the National Weather Service, applies the Recurrent Motors 2023 cold-weather curve, and
           outputs expected daily range in miles. If this week&apos;s worst day shows under
           65% retention, precondition before you leave.
         </p>
@@ -223,7 +222,7 @@ export default function WinterRangeForecastPage() {
     >
       <CalculatorSchema
         name="Winter Range Forecast"
-        description="Live 7-day EV range forecast by ZIP. Uses Open-Meteo weather data and published cold-weather retention curves. Free."
+        description="Live EV range forecast by ZIP. Uses National Weather Service forecast data and published cold-weather retention curves. Free."
         url="https://chargemath.com/winter-range-forecast"
       />
       <BreadcrumbSchema
@@ -308,16 +307,16 @@ export default function WinterRangeForecastPage() {
             />
           </div>
 
-          {/* 7-day chart */}
+          {/* forecast chart */}
           <div className="mt-8 overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-sm">
             <h2 className="mb-3 text-lg font-bold text-[var(--color-text)]">
-              7-day range forecast
+              Range forecast for the week ahead
             </h2>
             <svg
               viewBox={`0 0 ${chartWidth} ${chartHeight}`}
               className="h-auto w-full"
               role="img"
-              aria-label="7-day range retention chart"
+              aria-label="Range retention chart for the week ahead"
             >
               {/* Grid */}
               {[0.6, 0.75, 0.9, 1].map((r) => (
@@ -461,10 +460,10 @@ export default function WinterRangeForecastPage() {
         <h2>How The Forecast Works</h2>
         <p>
           When you enter a ZIP, the tool does two API calls. First, it asks zippopotam.us
-          for the latitude and longitude of that ZIP. Second, it asks Open-Meteo for the
-          next 7 days of daily min and max temperatures at that location. Open-Meteo
-          aggregates the NOAA GFS, NWS HRRR, and ECMWF models depending on region, so the
-          forecast comes from the same data feeds that the National Weather Service uses.
+          for the latitude and longitude of that ZIP. Second, it asks the National
+          Weather Service (api.weather.gov) for the forecast at that location and takes
+          each day&apos;s low and high from its day and night periods, so the numbers are
+          the same ones you see on weather.gov.
           For each day, the tool averages the daily min and max to get a rough daily mean
           temperature, then applies the Recurrent Motors 2023 cold-weather retention curve
           (10,000+ EVs tracked) to convert that into expected range retention as a
@@ -508,7 +507,7 @@ export default function WinterRangeForecastPage() {
         <h3>Sources</h3>
         <ul>
           <li>Recurrent Motors 2023 cold-weather EV range study (10,000+ EVs)</li>
-          <li>Open-Meteo Weather API (ECMWF + NOAA models)</li>
+          <li>National Weather Service API (api.weather.gov)</li>
           <li>Zippopotam.us US ZIP → lat/lng</li>
           <li>AAA EV winter range study (2019, 2023 updates)</li>
         </ul>
@@ -528,7 +527,7 @@ const wrfFAQ = [
   {
     question: "Does it work for Canada or Mexico?",
     answer:
-      "Right now only US ZIPs because the ZIP lookup uses a US-only database. If you'd like Canadian postal code support, that's a planned addition. Open-Meteo already covers Canada fine, the only missing piece is the postal code geocoder.",
+      "Right now only US ZIPs because the ZIP lookup uses a US-only database. If you'd like Canadian postal code support, that's a planned addition. The National Weather Service only forecasts US locations, so Canada would also need another weather source.",
   },
   {
     question: "Is the worst-day number always the coldest day?",
