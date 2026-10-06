@@ -15,12 +15,14 @@ import EducationalContent from "@/components/EducationalContent";
 import EmailCapture from "@/components/EmailCapture";
 import { useUrlSync } from "@/lib/useUrlState";
 
-// EPA combined MPG, fueleconomy.gov (vehicle ids in comments). MODEL_YEAR is the EPA model year of these ratings, not the current year.
+// EPA combined MPG, fueleconomy.gov (vehicle ids in comments). Premium = base MSRP hybrid trim minus gas trim, before destination:
+// Corolla LE $22,325 vs Hybrid LE $23,825 (buyatoyota.com, edmunds.com); RAV4 LE AWD $31,200 (jdpower.com) vs Hybrid LE $32,850 (edmunds.com);
+// Accord LX $28,295 vs Hybrid EX-L $34,940 (hondanews.com Accord model-year release; the 48 MPG hybrid is the EX-L, which also adds equipment). MODEL_YEAR is the EPA model year of these ratings, not the current year.
 const MODEL_YEAR = 2025;
 const EXAMPLE_PAIRS = [
-  { name: "Toyota Corolla", gasLabel: "Corolla 2.0L", gasMpg: 34, hybridLabel: "Corolla Hybrid", hybridMpg: 50 }, // 48495, 49139
-  { name: "Toyota RAV4 AWD", gasLabel: "RAV4 AWD 2.5L", gasMpg: 29, hybridLabel: "RAV4 Hybrid AWD", hybridMpg: 39 }, // 48933, 48937
-  { name: "Honda Accord", gasLabel: "Accord 1.5L Turbo", gasMpg: 32, hybridLabel: "Accord Hybrid", hybridMpg: 48 }, // 48504, 48505
+  { name: "Toyota Corolla", gasLabel: "Corolla LE", gasMpg: 34, hybridLabel: "Corolla Hybrid LE", hybridMpg: 50, premium: 1500 }, // 48495, 49139
+  { name: "Toyota RAV4 AWD", gasLabel: "RAV4 LE AWD", gasMpg: 29, hybridLabel: "RAV4 Hybrid LE", hybridMpg: 39, premium: 1650 }, // 48933, 48937
+  { name: "Honda Accord", gasLabel: "Accord LX", gasMpg: 32, hybridLabel: "Accord Hybrid EX-L", hybridMpg: 48, premium: 6645 }, // 48504, 48505
 ];
 const EXAMPLE_MILES = 12000;
 const EXAMPLE_PRICES = [3, 3.5, 4];
@@ -204,9 +206,11 @@ export default function HybridVsGasPage() {
               <th className="p-3">Gas MPG</th>
               <th className="p-3">Hybrid MPG</th>
               <th className="p-3">Gallons saved / yr</th>
+              <th className="p-3">Hybrid premium</th>
               {EXAMPLE_PRICES.map((p) => (
                 <th key={p} className="p-3">Saved / yr at ${p.toFixed(2)}</th>
               ))}
+              <th className="p-3">Payback at $3.50</th>
             </tr>
           </thead>
           <tbody>
@@ -216,18 +220,20 @@ export default function HybridVsGasPage() {
                 <td className="p-3">{pair.gasMpg}</td>
                 <td className="p-3">{pair.hybridMpg}</td>
                 <td className="p-3">{Math.round(EXAMPLE_MILES / pair.gasMpg - EXAMPLE_MILES / pair.hybridMpg)}</td>
+                <td className="p-3">${pair.premium.toLocaleString()}</td>
                 {EXAMPLE_PRICES.map((p) => (
                   <td key={p} className="p-3">
                     ${Math.round(annualSavings(EXAMPLE_MILES, pair.gasMpg, pair.hybridMpg, p)).toLocaleString()}
                   </td>
                 ))}
+                <td className="p-3">{(pair.premium / annualSavings(EXAMPLE_MILES, pair.gasMpg, pair.hybridMpg, 3.5)).toFixed(1)} years</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
       <p className="mt-2 text-xs text-[var(--color-text-muted)]">
-        EPA combined ratings, model year {MODEL_YEAR}, from fueleconomy.gov. {EXAMPLE_MILES.toLocaleString()} miles a year. Divide the hybrid&apos;s price premium by the yearly savings to get the payback years.
+        EPA combined ratings, model year {MODEL_YEAR}, from fueleconomy.gov. {EXAMPLE_MILES.toLocaleString()} miles a year. Premium is the base MSRP gap between the two trims before destination, from Toyota, Honda and Edmunds listings for model year {MODEL_YEAR}; dealer prices vary. The Accord&apos;s 48 MPG hybrid is the EX-L, which also adds equipment the LX lacks, so part of that premium buys features, not fuel savings.
       </p>
 
       <div className="mt-8 flex flex-wrap gap-3 text-sm">
