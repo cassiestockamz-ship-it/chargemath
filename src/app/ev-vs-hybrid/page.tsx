@@ -504,6 +504,12 @@ export default function EvVsHybridPage() {
           financial sense only when purchase price is the primary concern and
           annual mileage is low.
         </p>
+        <p>
+          Only weighing a hybrid against a gas car? The{" "}
+          <Link href="/hybrid-vs-gas">hybrid vs gas calculator</Link> shows
+          each hybrid&apos;s price premium, its yearly fuel savings, and the
+          year it pays back.
+        </p>
       </EducationalContent>
 
       <FAQSection questions={evVsHybridFAQ} />

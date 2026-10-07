@@ -31,6 +31,7 @@ const categories = [
       { title: "Charging Cost", description: "Monthly & annual charging estimates", href: "/ev-charging-cost" },
       { title: "Gas vs Electric", description: "Side-by-side cost & CO2 comparison", href: "/gas-vs-electric" },
       { title: "EV vs Hybrid", description: "Three-way EV, hybrid & gas comparison", href: "/ev-vs-hybrid" },
+      { title: "Hybrid vs Gas", description: "Hybrid fuel savings & payback vs a gas car", href: "/hybrid-vs-gas" },
       { title: "Total Cost of Ownership", description: "Full cost: fuel, insurance, maintenance", href: "/total-cost" },
       { title: "Lease vs Buy", description: "Compare leasing vs buying an EV", href: "/lease-vs-buy" },
       { title: "Payback Period", description: "When does your EV pay for itself?", href: "/payback-period" },

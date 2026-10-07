@@ -19,6 +19,7 @@ const ALL_CALCULATORS: Calc[] = [
   { title: "Charging Cost", description: "Monthly & annual charging estimates", href: "/ev-charging-cost", icon: "🔌" },
   { title: "Gas vs Electric", description: "Side-by-side cost & CO2 comparison", href: "/gas-vs-electric", icon: "⚖️" },
   { title: "EV vs Hybrid", description: "Three-way EV, hybrid & gas comparison", href: "/ev-vs-hybrid", icon: "🔄" },
+  { title: "Hybrid vs Gas", description: "Hybrid fuel savings & payback vs a gas car", href: "/hybrid-vs-gas", icon: "⛽" },
   { title: "Total Cost of Ownership", description: "Full cost: fuel, insurance, maintenance", href: "/total-cost", icon: "📋" },
   { title: "Lease vs Buy", description: "Compare leasing vs buying an EV", href: "/lease-vs-buy", icon: "🔑" },
   { title: "Payback Period", description: "When does your EV pay for itself?", href: "/payback-period", icon: "📊" },

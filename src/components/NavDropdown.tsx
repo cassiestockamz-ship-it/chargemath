@@ -10,6 +10,7 @@ const categories = [
       { title: "Charging Cost", href: "/ev-charging-cost" },
       { title: "Gas vs Electric", href: "/gas-vs-electric" },
       { title: "EV vs Hybrid", href: "/ev-vs-hybrid" },
+      { title: "Hybrid vs Gas", href: "/hybrid-vs-gas" },
       { title: "Total Cost of Ownership", href: "/total-cost" },
       { title: "Lease vs Buy", href: "/lease-vs-buy" },
       { title: "Payback Period", href: "/payback-period" },

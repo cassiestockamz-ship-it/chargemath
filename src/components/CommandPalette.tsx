@@ -29,6 +29,7 @@ const ITEMS: Item[] = [
   { title: "EV Charging Cost", href: "/ev-charging-cost", category: "Cost", keywords: "monthly bill charging cost kwh home" },
   { title: "Gas vs Electric", href: "/gas-vs-electric", category: "Cost", keywords: "savings fuel comparison mpg dollars" },
   { title: "EV vs Hybrid", href: "/ev-vs-hybrid", category: "Cost", keywords: "plugin hybrid phev comparison" },
+  { title: "Hybrid vs Gas", href: "/hybrid-vs-gas", category: "Cost", keywords: "hybrid fuel savings mpg premium payback break even gas car" },
   { title: "Total Cost of Ownership", href: "/total-cost", category: "Cost", keywords: "tco 5 year depreciation maintenance insurance" },
   { title: "Lease vs Buy", href: "/lease-vs-buy", category: "Cost", keywords: "lease finance monthly payment" },
   { title: "Payback Period", href: "/payback-period", category: "Cost", keywords: "break even premium years" },
