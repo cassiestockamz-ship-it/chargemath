@@ -139,6 +139,17 @@ export default function MethodologyPage() {
             to $716. That is the number the homepage hero shows by default.
           </p>
           <p>
+            <strong>Hybrid payback.</strong> The{" "}
+            <a className="text-[var(--color-brand)] hover:underline" href="/hybrid-vs-gas">hybrid vs gas calculator</a>{" "}
+            runs the gas cost formula twice, once with the gas car&apos;s MPG
+            and once with the hybrid&apos;s EPA combined MPG, and takes the
+            difference as yearly fuel savings. It then divides the hybrid&apos;s
+            price premium by those savings to get the payback in years. For
+            12,000 miles a year at $3.50 per gallon, a 30 MPG car burns 400
+            gallons and a 48 MPG hybrid burns 250, a saving of 150 gallons or
+            $525 a year, so a $2,500 premium pays back in about 4.8 years.
+          </p>
+          <p>
             Cost per mile is just the annual cost divided by annual miles. For
             the same Tesla Model 3 in California, that is $881 divided by
             12,775 miles, equal to about 6.9 cents per mile. A gas car at 28
