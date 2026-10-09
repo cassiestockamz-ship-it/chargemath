@@ -20,9 +20,9 @@ import { useUrlSync } from "@/lib/useUrlState";
 // Accord LX $28,295 vs Hybrid EX-L $34,940 (hondanews.com Accord model-year release; the 48 MPG hybrid is the EX-L, which also adds equipment). MODEL_YEAR is the EPA model year of these ratings, not the current year.
 const MODEL_YEAR = 2025;
 const EXAMPLE_PAIRS = [
-  { name: "Toyota Corolla (2027)", gasLabel: "Corolla LE", gasMpg: 33, hybridLabel: "Corolla Hybrid LE", hybridMpg: 50, premium: 1850 }, // 50740, 50735
-  { name: "Toyota Corolla Cross (2026)", gasLabel: "Corolla Cross LE", gasMpg: 32, hybridLabel: "Corolla Cross Hybrid S AWD", hybridMpg: 42, premium: 2130 }, // 49846, 49870
-  { name: `Honda Accord (${MODEL_YEAR})`, gasLabel: "Accord LX", gasMpg: 32, hybridLabel: "Accord Hybrid EX-L", hybridMpg: 48, premium: 6645 }, // 48504, 48505
+  { name: "Toyota Corolla", year: 2027, gasLabel: "Corolla LE", gasMpg: 33, hybridLabel: "Corolla Hybrid LE", hybridMpg: 50, premium: 1850 }, // 50740, 50735
+  { name: "Toyota Corolla Cross", year: 2026, gasLabel: "Corolla Cross LE", gasMpg: 32, hybridLabel: "Corolla Cross Hybrid S AWD", hybridMpg: 42, premium: 2130 }, // 49846, 49870
+  { name: "Honda Accord", year: MODEL_YEAR, gasLabel: "Accord LX", gasMpg: 32, hybridLabel: "Accord Hybrid EX-L", hybridMpg: 48, premium: 6645 }, // 48504, 48505
 ];
 const EXAMPLE_MILES = 12000;
 const EXAMPLE_PRICES = [3, 3.5, 4];
@@ -217,7 +217,7 @@ export default function HybridVsGasPage() {
           <tbody>
             {EXAMPLE_PAIRS.map((pair) => (
               <tr key={pair.name} className="border-t border-[var(--color-border)]">
-                <td className="p-3">{pair.gasLabel} vs {pair.hybridLabel}</td>
+                <td className="p-3">{pair.year} {pair.gasLabel} vs {pair.hybridLabel}</td>
                 <td className="p-3">{pair.gasMpg}</td>
                 <td className="p-3">{pair.hybridMpg}</td>
                 <td className="p-3">{Math.round(EXAMPLE_MILES / pair.gasMpg - EXAMPLE_MILES / pair.hybridMpg)}</td>
@@ -234,7 +234,7 @@ export default function HybridVsGasPage() {
         </table>
       </div>
       <p className="mt-2 text-xs text-[var(--color-text-muted)]">
-        EPA combined ratings, model year {MODEL_YEAR} unless the row names another year, from fueleconomy.gov. {EXAMPLE_MILES.toLocaleString()} miles a year. Premium is the base MSRP gap between the two trims before destination, from Toyota, Honda and Edmunds listings for the same model years; dealer prices vary. The gas Corolla Cross LE is front-wheel drive and the hybrid has all-wheel drive as standard, so part of its premium buys AWD. The Accord&apos;s 48 MPG hybrid is the EX-L, which also adds equipment the LX lacks, so part of that premium buys features, not fuel savings.
+        EPA combined ratings, for the model year shown on each row, from fueleconomy.gov. {EXAMPLE_MILES.toLocaleString()} miles a year. Premium is the base MSRP gap between the two trims before destination, from Toyota, Honda and Edmunds listings for the same model years; dealer prices vary. The gas Corolla Cross LE is front-wheel drive and the hybrid has all-wheel drive as standard, so part of its premium buys AWD. The Accord&apos;s 48 MPG hybrid is the EX-L, which also adds equipment the LX lacks, so part of that premium buys features, not fuel savings.
       </p>
 
       <div className="mt-8 flex flex-wrap gap-3 text-sm">
