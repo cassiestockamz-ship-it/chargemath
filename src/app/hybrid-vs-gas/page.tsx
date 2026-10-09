@@ -62,8 +62,8 @@ const hybridVsGasFAQ = [
 
 export default function HybridVsGasPage() {
   const [annualMiles, setAnnualMiles] = useState(12000);
-  const [gasMpg, setGasMpg] = useState(30);
-  const [hybridMpg, setHybridMpg] = useState(45);
+  const [gasMpg, setGasMpg] = useState(34);
+  const [hybridMpg, setHybridMpg] = useState(50);
   const [gasPrice, setGasPrice] = useState(3.5);
   const [premium, setPremium] = useState(1500);
   const [years, setYears] = useState(8);
@@ -187,8 +187,9 @@ export default function HybridVsGasPage() {
     >
       <CalculatorSchema
         name="Hybrid vs Gas Fuel Savings and Payback Calculator"
-        description="Annual gas savings, payback years on the hybrid price premium, and 10-year net savings for a hybrid versus a gas car."
+        description="Annual gas savings, payback years on the hybrid price premium, and net savings over the years you keep the car, for a hybrid versus a gas car."
         url="https://chargemath.com/hybrid-vs-gas"
+        datePublished="2026-10-09"
       />
       <BreadcrumbSchema
         items={[
