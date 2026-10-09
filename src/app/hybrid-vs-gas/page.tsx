@@ -17,12 +17,11 @@ import { useUrlSync } from "@/lib/useUrlState";
 
 // EPA combined MPG, fueleconomy.gov (vehicle ids in comments). Premium = base MSRP hybrid trim minus gas trim, before destination:
 // 2027 Corolla LE $23,325 vs Hybrid LE $25,175 (toyota.com, read 2026-10-09); 2026 Corolla Cross LE (FWD) $27,665 vs Hybrid S (AWD standard) $29,795 (toyota.com, read 2026-10-09; part of that premium buys AWD);
-// Accord LX $28,295 vs Hybrid EX-L $34,940 (hondanews.com Accord model-year release; the 48 MPG hybrid is the EX-L, which also adds equipment). MODEL_YEAR is the EPA model year of these ratings, not the current year.
-const MODEL_YEAR = 2025;
+// 2026 Accord LX $28,395 vs Hybrid EX-L $35,095 (hondanews.com '2026 Honda Accord Pricing & EPA Ratings' release, 10-09; the 48 MPG hybrid is the EX-L, which also adds equipment).
 const EXAMPLE_PAIRS = [
   { name: "Toyota Corolla", year: 2027, gasLabel: "Corolla LE", gasMpg: 33, hybridLabel: "Corolla Hybrid LE", hybridMpg: 50, premium: 1850 }, // 50740, 50735
   { name: "Toyota Corolla Cross", year: 2026, gasLabel: "Corolla Cross LE", gasMpg: 32, hybridLabel: "Corolla Cross Hybrid S AWD", hybridMpg: 42, premium: 2130 }, // 49846, 49870
-  { name: "Honda Accord", year: MODEL_YEAR, gasLabel: "Accord LX", gasMpg: 32, hybridLabel: "Accord Hybrid EX-L", hybridMpg: 48, premium: 6645 }, // 48504, 48505
+  { name: "Honda Accord", year: 2026, gasLabel: "Accord LX", gasMpg: 32, hybridLabel: "Accord Hybrid EX-L", hybridMpg: 48, premium: 6700 }, // 50070, 50071
 ];
 const EXAMPLE_MILES = 12000;
 const EXAMPLE_PRICES = [3, 3.5, 4];
