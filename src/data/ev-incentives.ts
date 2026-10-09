@@ -30,8 +30,8 @@ export const STATE_INCENTIVES: StateIncentive[] = [
         amount: "Up to $750",
         type: "rebate",
         notes:
-          "Point-of-sale discount applied by dealer at time of purchase or lease of a new EV.",
-        active: true,
+          "No longer offered on passenger EVs. The program now covers only new medium- and heavy-duty commercial EVs, Class 2b to 8 (cleanfuelreward.com).",
+        active: false,
       },
     ],
   },
