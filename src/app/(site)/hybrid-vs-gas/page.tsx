@@ -96,6 +96,25 @@ export default function HybridVsGasPage() {
 
   const inputs = (
     <div className="grid gap-4 sm:grid-cols-2">
+      <div className="sm:col-span-2">
+        <div className="mb-2 text-sm font-medium">Start from a real pair (fills MPG and price premium)</div>
+        <div className="flex flex-wrap gap-2">
+          {EXAMPLE_PAIRS.map((pair) => (
+            <button
+              key={pair.name}
+              type="button"
+              onClick={() => {
+                setGasMpg(pair.gasMpg);
+                setHybridMpg(pair.hybridMpg);
+                setPremium(pair.premium);
+              }}
+              className="rounded-full border border-[var(--color-border)] px-3 py-1.5 text-sm hover:border-[var(--color-accent)]"
+            >
+              {pair.year} {pair.name}
+            </button>
+          ))}
+        </div>
+      </div>
       <SliderInput
         label="Miles driven per year"
         value={annualMiles}
@@ -198,7 +217,7 @@ export default function HybridVsGasPage() {
       />
 
       <h2 className="cm-eyebrow mt-8 mb-3">Hybrid vs gas: real model pairs</h2>
-      <div className="overflow-x-auto rounded-2xl border border-[var(--color-border)] bg-white">
+      <div className="overflow-x-auto rounded-2xl border border-[var(--color-border)] bg-white" style={{ overflowX: "auto" }}>
         <table className="w-full text-sm">
           <thead>
             <tr className="text-left">
