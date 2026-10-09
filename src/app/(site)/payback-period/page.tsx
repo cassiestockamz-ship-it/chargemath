@@ -9,6 +9,7 @@ import SelectInput from "@/components/SelectInput";
 import NumberInput from "@/components/NumberInput";
 import SliderInput from "@/components/SliderInput";
 import RelatedCalculators from "@/components/RelatedCalculators";
+import ChargerPicks from "@/components/ChargerPicks";
 import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import FAQSection from "@/components/FAQSection";
@@ -414,6 +415,8 @@ export default function PaybackPeriodPage() {
           </li>
         </ul>
       </EducationalContent>
+
+      <ChargerPicks context="payback" />
 
       <FAQSection questions={paybackPeriodFAQ} />
       <EmailCapture source="payback-period" />

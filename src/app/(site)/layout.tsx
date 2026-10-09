@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
+import ClickBeacon from "@/components/ClickBeacon";
 import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import Link from "next/link";
 import MobileMenu from "@/components/MobileMenu";
 import NavDropdown from "@/components/NavDropdown";
 import CommandPalette from "@/components/CommandPalette";
-import "./globals.css";
+import "../globals.css";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -69,6 +70,7 @@ export default function RootLayout({
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7557739369186741" crossOrigin="anonymous" />
       </head>
       <body className="flex min-h-screen flex-col">
+        <ClickBeacon />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
           "@context": "https://schema.org",
           "@graph": [

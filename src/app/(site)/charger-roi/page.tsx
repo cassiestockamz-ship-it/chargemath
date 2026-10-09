@@ -10,6 +10,7 @@ import SelectInput from "@/components/SelectInput";
 import NumberInput from "@/components/NumberInput";
 import SliderInput from "@/components/SliderInput";
 import RelatedCalculators from "@/components/RelatedCalculators";
+import ChargerPicks from "@/components/ChargerPicks";
 import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import HowToSchema from "@/components/HowToSchema";
@@ -373,6 +374,7 @@ export default function ChargerROIPage() {
             <li>Home chargers can increase property value. A 2024 Zillow study found homes with EV chargers sold for 3.3% more on average.</li>
           </ul>
         </EducationalContent>
+        <ChargerPicks context="roi" />
         <FAQSection questions={chargerRoiFAQ} />
         <EmailCapture source="charger-roi" />
         <RelatedCalculators currentPath="/charger-roi" />

@@ -6,13 +6,13 @@ import Link from "next/link";
 
 // Lazy-load each calculator to keep initial bundle small
 const calculators: Record<string, ReturnType<typeof dynamic>> = {
-  "ev-charging-cost": dynamic(() => import("@/app/ev-charging-cost/page")),
-  "gas-vs-electric": dynamic(() => import("@/app/gas-vs-electric/page")),
-  "charging-time": dynamic(() => import("@/app/charging-time/page")),
-  "charger-roi": dynamic(() => import("@/app/charger-roi/page")),
-  range: dynamic(() => import("@/app/range/page")),
-  "tax-credits": dynamic(() => import("@/app/tax-credits/page")),
-  "bill-impact": dynamic(() => import("@/app/bill-impact/page")),
+  "ev-charging-cost": dynamic(() => import("@/app/(site)/ev-charging-cost/page")),
+  "gas-vs-electric": dynamic(() => import("@/app/(site)/gas-vs-electric/page")),
+  "charging-time": dynamic(() => import("@/app/(site)/charging-time/page")),
+  "charger-roi": dynamic(() => import("@/app/(site)/charger-roi/page")),
+  range: dynamic(() => import("@/app/(site)/range/page")),
+  "tax-credits": dynamic(() => import("@/app/(site)/tax-credits/page")),
+  "bill-impact": dynamic(() => import("@/app/(site)/bill-impact/page")),
 };
 
 export default function EmbedCalculatorPage() {

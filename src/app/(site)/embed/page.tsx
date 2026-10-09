@@ -15,7 +15,7 @@ const CALCULATORS = [
 
 function EmbedCodeBlock({ slug, title }: { slug: string; title: string }) {
   const [copied, setCopied] = useState(false);
-  const code = `<iframe src="https://chargemath.com/embed/${slug}" width="100%" height="800" style="border:none;border-radius:12px;" title="${title}" loading="lazy"></iframe>`;
+  const code = `<iframe src="https://chargemath.com/embed/${slug}" width="100%" height="800" style="border:none;border-radius:12px;" title="${title}" loading="lazy"></iframe>\n<p style="font-size:12px;margin:4px 0 0;"><a href="https://chargemath.com/${slug}">${title}</a> by <a href="https://chargemath.com">ChargeMath</a></p>`;
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(code);
@@ -80,8 +80,7 @@ export default function EmbedShowcasePage() {
             Embeds are free for any website: commercial, educational, or personal.
           </li>
           <li>
-            The &quot;Powered by ChargeMath&quot; attribution must remain visible. This is our
-            only requirement.
+            Keep the link under the calculator in the code (and the &quot;Powered by ChargeMath&quot; line inside it) visible. This is our only requirement.
           </li>
           <li>
             Adjust the <code className="rounded bg-[var(--color-surface)] px-1 text-xs">height</code> attribute
