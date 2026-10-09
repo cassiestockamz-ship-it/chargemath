@@ -5,7 +5,7 @@ import Link from "next/link";
 import MobileMenu from "@/components/MobileMenu";
 import NavDropdown from "@/components/NavDropdown";
 import CommandPalette from "@/components/CommandPalette";
-import "./globals.css";
+import "../globals.css";
 
 const inter = Inter({
   subsets: ["latin"],

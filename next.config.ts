@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   experimental: {
     viewTransition: true,
+    globalNotFound: true,
   },
   async redirects() {
     return [
