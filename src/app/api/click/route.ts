@@ -47,8 +47,8 @@ export async function POST(request: NextRequest) {
     // Set by Vercel's edge from the client IP; the browser cannot supply it.
     country: request.headers.get("x-vercel-ip-country")?.slice(0, 2) || null,
   };
-  // Public anon key, same as /api/subscribe; the table allows insert only.
-  const key = process.env.SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlveXBzb2p1ZWR3eXp5bWJzdWJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0NjE3MjQsImV4cCI6MjA4NzAzNzcyNH0.tnAlDR4MHllLjrbv49xWbOEf_QNMjAFtk1vjXIa91fs";
+  // Server-side key: the public key may not insert into affiliate_clicks (plan b10c62ec).
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
   await fetch("https://yoypsojuedwyzymbsubu.supabase.co/rest/v1/affiliate_clicks", {
     method: "POST",
