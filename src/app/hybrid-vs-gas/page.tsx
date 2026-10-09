@@ -16,13 +16,13 @@ import EmailCapture from "@/components/EmailCapture";
 import { useUrlSync } from "@/lib/useUrlState";
 
 // EPA combined MPG, fueleconomy.gov (vehicle ids in comments). Premium = base MSRP hybrid trim minus gas trim, before destination:
-// Corolla LE $22,325 vs Hybrid LE $23,825 (buyatoyota.com, edmunds.com); 2026 Corolla Cross LE (FWD) $27,665 vs Hybrid S (AWD standard) $29,795 (toyota.com, read 2026-10-09; part of that premium buys AWD);
+// 2027 Corolla LE $23,325 vs Hybrid LE $25,175 (toyota.com, read 2026-10-09); 2026 Corolla Cross LE (FWD) $27,665 vs Hybrid S (AWD standard) $29,795 (toyota.com, read 2026-10-09; part of that premium buys AWD);
 // Accord LX $28,295 vs Hybrid EX-L $34,940 (hondanews.com Accord model-year release; the 48 MPG hybrid is the EX-L, which also adds equipment). MODEL_YEAR is the EPA model year of these ratings, not the current year.
 const MODEL_YEAR = 2025;
 const EXAMPLE_PAIRS = [
-  { name: "Toyota Corolla", gasLabel: "Corolla LE", gasMpg: 34, hybridLabel: "Corolla Hybrid LE", hybridMpg: 50, premium: 1500 }, // 48495, 49139
+  { name: "Toyota Corolla (2027)", gasLabel: "Corolla LE", gasMpg: 33, hybridLabel: "Corolla Hybrid LE", hybridMpg: 50, premium: 1850 }, // 50740, 50735
   { name: "Toyota Corolla Cross (2026)", gasLabel: "Corolla Cross LE", gasMpg: 32, hybridLabel: "Corolla Cross Hybrid S AWD", hybridMpg: 42, premium: 2130 }, // 49846, 49870
-  { name: "Honda Accord", gasLabel: "Accord LX", gasMpg: 32, hybridLabel: "Accord Hybrid EX-L", hybridMpg: 48, premium: 6645 }, // 48504, 48505
+  { name: `Honda Accord (${MODEL_YEAR})`, gasLabel: "Accord LX", gasMpg: 32, hybridLabel: "Accord Hybrid EX-L", hybridMpg: 48, premium: 6645 }, // 48504, 48505
 ];
 const EXAMPLE_MILES = 12000;
 const EXAMPLE_PRICES = [3, 3.5, 4];
@@ -36,12 +36,12 @@ const hybridVsGasFAQ = [
   {
     question: "How much does a hybrid save on gas per year?",
     answer:
-      `It depends on miles driven, the MPG gap and the gas price. At 12,000 miles a year and $3.50 a gallon, a ${MODEL_YEAR} Corolla Hybrid (50 MPG combined) uses about 113 fewer gallons than the gas Corolla (34 MPG), which is roughly $395 a year. A 2026 Corolla Cross Hybrid (42 MPG) versus the gas Corolla Cross (32 MPG) saves about $313 a year at the same price.`,
+      `It depends on miles driven, the MPG gap and the gas price. At 12,000 miles a year and $3.50 a gallon, a 2027 Corolla Hybrid (50 MPG combined) uses about 124 fewer gallons than the gas Corolla (33 MPG), which is roughly $433 a year. A 2026 Corolla Cross Hybrid (42 MPG) versus the gas Corolla Cross (32 MPG) saves about $313 a year at the same price.`,
   },
   {
     question: "How do I calculate hybrid payback?",
     answer:
-      "Divide the extra price you pay for the hybrid by its annual fuel savings. Annual fuel savings are (miles / gas MPG minus miles / hybrid MPG) times the price per gallon. A $1,500 premium with $400 a year in savings pays back in about 3.75 years.",
+      "Divide the extra price you pay for the hybrid by its annual fuel savings. Annual fuel savings are (miles / gas MPG minus miles / hybrid MPG) times the price per gallon. A $1,850 premium with $433 a year in savings pays back in about 4.3 years.",
   },
   {
     question: "Is a hybrid worth it if I drive few miles?",
@@ -56,16 +56,16 @@ const hybridVsGasFAQ = [
   {
     question: "Where do the example MPG figures come from?",
     answer:
-      `They are EPA combined ratings for model year ${MODEL_YEAR} from fueleconomy.gov. Real-world mileage varies with speed, temperature and driving style, so enter your own figures if you know them.`,
+      `They are EPA combined ratings from fueleconomy.gov for the model year each example names. Real-world mileage varies with speed, temperature and driving style, so enter your own figures if you know them.`,
   },
 ];
 
 export default function HybridVsGasPage() {
   const [annualMiles, setAnnualMiles] = useState(12000);
-  const [gasMpg, setGasMpg] = useState(34);
+  const [gasMpg, setGasMpg] = useState(33);
   const [hybridMpg, setHybridMpg] = useState(50);
   const [gasPrice, setGasPrice] = useState(3.5);
-  const [premium, setPremium] = useState(1500);
+  const [premium, setPremium] = useState(1850);
   const [years, setYears] = useState(8);
 
   useUrlSync(
@@ -181,7 +181,7 @@ export default function HybridVsGasPage() {
     <CalculatorShell
       eyebrow="Cost comparison"
       title="Hybrid vs Gas Calculator"
-      quickAnswer="At 12,000 miles a year and $3.50 gas, a 50 MPG hybrid saves about $395 a year over a 34 MPG gas car, so a $1,500 hybrid premium pays back in under 4 years."
+      quickAnswer="At 12,000 miles a year and $3.50 gas, a 50 MPG hybrid saves about $433 a year over a 33 MPG gas car, so a $1,850 hybrid premium pays back in under 4.5 years."
       inputs={inputs}
       hero={hero}
     >
@@ -198,7 +198,7 @@ export default function HybridVsGasPage() {
         ]}
       />
 
-      <h2 className="cm-eyebrow mt-8 mb-3">Hybrid vs gas: real {MODEL_YEAR} model pairs</h2>
+      <h2 className="cm-eyebrow mt-8 mb-3">Hybrid vs gas: real model pairs</h2>
       <div className="overflow-x-auto rounded-2xl border border-[var(--color-border)] bg-white">
         <table className="w-full text-sm">
           <thead>
