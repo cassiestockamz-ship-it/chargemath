@@ -19,12 +19,18 @@ import { useUrlSync } from "@/lib/useUrlState";
 // 2027 Corolla LE $23,325 vs Hybrid LE $25,175 (toyota.com, read 2026-10-09); 2026 Corolla Cross LE (FWD) $27,665 vs Hybrid S (AWD standard) $29,795 (toyota.com, read 2026-10-09; part of that premium buys AWD);
 // 2026 Accord LX $28,395 vs Hybrid EX-L $35,095 (hondanews.com '2026 Honda Accord Pricing & EPA Ratings' release, 10-09; the 48 MPG hybrid is the EX-L, which also adds equipment).
 const EXAMPLE_PAIRS = [
-  { name: "Toyota Corolla", year: 2027, gasLabel: "Corolla LE", gasMpg: 33, hybridLabel: "Corolla Hybrid LE", hybridMpg: 50, premium: 1850 }, // 50740, 50735
-  { name: "Toyota Corolla Cross", year: 2026, gasLabel: "Corolla Cross LE", gasMpg: 32, hybridLabel: "Corolla Cross Hybrid S AWD", hybridMpg: 42, premium: 2130 }, // 49846, 49870
-  { name: "Honda Accord", year: 2026, gasLabel: "Accord LX", gasMpg: 32, hybridLabel: "Accord Hybrid EX-L", hybridMpg: 48, premium: 6700 }, // 50070, 50071
+  { name: "Toyota Corolla", year: 2027, gasLabel: "Corolla LE", gasMpg: 33, gasCity: 29, gasHwy: 38, hybridLabel: "Corolla Hybrid LE", hybridMpg: 50, hybridCity: 53, hybridHwy: 46, premium: 1850 }, // 50740, 50735
+  { name: "Toyota Corolla Cross", year: 2026, gasLabel: "Corolla Cross LE", gasMpg: 32, gasCity: 31, gasHwy: 33, hybridLabel: "Corolla Cross Hybrid S AWD", hybridMpg: 42, hybridCity: 46, hybridHwy: 39, premium: 2130 }, // 49846, 49870
+  { name: "Honda Accord", year: 2026, gasLabel: "Accord LX", gasMpg: 32, gasCity: 29, gasHwy: 37, hybridLabel: "Accord Hybrid EX-L", hybridMpg: 48, hybridCity: 51, hybridHwy: 44, premium: 6700 }, // 50070, 50071
 ];
 const EXAMPLE_MILES = 12000;
 const EXAMPLE_PRICES = [3, 3.5, 4];
+
+// Gallons add per mile, so a city/highway split blends MPG harmonically.
+function blendMpg(city: number, hwy: number, cityShare: number) {
+  if (city <= 0 || hwy <= 0) return 0;
+  return 1 / (cityShare / city + (1 - cityShare) / hwy);
+}
 
 function annualSavings(miles: number, gasMpg: number, hybridMpg: number, price: number) {
   if (gasMpg <= 0 || hybridMpg <= 0) return 0;
@@ -66,9 +72,15 @@ export default function HybridVsGasPage() {
   const [gasPrice, setGasPrice] = useState(3.5);
   const [premium, setPremium] = useState(1850);
   const [years, setYears] = useState(8);
+  const [useMix, setUseMix] = useState(false);
+  const [cityPct, setCityPct] = useState(55);
+  const [gasCity, setGasCity] = useState(29);
+  const [gasHwy, setGasHwy] = useState(38);
+  const [hybridCity, setHybridCity] = useState(53);
+  const [hybridHwy, setHybridHwy] = useState(46);
 
   useUrlSync(
-    { miles: annualMiles, gmpg: gasMpg, hmpg: hybridMpg, price: gasPrice, prem: premium, yrs: years },
+    { miles: annualMiles, gmpg: gasMpg, hmpg: hybridMpg, price: gasPrice, prem: premium, yrs: years, mix: useMix ? 1 : 0, city: cityPct, gc: gasCity, gh: gasHwy, hc: hybridCity, hh: hybridHwy },
     (p) => {
       if (p.miles) setAnnualMiles(Number(p.miles));
       if (p.gmpg) setGasMpg(Number(p.gmpg));
@@ -76,19 +88,28 @@ export default function HybridVsGasPage() {
       if (p.price) setGasPrice(Number(p.price));
       if (p.prem) setPremium(Number(p.prem));
       if (p.yrs) setYears(Number(p.yrs));
+      if (p.mix) setUseMix(p.mix === "1");
+      if (p.city) setCityPct(Number(p.city));
+      if (p.gc) setGasCity(Number(p.gc));
+      if (p.gh) setGasHwy(Number(p.gh));
+      if (p.hc) setHybridCity(Number(p.hc));
+      if (p.hh) setHybridHwy(Number(p.hh));
     }
   );
 
   const r = useMemo(() => {
-    const gasGallons = gasMpg > 0 ? annualMiles / gasMpg : 0;
-    const hybridGallons = hybridMpg > 0 ? annualMiles / hybridMpg : 0;
+    const share = cityPct / 100;
+    const gEff = useMix ? blendMpg(gasCity, gasHwy, share) : gasMpg;
+    const hEff = useMix ? blendMpg(hybridCity, hybridHwy, share) : hybridMpg;
+    const gasGallons = gEff > 0 ? annualMiles / gEff : 0;
+    const hybridGallons = hEff > 0 ? annualMiles / hEff : 0;
     const gasCost = gasGallons * gasPrice;
     const hybridCost = hybridGallons * gasPrice;
     const savings = gasCost - hybridCost;
     const paybackYears = savings > 0 ? premium / savings : Infinity;
     const netOverOwnership = savings * years - premium;
-    return { gasGallons, hybridGallons, gasCost, hybridCost, savings, paybackYears, netOverOwnership };
-  }, [annualMiles, gasMpg, hybridMpg, gasPrice, premium, years]);
+    return { gEff, hEff, gasGallons, hybridGallons, gasCost, hybridCost, savings, paybackYears, netOverOwnership };
+  }, [annualMiles, gasMpg, hybridMpg, gasPrice, premium, years, useMix, cityPct, gasCity, gasHwy, hybridCity, hybridHwy]);
 
   const paybackText = Number.isFinite(r.paybackYears)
     ? `${r.paybackYears.toFixed(1)} years`
@@ -107,6 +128,10 @@ export default function HybridVsGasPage() {
                 setGasMpg(pair.gasMpg);
                 setHybridMpg(pair.hybridMpg);
                 setPremium(pair.premium);
+                setGasCity(pair.gasCity);
+                setGasHwy(pair.gasHwy);
+                setHybridCity(pair.hybridCity);
+                setHybridHwy(pair.hybridHwy);
               }}
               className="rounded-full border border-[var(--color-border)] px-3 py-1.5 text-sm hover:border-[var(--color-accent)]"
             >
@@ -135,8 +160,29 @@ export default function HybridVsGasPage() {
         unit="$/gal"
         helpText="Enter what you pay locally"
       />
-      <NumberInput label="Gas car MPG (combined)" value={gasMpg} onChange={setGasMpg} min={5} max={80} step={1} unit="MPG" />
-      <NumberInput label="Hybrid MPG (combined)" value={hybridMpg} onChange={setHybridMpg} min={5} max={80} step={1} unit="MPG" />
+      <label className="flex items-center gap-2 text-sm font-medium sm:col-span-2">
+        <input type="checkbox" checked={useMix} onChange={(e) => setUseMix(e.target.checked)} className="h-4 w-4" />
+        Split by city and highway driving (hybrids gain most in town)
+      </label>
+      {useMix ? (
+        <>
+          <div className="sm:col-span-2">
+            <SliderInput label="Share of miles in city driving" value={cityPct} onChange={setCityPct} min={0} max={100} step={5} unit="%" showValue />
+          </div>
+          <NumberInput label="Gas car city MPG" value={gasCity} onChange={setGasCity} min={5} max={80} step={1} unit="MPG" />
+          <NumberInput label="Gas car highway MPG" value={gasHwy} onChange={setGasHwy} min={5} max={80} step={1} unit="MPG" />
+          <NumberInput label="Hybrid city MPG" value={hybridCity} onChange={setHybridCity} min={5} max={80} step={1} unit="MPG" />
+          <NumberInput label="Hybrid highway MPG" value={hybridHwy} onChange={setHybridHwy} min={5} max={80} step={1} unit="MPG" />
+          <p className="text-xs text-[var(--color-text-muted)] sm:col-span-2">
+            Effective MPG at this mix: gas car {r.gEff.toFixed(1)}, hybrid {r.hEff.toFixed(1)}. EPA&apos;s combined rating assumes 55% city.
+          </p>
+        </>
+      ) : (
+        <>
+          <NumberInput label="Gas car MPG (combined)" value={gasMpg} onChange={setGasMpg} min={5} max={80} step={1} unit="MPG" />
+          <NumberInput label="Hybrid MPG (combined)" value={hybridMpg} onChange={setHybridMpg} min={5} max={80} step={1} unit="MPG" />
+        </>
+      )}
       <NumberInput
         label="Extra price paid for the hybrid"
         value={premium}
