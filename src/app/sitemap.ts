@@ -21,6 +21,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/tax-credits',
     '/bill-impact',
     '/ev-vs-hybrid',
+    '/hybrid-vs-gas',
     '/total-cost',
     '/lease-vs-buy',
     '/payback-period',

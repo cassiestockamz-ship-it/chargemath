@@ -3,11 +3,13 @@ export default function CalculatorSchema({
   description,
   url,
   featureList,
+  datePublished = "2026-03-21",
 }: {
   name: string;
   description: string;
   url: string;
   featureList?: string[];
+  datePublished?: string;
 }) {
   const schema = {
     "@context": "https://schema.org",
@@ -42,7 +44,7 @@ export default function CalculatorSchema({
       name: "ChargeMath",
       url: "https://chargemath.com",
     },
-    datePublished: "2026-03-21",
+    datePublished,
     dateModified: new Date().toISOString().split("T")[0],
   };
 

@@ -21,6 +21,7 @@ const categories = [
       { title: "Charging Cost", href: "/ev-charging-cost", blurb: "Your monthly bill impact by car, state, and habits." },
       { title: "Gas vs Electric", href: "/gas-vs-electric", blurb: "The fuel savings number, side by side." },
       { title: "EV vs Hybrid", href: "/ev-vs-hybrid", blurb: "The middle-ground math nobody runs." },
+      { title: "Hybrid vs Gas", href: "/hybrid-vs-gas", blurb: "Hybrid premium, fuel savings, and the payback year." },
       { title: "Total Cost of Ownership", href: "/total-cost", blurb: "5 years, purchase to resale, every line." },
       { title: "Lease vs Buy", href: "/lease-vs-buy", blurb: "Break even month, cash flow, depreciation risk." },
       { title: "Payback Period", href: "/payback-period", blurb: "When the EV premium pays for itself." },
