@@ -122,6 +122,9 @@ export default function HybridVsGasPage() {
 
   const inputs = (
     <div className="grid gap-4 sm:grid-cols-2">
+      <div className="rounded-xl bg-[var(--color-brand-soft)] px-3 py-2 text-sm font-semibold text-[var(--color-ink)] sm:hidden" aria-live="polite">
+        Hybrid saves ${Math.round(Math.max(0, r.savings)).toLocaleString()} a year on gas. Payback: {paybackText}.
+      </div>
       <div className="sm:col-span-2">
         <div className="mb-2 text-sm font-medium">Start from a real pair (fills MPG and price premium)</div>
         <div className="flex flex-wrap gap-2">
