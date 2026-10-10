@@ -24,6 +24,8 @@ const EXAMPLE_PAIRS = [
   { name: "Toyota Corolla Cross", year: 2026, gasLabel: "Corolla Cross LE", gasMpg: 32, gasCity: 31, gasHwy: 33, hybridLabel: "Corolla Cross Hybrid S AWD", hybridMpg: 42, hybridCity: 46, hybridHwy: 39, premium: 2130 }, // 49846, 49870
   { name: "Honda Accord", year: 2026, gasLabel: "Accord LX", gasMpg: 32, gasCity: 29, gasHwy: 37, hybridLabel: "Accord Hybrid EX-L", hybridMpg: 48, hybridCity: 51, hybridHwy: 44, premium: 6700 }, // 50070, 50071
 ];
+// Two tiles share a 390px row; four-digit and negative dollar values need a smaller number there.
+const TILE_FIT = "max-sm:[&_.cm-result-number]:!text-[1.6rem]";
 const EXAMPLE_MILES = 12000;
 const EXAMPLE_PRICES = [3, 3.5, 4];
 
@@ -113,7 +115,9 @@ export default function HybridVsGasPage() {
   }, [annualMiles, gasMpg, hybridMpg, gasPrice, premium, years, useMix, cityPct, gasCity, gasHwy, hybridCity, hybridHwy]);
 
   const paybackText = Number.isFinite(r.paybackYears)
-    ? `${r.paybackYears.toFixed(1)} years`
+    ? r.paybackYears > years
+      ? `${r.paybackYears.toFixed(1)} years, longer than the ${years} years you plan to keep the car`
+      : `${r.paybackYears.toFixed(1)} years`
     : "never on fuel alone";
 
   const inputs = (
@@ -220,10 +224,10 @@ export default function HybridVsGasPage() {
       dialPercent={r.gasCost > 0 ? Math.max(0, Math.min(100, (r.savings / r.gasCost) * 100)) : 0}
       dialLabel="FUEL CUT"
     >
-      <SavingsTile label="GAS CAR FUEL" value={r.gasCost} prefix="$" unit="/yr" tier="warn" animate />
-      <SavingsTile label="HYBRID FUEL" value={r.hybridCost} prefix="$" unit="/yr" tier="volt" animate />
+      <SavingsTile className={TILE_FIT} label="GAS CAR FUEL" value={r.gasCost} prefix="$" sub="per year" tier="warn" animate />
+      <SavingsTile className={TILE_FIT} label="HYBRID FUEL" value={r.hybridCost} prefix="$" sub="per year" tier="volt" animate />
       {Number.isFinite(r.paybackYears) ? (
-        <SavingsTile label="PAYBACK" value={r.paybackYears} decimals={1} unit=" yrs" tier="brand" animate />
+        <SavingsTile className={TILE_FIT} label="PAYBACK" value={r.paybackYears} decimals={1} sub="years" tier="brand" animate />
       ) : (
         <div className="rounded-2xl border border-[var(--color-border)] bg-white p-4">
           <div className="text-xs font-semibold tracking-wide text-[var(--color-text-muted)]">PAYBACK</div>
@@ -232,10 +236,11 @@ export default function HybridVsGasPage() {
         </div>
       )}
       <SavingsTile
+        className={TILE_FIT}
         label={`${years} YR NET`}
-        value={r.netOverOwnership}
-        prefix="$"
-        unit=" after premium"
+        value={Math.abs(r.netOverOwnership)}
+        prefix={r.netOverOwnership < 0 ? "-$" : "$"}
+        sub={r.netOverOwnership < 0 ? "lost after the premium" : "saved after the premium"}
         tier={r.netOverOwnership >= 0 ? "good" : "warn"}
         animate
       />
@@ -254,7 +259,7 @@ export default function HybridVsGasPage() {
         name="Hybrid vs Gas Fuel Savings and Payback Calculator"
         description="Annual gas savings, payback years on the hybrid price premium, and net savings over the years you keep the car, for a hybrid versus a gas car."
         url="https://chargemath.com/hybrid-vs-gas"
-        datePublished="2026-10-09"
+        datePublished="2026-10-10"
       />
       <BreadcrumbSchema
         items={[
@@ -299,7 +304,7 @@ export default function HybridVsGasPage() {
         </table>
       </div>
       <p className="mt-2 text-xs text-[var(--color-text-muted)]">
-        EPA combined ratings, for the model year shown on each row, from fueleconomy.gov (2027 gas Corolla LE: Toyota's published estimate for the LE grade). {EXAMPLE_MILES.toLocaleString()} miles a year. Premium is the base MSRP gap between the two trims before destination, from Toyota, Honda and Edmunds listings for the same model years; dealer prices vary. The gas Corolla Cross LE is front-wheel drive and the hybrid has all-wheel drive as standard, so part of its premium buys AWD. The Accord&apos;s 48 MPG hybrid is the EX-L, which also adds equipment the LX lacks, so part of that premium buys features, not fuel savings.
+        EPA combined ratings, for the model year shown on each row, from fueleconomy.gov (2027 gas Corolla LE: Toyota's published estimate for the LE grade). {` ${EXAMPLE_MILES.toLocaleString()} miles a year. `}Premium is the base MSRP gap between the two trims before destination, from Toyota, Honda and Edmunds listings for the same model years; dealer prices vary. The gas Corolla Cross LE is front-wheel drive and the hybrid has all-wheel drive as standard, so part of its premium buys AWD. The Accord&apos;s 48 MPG hybrid is the EX-L, which also adds equipment the LX lacks, so part of that premium buys features, not fuel savings.
       </p>
 
       <div className="mt-8 flex flex-wrap gap-3 text-sm">
