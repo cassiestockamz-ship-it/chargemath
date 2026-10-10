@@ -16,10 +16,11 @@ import EmailCapture from "@/components/EmailCapture";
 import { useUrlSync } from "@/lib/useUrlState";
 
 // EPA combined MPG, fueleconomy.gov (vehicle ids in comments). Premium = base MSRP hybrid trim minus gas trim, before destination:
+// 2027 Corolla LE MPG 32/41/35 is Toyota's manufacturer estimate for the LE grade (pressroom.toyota.com 2027 Corolla release, read 2026-10-10).
 // 2027 Corolla LE $23,325 vs Hybrid LE $25,175 (toyota.com, read 2026-10-09); 2026 Corolla Cross LE (FWD) $27,665 vs Hybrid S (AWD standard) $29,795 (toyota.com, read 2026-10-09; part of that premium buys AWD);
 // 2026 Accord LX $28,395 vs Hybrid EX-L $35,095 (hondanews.com '2026 Honda Accord Pricing & EPA Ratings' release, 10-09; the 48 MPG hybrid is the EX-L, which also adds equipment).
 const EXAMPLE_PAIRS = [
-  { name: "Toyota Corolla", year: 2027, gasLabel: "Corolla LE", gasMpg: 33, gasCity: 29, gasHwy: 38, hybridLabel: "Corolla Hybrid LE", hybridMpg: 50, hybridCity: 53, hybridHwy: 46, premium: 1850 }, // 50740, 50735
+  { name: "Toyota Corolla", year: 2027, gasLabel: "Corolla LE", gasMpg: 35, gasCity: 32, gasHwy: 41, hybridLabel: "Corolla Hybrid LE", hybridMpg: 50, hybridCity: 53, hybridHwy: 46, premium: 1850 }, // gas LE: Toyota pressroom 2027 release (EPA lists only one gas 2027 Corolla, 50740, 33 MPG, not the LE); hybrid LE FWD 50735
   { name: "Toyota Corolla Cross", year: 2026, gasLabel: "Corolla Cross LE", gasMpg: 32, gasCity: 31, gasHwy: 33, hybridLabel: "Corolla Cross Hybrid S AWD", hybridMpg: 42, hybridCity: 46, hybridHwy: 39, premium: 2130 }, // 49846, 49870
   { name: "Honda Accord", year: 2026, gasLabel: "Accord LX", gasMpg: 32, gasCity: 29, gasHwy: 37, hybridLabel: "Accord Hybrid EX-L", hybridMpg: 48, hybridCity: 51, hybridHwy: 44, premium: 6700 }, // 50070, 50071
 ];
@@ -41,12 +42,12 @@ const hybridVsGasFAQ = [
   {
     question: "How much does a hybrid save on gas per year?",
     answer:
-      `It depends on miles driven, the MPG gap and the gas price. At 12,000 miles a year and $3.50 a gallon, a 2027 Corolla Hybrid (50 MPG combined) uses about 124 fewer gallons than the gas Corolla (33 MPG), which is roughly $433 a year. A 2026 Corolla Cross Hybrid (42 MPG) versus the gas Corolla Cross (32 MPG) saves about $313 a year at the same price.`,
+      `It depends on miles driven, the MPG gap and the gas price. At 12,000 miles a year and $3.50 a gallon, a 2027 Corolla Hybrid (50 MPG combined) uses about 103 fewer gallons than the gas Corolla LE (35 MPG), which is roughly $360 a year. A 2026 Corolla Cross Hybrid (42 MPG) versus the gas Corolla Cross (32 MPG) saves about $313 a year at the same price.`,
   },
   {
     question: "How do I calculate hybrid payback?",
     answer:
-      "Divide the extra price you pay for the hybrid by its annual fuel savings. Annual fuel savings are (miles / gas MPG minus miles / hybrid MPG) times the price per gallon. A $1,850 premium with $433 a year in savings pays back in about 4.3 years.",
+      "Divide the extra price you pay for the hybrid by its annual fuel savings. Annual fuel savings are (miles / gas MPG minus miles / hybrid MPG) times the price per gallon. A $1,850 premium with $360 a year in savings pays back in about 5.1 years.",
   },
   {
     question: "Is a hybrid worth it if I drive few miles?",
@@ -61,21 +62,21 @@ const hybridVsGasFAQ = [
   {
     question: "Where do the example MPG figures come from?",
     answer:
-      `They are EPA combined ratings from fueleconomy.gov for the model year each example names. Real-world mileage varies with speed, temperature and driving style, so enter your own figures if you know them.`,
+      `They are EPA combined ratings from fueleconomy.gov for the model year each example names, except the 2027 gas Corolla LE: EPA has not yet listed a separate LE record, so its 35 MPG is the estimate Toyota publishes for that grade. Real-world mileage varies with speed, temperature and driving style, so enter your own figures if you know them.`,
   },
 ];
 
 export default function HybridVsGasPage() {
   const [annualMiles, setAnnualMiles] = useState(12000);
-  const [gasMpg, setGasMpg] = useState(33);
+  const [gasMpg, setGasMpg] = useState(35);
   const [hybridMpg, setHybridMpg] = useState(50);
   const [gasPrice, setGasPrice] = useState(3.5);
   const [premium, setPremium] = useState(1850);
   const [years, setYears] = useState(8);
   const [useMix, setUseMix] = useState(false);
   const [cityPct, setCityPct] = useState(55);
-  const [gasCity, setGasCity] = useState(29);
-  const [gasHwy, setGasHwy] = useState(38);
+  const [gasCity, setGasCity] = useState(32);
+  const [gasHwy, setGasHwy] = useState(41);
   const [hybridCity, setHybridCity] = useState(53);
   const [hybridHwy, setHybridHwy] = useState(46);
 
@@ -245,7 +246,7 @@ export default function HybridVsGasPage() {
     <CalculatorShell
       eyebrow="Cost comparison"
       title="Hybrid vs Gas Calculator"
-      quickAnswer="At 12,000 miles a year and $3.50 gas, a 50 MPG hybrid saves about $433 a year over a 33 MPG gas car, so a $1,850 hybrid premium pays back in under 4.5 years."
+      quickAnswer="At 12,000 miles a year and $3.50 gas, a 50 MPG hybrid saves about $360 a year over a 35 MPG gas car, so a $1,850 hybrid premium pays back in about 5 years."
       inputs={inputs}
       hero={hero}
     >
@@ -298,7 +299,7 @@ export default function HybridVsGasPage() {
         </table>
       </div>
       <p className="mt-2 text-xs text-[var(--color-text-muted)]">
-        EPA combined ratings, for the model year shown on each row, from fueleconomy.gov. {EXAMPLE_MILES.toLocaleString()} miles a year. Premium is the base MSRP gap between the two trims before destination, from Toyota, Honda and Edmunds listings for the same model years; dealer prices vary. The gas Corolla Cross LE is front-wheel drive and the hybrid has all-wheel drive as standard, so part of its premium buys AWD. The Accord&apos;s 48 MPG hybrid is the EX-L, which also adds equipment the LX lacks, so part of that premium buys features, not fuel savings.
+        EPA combined ratings, for the model year shown on each row, from fueleconomy.gov (2027 gas Corolla LE: Toyota's published estimate for the LE grade). {EXAMPLE_MILES.toLocaleString()} miles a year. Premium is the base MSRP gap between the two trims before destination, from Toyota, Honda and Edmunds listings for the same model years; dealer prices vary. The gas Corolla Cross LE is front-wheel drive and the hybrid has all-wheel drive as standard, so part of its premium buys AWD. The Accord&apos;s 48 MPG hybrid is the EX-L, which also adds equipment the LX lacks, so part of that premium buys features, not fuel savings.
       </p>
 
       <div className="mt-8 flex flex-wrap gap-3 text-sm">
@@ -329,7 +330,7 @@ export default function HybridVsGasPage() {
         </p>
         <h2>What the calculator leaves out</h2>
         <p>
-          It compares fuel only. Insurance, resale value, financing and maintenance can move the answer either way, and city driving usually favors hybrids more than highway driving because regenerative braking recovers energy in stop-and-go traffic. Use the city or highway EPA figure instead of combined if most of your miles are one or the other.
+          It compares fuel only. Insurance, resale value, financing and maintenance can move the answer either way, and city driving usually favors hybrids more than highway driving because regenerative braking recovers energy in stop-and-go traffic. If most of your miles are in town or on the highway, tick "Split by city and highway driving" and set your share of city miles.
         </p>
       </EducationalContent>
 
