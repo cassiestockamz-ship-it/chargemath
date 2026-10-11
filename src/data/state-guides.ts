@@ -1,4 +1,5 @@
 import { ELECTRICITY_RATES, NATIONAL_AVERAGE_RATE } from "./electricity-rates";
+import { US_GAS_PRICE } from "./fuel-prices";
 
 export interface StateGuideData {
   code: string;
@@ -18,7 +19,7 @@ export interface StateGuideData {
 const KWH_PER_100MI = 25;
 const BATTERY_KWH = 60;
 const DAILY_MILES = 35;
-const GAS_PRICE = 3.5;
+export const GAS_PRICE = US_GAS_PRICE;
 const GAS_MPG = 28;
 
 function slugify(state: string): string {

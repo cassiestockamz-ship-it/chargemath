@@ -2,6 +2,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
+import { GAS_PRICE } from "@/data/state-guides";
+const GAS_PER_MILE = GAS_PRICE / 28;
 import FAQSection from "@/components/FAQSection";
 import StateCalculatorEmbed from "@/components/StateCalculatorEmbed";
 import {
@@ -83,7 +85,7 @@ export default async function StateGuidePage({
     },
     {
       question: `Is it cheaper to drive an EV than a gas car in ${guide.state}?`,
-      answer: `Yes. An EV in ${guide.state} costs about $${guide.costPerMile.toFixed(3)} per mile for electricity, compared to $0.125 per mile for a 28 MPG gas car at $3.50 per gallon. That saves roughly ${fmtShort.format(guide.annualGasSavings)} per year on fuel.`,
+      answer: `Yes. An EV in ${guide.state} costs about $${guide.costPerMile.toFixed(3)} per mile for electricity, compared to $${GAS_PER_MILE.toFixed(3)} per mile for a 28 MPG gas car at $${GAS_PRICE.toFixed(2)} per gallon (US average). That saves roughly ${fmtShort.format(guide.annualGasSavings)} per year on fuel.`,
     },
     {
       question: `How does ${guide.state}'s electricity rate compare to other states?`,
@@ -236,10 +238,10 @@ export default async function StateGuidePage({
         <h2 className="cm-eyebrow mb-3">What the rate means for you</h2>
         <div className="calc-prose rounded-2xl border border-[var(--color-border)] bg-white p-5 sm:p-6">
           <p>
-            {guide.state}&apos;s residential electricity rate of {guide.rate}¢/kWh is {rateLabel}. For a typical EV owner driving 35 miles per day, this translates to about {fmt.format(guide.monthlyCharging)} per month in charging costs, or {fmt.format(guide.annualCharging)} annually. Compared to fueling a 28 MPG gas car at $3.50 per gallon, you save {fmtShort.format(guide.annualGasSavings)} per year.
+            {guide.state}&apos;s residential electricity rate of {guide.rate}¢/kWh is {rateLabel}. For a typical EV owner driving 35 miles per day, this translates to about {fmt.format(guide.monthlyCharging)} per month in charging costs, or {fmt.format(guide.annualCharging)} annually. Compared to fueling a 28 MPG gas car at the US average of ${GAS_PRICE.toFixed(2)} per gallon, you save {fmtShort.format(guide.annualGasSavings)} per year.
           </p>
           <p>
-            At ${guide.costPerMile.toFixed(3)} per mile for electricity versus $0.125 per mile for gas, driving electric in {guide.state} costs {((1 - guide.costPerMile / 0.125) * 100).toFixed(0)}% less per mile. Over 5 years of typical driving (12,775 miles per year), that adds up to {fmtShort.format(guide.annualGasSavings * 5)} in fuel savings alone, before accounting for reduced maintenance costs.
+            At ${guide.costPerMile.toFixed(3)} per mile for electricity versus ${GAS_PER_MILE.toFixed(3)} per mile for gas, driving electric in {guide.state} costs {((1 - guide.costPerMile / GAS_PER_MILE) * 100).toFixed(0)}% less per mile. Over 5 years of typical driving (12,775 miles per year), that adds up to {fmtShort.format(guide.annualGasSavings * 5)} in fuel savings alone, before accounting for reduced maintenance costs.
           </p>
           <p>
             A full charge on a Tesla Model 3 (60 kWh battery, 272 miles of range) costs {fmt.format(guide.costPerFullCharge)} in {guide.state}. Most daily charging sessions only use 20 to 40 percent of the battery, so a typical overnight charge costs {fmt.format(guide.costPerFullCharge * 0.3)} to {fmt.format(guide.costPerFullCharge * 0.4)}.
