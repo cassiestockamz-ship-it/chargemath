@@ -30,10 +30,10 @@ export function getAllStateGuides(): StateGuideData[] {
   const entries = Object.entries(ELECTRICITY_RATES).map(([code, data]) => {
     const rate = data.residential / 100; // convert cents to dollars
     const dailyKwh = (DAILY_MILES / 100) * KWH_PER_100MI;
-    const monthlyKwh = dailyKwh * 30;
+    const monthlyKwh = (dailyKwh * 365) / 12;
     const monthlyCharging = monthlyKwh * rate;
     const annualCharging = monthlyCharging * 12;
-    const gasMonthlyCost = ((DAILY_MILES * 30) / GAS_MPG) * GAS_PRICE;
+    const gasMonthlyCost = ((DAILY_MILES * 365) / 12 / GAS_MPG) * GAS_PRICE;
     const annualGasSavings = (gasMonthlyCost - monthlyCharging) * 12;
     const costPerMile = rate * (KWH_PER_100MI / 100);
     const costPerFullCharge = BATTERY_KWH * rate;
