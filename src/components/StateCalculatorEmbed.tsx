@@ -8,6 +8,7 @@ import SavingsMeter from "./SavingsMeter";
 import SelectInput from "./SelectInput";
 import SliderInput from "./SliderInput";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
+import { US_GAS_PRICE } from "@/data/fuel-prices";
 
 interface Props {
   /** State name like "California" */
@@ -19,7 +20,7 @@ interface Props {
 }
 
 const DEFAULT_MPG = 28;
-const DEFAULT_GAS_PRICE = 3.5;
+const DEFAULT_GAS_PRICE = US_GAS_PRICE;
 
 /**
  * A state-locked live calculator embedded in every /guides/[state]
@@ -112,7 +113,7 @@ export default function StateCalculatorEmbed({
         amountUnit="/year"
         sub={
           <>
-            In {stateName}, versus a 28 MPG gas car at $3.50/gal. Over 5 years,
+            In {stateName}, versus a 28 MPG gas car at ${US_GAS_PRICE.toFixed(2)}/gal. Over 5 years,
             that is ${Math.round(results.fiveYear).toLocaleString()}.
           </>
         }
