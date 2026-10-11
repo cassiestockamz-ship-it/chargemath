@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { US_GAS_PRICE, US_GAS_PRICE_LABEL } from "@/data/fuel-prices";
 import Link from "next/link";
 import SavingsVerdict from "./SavingsVerdict";
 import SavingsTile from "./SavingsTile";
@@ -16,7 +17,7 @@ import {
 import { EV_VEHICLES } from "@/data/ev-vehicles";
 
 const DEFAULT_MPG = 28;
-const DEFAULT_GAS_PRICE = 3.5;
+const DEFAULT_GAS_PRICE = US_GAS_PRICE;
 
 /**
  * Live homepage hero. Runs a real SavingsVerdict on first paint with
@@ -150,7 +151,7 @@ export default function HomeLiveHero() {
               max={10}
               step={0.1}
               unit="$/gal"
-              helpText="Your local price, national average 3.50"
+              helpText={US_GAS_PRICE_LABEL}
             />
             <NumberInput
               label="Gas car MPG"

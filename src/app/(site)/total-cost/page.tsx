@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useCallback } from "react";
+import { US_GAS_PRICE } from "@/data/fuel-prices";
 import Link from "next/link";
 import CalculatorShell from "@/components/CalculatorShell";
 import SavingsVerdict from "@/components/SavingsVerdict";
@@ -65,7 +66,7 @@ export default function TotalCostPage() {
   const [gasPrice, setGasPrice] = useState(30000);
   const [dailyMiles, setDailyMiles] = useState(35);
   const [ownershipYears, setOwnershipYears] = useState(5);
-  const [gasFuelPrice, setGasFuelPrice] = useState(3.5);
+  const [gasFuelPrice, setGasFuelPrice] = useState(US_GAS_PRICE);
   const [gasMpg, setGasMpg] = useState(28);
   const [insuranceEv, setInsuranceEv] = useState(1800);
   const [insuranceGas, setInsuranceGas] = useState(1500);

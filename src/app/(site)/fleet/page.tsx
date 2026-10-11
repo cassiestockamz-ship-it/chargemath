@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
+import { US_GAS_PRICE } from "@/data/fuel-prices";
 import Link from "next/link";
 import CalculatorShell from "@/components/CalculatorShell";
 import SavingsVerdict from "@/components/SavingsVerdict";
@@ -50,7 +51,7 @@ export default function FleetElectrificationPage() {
   const [fleetSize, setFleetSize] = useState(10);
   const [dailyMiles, setDailyMiles] = useState(80);
   const [gasMpg, setGasMpg] = useState(22);
-  const [gasPrice, setGasPrice] = useState(3.5);
+  const [gasPrice, setGasPrice] = useState(US_GAS_PRICE);
   const [evEfficiency, setEvEfficiency] = useState(30);
   const [electricityRate, setElectricityRate] = useState(16);
   const [evPrice, setEvPrice] = useState(45000);

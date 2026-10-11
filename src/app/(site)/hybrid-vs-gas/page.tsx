@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { US_GAS_PRICE } from "@/data/fuel-prices";
 import Link from "next/link";
 import CalculatorShell from "@/components/CalculatorShell";
 import SavingsVerdict from "@/components/SavingsVerdict";
@@ -72,7 +73,7 @@ export default function HybridVsGasPage() {
   const [annualMiles, setAnnualMiles] = useState(12000);
   const [gasMpg, setGasMpg] = useState(35);
   const [hybridMpg, setHybridMpg] = useState(50);
-  const [gasPrice, setGasPrice] = useState(3.5);
+  const [gasPrice, setGasPrice] = useState(US_GAS_PRICE);
   const [premium, setPremium] = useState(1850);
   const [years, setYears] = useState(8);
   const [useMix, setUseMix] = useState(false);

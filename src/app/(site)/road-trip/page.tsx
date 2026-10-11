@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
+import { US_GAS_PRICE } from "@/data/fuel-prices";
 import Link from "next/link";
 import CalculatorShell from "@/components/CalculatorShell";
 import SavingsVerdict from "@/components/SavingsVerdict";
@@ -51,7 +52,7 @@ export default function RoadTripPage() {
   const [homeRate, setHomeRate] = useState(16);
   const [dcfcRate, setDcfcRate] = useState(40);
   const [homeChargePercent, setHomeChargePercent] = useState(20);
-  const [gasPrice, setGasPrice] = useState(3.5);
+  const [gasPrice, setGasPrice] = useState(US_GAS_PRICE);
   const [gasMpg, setGasMpg] = useState(28);
 
   useUrlSync(

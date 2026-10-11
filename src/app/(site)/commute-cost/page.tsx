@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useCallback } from "react";
+import { US_GAS_PRICE } from "@/data/fuel-prices";
 import Link from "next/link";
 import CalculatorShell from "@/components/CalculatorShell";
 import SavingsVerdict from "@/components/SavingsVerdict";
@@ -57,7 +58,7 @@ export default function CommuteCostPage() {
   const [oneWayMiles, setOneWayMiles] = useState(25);
   const [workDaysPerWeek, setWorkDaysPerWeek] = useState(5);
   const [weeksPerYear, setWeeksPerYear] = useState(50);
-  const [gasPrice, setGasPrice] = useState(3.5);
+  const [gasPrice, setGasPrice] = useState(US_GAS_PRICE);
   const [gasMpg, setGasMpg] = useState(28);
   const [parkingCostPerDay, setParkingCostPerDay] = useState(0);
   const [tollsPerDay, setTollsPerDay] = useState(0);

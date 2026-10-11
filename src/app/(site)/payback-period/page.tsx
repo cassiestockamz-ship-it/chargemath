@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useCallback } from "react";
+import { US_GAS_PRICE } from "@/data/fuel-prices";
 import Link from "next/link";
 import CalculatorShell from "@/components/CalculatorShell";
 import SavingsVerdict from "@/components/SavingsVerdict";
@@ -30,7 +31,7 @@ export default function PaybackPeriodPage() {
   const [evPrice, setEvPrice] = useState(35000);
   const [gasCarPrice, setGasCarPrice] = useState(28000);
   const [dailyMiles, setDailyMiles] = useState(35);
-  const [gasPrice, setGasPrice] = useState(3.5);
+  const [gasPrice, setGasPrice] = useState(US_GAS_PRICE);
   const [gasCarMpg, setGasCarMpg] = useState(28);
   const [maintenanceSavings, setMaintenanceSavings] = useState(40);
   const [federalCredit, setFederalCredit] = useState(0);

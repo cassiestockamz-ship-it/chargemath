@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useCallback } from "react";
+import { US_GAS_PRICE } from "@/data/fuel-prices";
 import Link from "next/link";
 import CalculatorShell from "@/components/CalculatorShell";
 import SavingsVerdict from "@/components/SavingsVerdict";
@@ -82,7 +83,7 @@ export default function EVChargingCostPage() {
 
     // Gas comparison
     const gasMpg = 28;
-    const gasPrice = 3.5;
+    const gasPrice = US_GAS_PRICE;
     const gasMonthlyCost = ((dailyMiles * 30) / gasMpg) * gasPrice;
     const gasAnnualCost = gasMonthlyCost * 12;
     const gasCostPerMile = gasPrice / gasMpg;
