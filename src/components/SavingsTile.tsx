@@ -102,7 +102,9 @@ export default function SavingsTile({
   const numberColor = tierInk(tier);
   const iconBg = tierSoft(tier);
 
-  const numberClass = isHero ? "cm-hero-number" : "cm-result-number";
+  const numberClass = isHero
+    ? "cm-hero-number"
+    : "cm-result-number max-sm:!text-[1.6rem]";
 
   return (
     <article
@@ -141,7 +143,7 @@ export default function SavingsTile({
       </div>
 
       {/* Main row: big number + unit */}
-      <div className="flex items-baseline gap-1.5">
+      <div className="flex min-w-0 flex-wrap items-baseline gap-x-1.5">
         <span
           className={`${numberClass} ${heroMorph ? "vt-hero-number" : ""}`}
           style={{ color: numberColor }}
