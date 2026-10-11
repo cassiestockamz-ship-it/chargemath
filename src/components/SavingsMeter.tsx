@@ -221,7 +221,7 @@ function DigitSlot({ char }: { char: string }) {
       <span
         className="absolute left-0 top-0"
         style={{
-          transform: `translateY(${-target * 100}%)`,
+          transform: `translateY(${-target}em)`,
           transition:
             "transform 420ms cubic-bezier(0.32, 0.72, 0, 1), opacity 220ms ease",
           opacity: isDigit ? 1 : 0,
