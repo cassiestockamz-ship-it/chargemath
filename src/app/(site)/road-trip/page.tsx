@@ -27,7 +27,7 @@ const roadTripFAQ = [
   {
     question: "How much does it cost to road trip in an EV vs a gas car?",
     answer:
-      "EV road trips using DC fast chargers typically cost 30 to 50 percent less than gas. At 40 cents per kWh for fast charging and 25 kWh per 100 miles, a 500-mile trip costs about $50 in an EV. The same trip in a 28 MPG gas car at $3.50 per gallon costs about $63. If you charge at home before leaving, EV costs drop further.",
+      `EV road trips using DC fast chargers typically cost 30 to 50 percent less than gas. At 40 cents per kWh for fast charging and 25 kWh per 100 miles, a 500-mile trip costs about $50 in an EV. The same trip in a 28 MPG gas car at the US average of $${US_GAS_PRICE.toFixed(2)} per gallon costs about $${Math.round((500 / 28) * US_GAS_PRICE)}. If you charge at home before leaving, EV costs drop further.`,
   },
   {
     question: "How long does it take to charge an EV on a road trip?",

@@ -464,7 +464,7 @@ export default function FleetElectrificationPage() {
         </p>
         <h3>Fuel Cost Advantage</h3>
         <p>
-          Electricity costs roughly $0.04 to $0.06 per mile for a typical EV, compared to $0.12 to $0.20 per mile for a gas vehicle at $3.50 per gallon. For a 10-vehicle fleet driving 80 miles per day each, that difference adds up to $15,000 to $25,000 in annual fuel savings alone. Commercial electricity rates are often lower than residential rates, and many utilities offer special EV fleet charging programs with off-peak discounts.
+          Electricity costs roughly $0.04 to $0.06 per mile for a typical EV, compared to {`$${(US_GAS_PRICE / 30).toFixed(2)} to $${(US_GAS_PRICE / 18).toFixed(2)}`} per mile for a 30 to 18 MPG gas vehicle at the US average of {`$${US_GAS_PRICE.toFixed(2)}`} per gallon. For a 10-vehicle fleet driving 80 miles per day each on 260 working days, that difference adds up to {`$${(Math.round((US_GAS_PRICE / 30 - 0.06) * 208000 / 1000) * 1000).toLocaleString("en-US")} to $${(Math.round((US_GAS_PRICE / 18 - 0.04) * 208000 / 1000) * 1000).toLocaleString("en-US")}`} in annual fuel savings alone. Commercial electricity rates are often lower than residential rates, and many utilities offer special EV fleet charging programs with off-peak discounts.
         </p>
         <h3>Maintenance Savings Add Up</h3>
         <p>
