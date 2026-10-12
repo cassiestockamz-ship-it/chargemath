@@ -65,7 +65,7 @@ export default function SavingsMeter({
           <OdometerNumber
             value={leftValue}
             color="#ffffff"
-            size="clamp(1.9rem, 7vw, 3rem)"
+            size="clamp(1.3rem, 5.6vw, 3rem)"
             prefix="$"
           />
           <span className="cm-mono mt-1" style={{ color: "rgba(255,255,255,0.55)" }}>
@@ -82,7 +82,7 @@ export default function SavingsMeter({
             <OdometerNumber
               value={delta}
               color="var(--color-volt)"
-              size="clamp(1.6rem, 5.5vw, 2.4rem)"
+              size="clamp(1.15rem, 4.8vw, 2.4rem)"
               prefix="$"
             />
           </div>
@@ -99,7 +99,7 @@ export default function SavingsMeter({
           <OdometerNumber
             value={rightValue}
             color="var(--color-teal)"
-            size="clamp(1.9rem, 7vw, 3rem)"
+            size="clamp(1.3rem, 5.6vw, 3rem)"
             prefix="$"
           />
           <span className="cm-mono mt-1" style={{ color: "rgba(255,255,255,0.55)" }}>
