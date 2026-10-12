@@ -138,7 +138,7 @@ export default function MethodologyPage() {
           </p>
           <p>
             <strong>Annual gas cost for comparison.</strong> Daily miles times
-            365, divided by MPG, times dollars per gallon. For a 28 MPG car at
+            365, divided by MPG, times dollars per gallon. For a 28 MPG car at{" "}
             {GAS} per gallon (the US average) driven 12,775 miles per year,
             that is 12,775 divided by 28 times {GAS}, equal to $
             {GAS_YEAR.toLocaleString("en-US")} per year.
