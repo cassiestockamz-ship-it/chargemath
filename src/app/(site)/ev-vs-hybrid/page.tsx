@@ -507,7 +507,8 @@ export default function EvVsHybridPage() {
         </p>
         <p>
           Only weighing a hybrid against a gas car? The{" "}
-          <Link href="/hybrid-vs-gas">hybrid vs gas calculator</Link> shows
+          <Link href="/hybrid-vs-gas">hybrid vs gas calculator</Link>{" "}
+          shows
           each hybrid&apos;s price premium, its yearly fuel savings, and the
           year it pays back.
         </p>
