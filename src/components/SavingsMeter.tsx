@@ -56,7 +56,7 @@ export default function SavingsMeter({
         </span>
       </div>
 
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 sm:gap-6">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 sm:gap-6">
         {/* LEFT */}
         <div className="flex flex-col items-start">
           <span className="cm-eyebrow mb-1" style={{ color: "rgba(255,255,255,0.55)" }}>
@@ -212,6 +212,8 @@ function DigitSlot({ char }: { char: string }) {
       style={{
         height: "1em",
         lineHeight: 1,
+        // Unused leading slots take no room; commas are narrower than digits.
+        width: isEmpty ? 0 : isComma ? "0.35em" : undefined,
       }}
     >
       {/* Width holder (invisible 0, provides the tabular slot width) */}
