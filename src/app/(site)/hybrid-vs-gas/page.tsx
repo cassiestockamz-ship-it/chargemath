@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { US_GAS_PRICE } from "@/data/fuel-prices";
+import { US_GAS_PRICE, US_GAS_PRICE_LABEL } from "@/data/fuel-prices";
 import Link from "next/link";
 import CalculatorShell from "@/components/CalculatorShell";
 import SavingsVerdict from "@/components/SavingsVerdict";
@@ -28,7 +28,8 @@ const EXAMPLE_PAIRS = [
 // Two tiles share a 390px row; four-digit and negative dollar values need a smaller number there.
 const TILE_FIT = "max-sm:[&_.cm-result-number]:!text-[1.6rem]";
 const EXAMPLE_MILES = 12000;
-const EXAMPLE_PRICES = [3, 3.5, 4];
+// Scenarios around the live EIA price, so the table and the calculator default agree.
+const EXAMPLE_PRICES = [US_GAS_PRICE - 0.5, US_GAS_PRICE, US_GAS_PRICE + 0.5];
 
 // Gallons add per mile, so a city/highway split blends MPG harmonically.
 function blendMpg(city: number, hwy: number, cityShare: number) {
@@ -41,16 +42,22 @@ function annualSavings(miles: number, gasMpg: number, hybridMpg: number, price: 
   return (miles / gasMpg - miles / hybridMpg) * price;
 }
 
+const usd = (n: number) => `$${Math.round(n).toLocaleString("en-US")}`;
+const GAS = `$${US_GAS_PRICE.toFixed(2)}`;
+const COROLLA_SAVE = annualSavings(12000, 35, 50, US_GAS_PRICE);
+const CROSS_SAVE = annualSavings(12000, 32, 42, US_GAS_PRICE);
+const COROLLA_PAYBACK = (1850 / COROLLA_SAVE).toFixed(1);
+
 const hybridVsGasFAQ = [
   {
     question: "How much does a hybrid save on gas per year?",
     answer:
-      `It depends on miles driven, the MPG gap and the gas price. At 12,000 miles a year and $3.50 a gallon, a 2027 Corolla Hybrid (50 MPG combined) uses about 103 fewer gallons than the gas Corolla LE (35 MPG), which is roughly $360 a year. A 2026 Corolla Cross Hybrid (42 MPG) versus the gas Corolla Cross (32 MPG) saves about $313 a year at the same price.`,
+      `It depends on miles driven, the MPG gap and the gas price. At 12,000 miles a year and ${GAS} a gallon (the latest EIA US average), a 2027 Corolla Hybrid (50 MPG combined) uses about 103 fewer gallons than the gas Corolla LE (35 MPG), which is roughly ${usd(COROLLA_SAVE)} a year. A 2026 Corolla Cross Hybrid (42 MPG) versus the gas Corolla Cross (32 MPG) saves about ${usd(CROSS_SAVE)} a year at the same price.`,
   },
   {
     question: "How do I calculate hybrid payback?",
     answer:
-      "Divide the extra price you pay for the hybrid by its annual fuel savings. Annual fuel savings are (miles / gas MPG minus miles / hybrid MPG) times the price per gallon. A $1,850 premium with $360 a year in savings pays back in about 5.1 years.",
+      `Divide the extra price you pay for the hybrid by its annual fuel savings. Annual fuel savings are (miles / gas MPG minus miles / hybrid MPG) times the price per gallon. A $1,850 premium with ${usd(COROLLA_SAVE)} a year in savings pays back in about ${COROLLA_PAYBACK} years.`,
   },
   {
     question: "Is a hybrid worth it if I drive few miles?",
@@ -255,7 +262,7 @@ export default function HybridVsGasPage() {
     <CalculatorShell
       eyebrow="Cost comparison"
       title="Hybrid vs Gas Calculator"
-      quickAnswer="At 12,000 miles a year and $3.50 gas, a 50 MPG hybrid saves about $360 a year over a 35 MPG gas car, so a $1,850 hybrid premium pays back in about 5 years."
+      quickAnswer={`At 12,000 miles a year and ${GAS} gas (the latest EIA US average), a 50 MPG hybrid saves about ${usd(COROLLA_SAVE)} a year over a 35 MPG gas car, so a $1,850 hybrid premium pays back in about ${COROLLA_PAYBACK} years.`}
       inputs={inputs}
       hero={hero}
     >
@@ -285,7 +292,7 @@ export default function HybridVsGasPage() {
               {EXAMPLE_PRICES.map((p) => (
                 <th key={p} className="p-3">Saved / yr at ${p.toFixed(2)}</th>
               ))}
-              <th className="p-3">Payback at $3.50</th>
+              <th className="p-3">Payback at {GAS}</th>
             </tr>
           </thead>
           <tbody>
@@ -301,14 +308,14 @@ export default function HybridVsGasPage() {
                     ${Math.round(annualSavings(EXAMPLE_MILES, pair.gasMpg, pair.hybridMpg, p)).toLocaleString()}
                   </td>
                 ))}
-                <td className="p-3">{(pair.premium / annualSavings(EXAMPLE_MILES, pair.gasMpg, pair.hybridMpg, 3.5)).toFixed(1)} years</td>
+                <td className="p-3">{(pair.premium / annualSavings(EXAMPLE_MILES, pair.gasMpg, pair.hybridMpg, US_GAS_PRICE)).toFixed(1)} years</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
       <p className="mt-2 text-xs text-[var(--color-text-muted)]">
-        EPA combined ratings, for the model year shown on each row, from fueleconomy.gov (2027 gas Corolla LE: Toyota's published estimate for the LE grade). {` ${EXAMPLE_MILES.toLocaleString()} miles a year. `}Premium is the base MSRP gap between the two trims before destination, from Toyota, Honda and Edmunds listings for the same model years; dealer prices vary. The gas Corolla Cross LE is front-wheel drive and the hybrid has all-wheel drive as standard, so part of its premium buys AWD. The Accord&apos;s 48 MPG hybrid is the EX-L, which also adds equipment the LX lacks, so part of that premium buys features, not fuel savings.
+        EPA combined ratings, for the model year shown on each row, from fueleconomy.gov (2027 gas Corolla LE: Toyota's published estimate for the LE grade). {` ${EXAMPLE_MILES.toLocaleString()} miles a year. Middle price column is ${US_GAS_PRICE_LABEL}; the others are 50 cents either side. `}Premium is the base MSRP gap between the two trims before destination, from Toyota, Honda and Edmunds listings for the same model years; dealer prices vary. The gas Corolla Cross LE is front-wheel drive and the hybrid has all-wheel drive as standard, so part of its premium buys AWD. The Accord&apos;s 48 MPG hybrid is the EX-L, which also adds equipment the LX lacks, so part of that premium buys features, not fuel savings.
       </p>
 
       <div className="mt-8 flex flex-wrap gap-3 text-sm">
