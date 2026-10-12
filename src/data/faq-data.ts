@@ -1,11 +1,11 @@
-import { US_GAS_PRICE } from "@/data/fuel-prices";
+import {
+  US_GAS_PRICE,
+  EXAMPLE_GAS_YEAR,
+  EV_SAVE_VS_GAS_LO as SAVE_LO,
+  EV_SAVE_VS_GAS_HI as SAVE_HI,
+} from "@/data/fuel-prices";
 
-// Gas side of the worked FAQ examples: 12,775 miles a year in a 28 MPG car.
-const GAS_YEAR = (12775 / 28) * US_GAS_PRICE;
-const GAS_MONTH = Math.round(GAS_YEAR / 12 / 5) * 5;
-// EV electricity for the same miles runs about $400 to $800 a year.
-const SAVE_LO = Math.round((GAS_YEAR - 800) / 100) * 100;
-const SAVE_HI = Math.round((GAS_YEAR - 400) / 100) * 100;
+const GAS_MONTH = Math.round(EXAMPLE_GAS_YEAR / 12 / 5) * 5;
 
 export const chargingCostFAQ = [
   {
@@ -44,7 +44,7 @@ export const gasVsElectricFAQ = [
   {
     question: "How much do you save per year driving an EV vs gas?",
     answer:
-      "At average electricity and gas prices, a driver covering 12,775 miles per year saves roughly $800\u2013$1,200 annually on fuel alone by driving electric. Higher-mileage drivers and those with cheap electricity save even more.",
+      `At average electricity prices and the US average gas price of $${US_GAS_PRICE.toFixed(2)}, a driver covering 12,775 miles per year saves roughly $${SAVE_LO.toLocaleString("en-US")}\u2013$${SAVE_HI.toLocaleString("en-US")} annually on fuel alone by driving electric, compared to a 28 MPG gas car. Higher-mileage drivers and those with cheap electricity save even more.`,
   },
   {
     question: "Do EVs produce zero emissions?",

@@ -1,7 +1,13 @@
 "use client";
 
 import { useState, useMemo, useEffect, useCallback } from "react";
-import { US_GAS_PRICE } from "@/data/fuel-prices";
+import {
+  US_GAS_PRICE,
+  EV_SAVE_VS_GAS_LO,
+  EV_SAVE_VS_GAS_HI,
+  EV_PCT_BELOW_GAS_LO,
+  EV_PCT_BELOW_GAS_HI,
+} from "@/data/fuel-prices";
 import Link from "next/link";
 import CalculatorShell from "@/components/CalculatorShell";
 import SavingsVerdict from "@/components/SavingsVerdict";
@@ -230,7 +236,7 @@ export default function GasVsElectricPage() {
     <CalculatorShell
       eyebrow="Cost comparison"
       title="Gas vs Electric"
-      quickAnswer="EV fuel costs run 60-70% below gas. Typical savings: $800 to $1,200 per year."
+      quickAnswer={`EV fuel costs run ${EV_PCT_BELOW_GAS_LO}-${EV_PCT_BELOW_GAS_HI}% below gas. Typical savings: $${EV_SAVE_VS_GAS_LO.toLocaleString("en-US")} to $${EV_SAVE_VS_GAS_HI.toLocaleString("en-US")} per year at $${US_GAS_PRICE.toFixed(2)} gas.`}
       inputs={inputs}
       hero={hero}
     >

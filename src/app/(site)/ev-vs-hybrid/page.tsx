@@ -1,7 +1,15 @@
 "use client";
 
 import { useState, useMemo, useEffect, useCallback } from "react";
-import { US_GAS_PRICE } from "@/data/fuel-prices";
+import {
+  US_GAS_PRICE,
+  EV_SAVE_VS_GAS_LO,
+  EV_SAVE_VS_GAS_HI,
+  EV_SAVE_VS_HYBRID_LO,
+  EV_SAVE_VS_HYBRID_HI,
+  EV_PCT_BELOW_GAS_LO,
+  EV_PCT_BELOW_GAS_HI,
+} from "@/data/fuel-prices";
 import Link from "next/link";
 import CalculatorShell from "@/components/CalculatorShell";
 import SavingsVerdict from "@/components/SavingsVerdict";
@@ -32,12 +40,12 @@ const evVsHybridFAQ = [
   {
     question: "Is a hybrid or fully electric car cheaper to fuel?",
     answer:
-      `Fully electric vehicles are almost always cheaper to fuel than hybrids. A typical EV costs $0.03-0.05 per mile in electricity, while a 50 MPG hybrid costs about $${(US_GAS_PRICE / 50).toFixed(3)} per mile in gasoline at the US average of $${US_GAS_PRICE.toFixed(2)}/gallon. Over 12,000 miles per year, that difference adds up to $${Math.round(((US_GAS_PRICE / 50 - 0.05) * 12000) / 10) * 10}-${Math.round(((US_GAS_PRICE / 50 - 0.03) * 12000) / 10) * 10} in annual savings for the EV.`,
+      `Fully electric vehicles are almost always cheaper to fuel than hybrids. A typical EV costs $0.03-0.05 per mile in electricity, while a 50 MPG hybrid costs about $${(US_GAS_PRICE / 50).toFixed(3)} per mile in gasoline at the US average of $${US_GAS_PRICE.toFixed(2)}/gallon. Over 12,000 miles per year, that difference adds up to $${EV_SAVE_VS_HYBRID_LO}-${EV_SAVE_VS_HYBRID_HI} in annual savings for the EV.`,
   },
   {
     question: "How does hybrid fuel efficiency compare to a gas car?",
     answer:
-      "Hybrids typically achieve 45-60 MPG compared to 25-32 MPG for conventional gas cars. This roughly cuts fuel costs in half. However, EVs go even further by eliminating gasoline entirely, reducing fuel costs by 60-70% compared to a standard gas vehicle.",
+      `Hybrids typically achieve 45-60 MPG compared to 25-32 MPG for conventional gas cars. This roughly cuts fuel costs in half. However, EVs go even further by eliminating gasoline entirely, reducing fuel costs by ${EV_PCT_BELOW_GAS_LO}-${EV_PCT_BELOW_GAS_HI}% compared to a 28 MPG gas car at $${US_GAS_PRICE.toFixed(2)} a gallon.`,
   },
   {
     question: "Do hybrids produce less CO2 than gas cars?",
@@ -289,7 +297,7 @@ export default function EvVsHybridPage() {
     <CalculatorShell
       eyebrow="Cost comparison"
       title="EV vs Hybrid vs Gas"
-      quickAnswer="An EV typically beats a 50 MPG hybrid by $250 to $500 per year on fuel, and beats a gas car by $800 to $1,200 per year."
+      quickAnswer={`An EV typically beats a 50 MPG hybrid by $${EV_SAVE_VS_HYBRID_LO} to $${EV_SAVE_VS_HYBRID_HI} per year on fuel, and beats a gas car by $${EV_SAVE_VS_GAS_LO.toLocaleString("en-US")} to $${EV_SAVE_VS_GAS_HI.toLocaleString("en-US")} per year, at $${US_GAS_PRICE.toFixed(2)} gas.`}
       inputs={inputs}
       hero={hero}
     >
