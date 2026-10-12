@@ -1,6 +1,15 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
+import { US_GAS_PRICE } from "@/data/fuel-prices";
+
+// Worked examples below, all at the current US gas price.
+const GAS = `$${US_GAS_PRICE.toFixed(2)}`;
+const GAS_YEAR = Math.round((12775 / 28) * US_GAS_PRICE);
+const EV_YEAR = 881;
+const HYBRID_SAVE = Math.round(150 * US_GAS_PRICE);
+const GAS_CENTS = ((US_GAS_PRICE / 28) * 100).toFixed(1);
+const EV_CHEAPER = Math.round((1 - 6.9 / ((US_GAS_PRICE / 28) * 100)) * 100);
 
 export const metadata: Metadata = {
   title: "Methodology: How ChargeMath calculates everything",
@@ -130,13 +139,14 @@ export default function MethodologyPage() {
           <p>
             <strong>Annual gas cost for comparison.</strong> Daily miles times
             365, divided by MPG, times dollars per gallon. For a 28 MPG car at
-            $3.50 per gallon driven 12,775 miles per year, that is 12,775
-            divided by 28 times $3.50, equal to $1,597 per year.
+            {GAS} per gallon (the US average) driven 12,775 miles per year,
+            that is 12,775 divided by 28 times {GAS}, equal to $
+            {GAS_YEAR.toLocaleString("en-US")} per year.
           </p>
           <p>
             <strong>Annual savings.</strong> Annual gas cost minus annual
-            electricity cost. In the example above, $1,597 minus $881, equal
-            to $716. That is the number the homepage hero shows by default.
+            electricity cost. In the example above, ${GAS_YEAR.toLocaleString("en-US")} minus
+            ${EV_YEAR}, equal to ${(GAS_YEAR - EV_YEAR).toLocaleString("en-US")}. That is the number the homepage hero shows by default.
           </p>
           <p>
             <strong>Hybrid payback.</strong> The{" "}
@@ -145,16 +155,18 @@ export default function MethodologyPage() {
             and once with the hybrid&apos;s EPA combined MPG, and takes the
             difference as yearly fuel savings. It then divides the hybrid&apos;s
             price premium by those savings to get the payback in years. For
-            12,000 miles a year at $3.50 per gallon, a 30 MPG car burns 400
-            gallons and a 48 MPG hybrid burns 250, a saving of 150 gallons or
-            $525 a year, so a $2,500 premium pays back in about 4.8 years.
+            12,000 miles a year at {GAS} per gallon, a 30 MPG car burns 400
+            gallons and a 48 MPG hybrid burns 250, a saving of 150 gallons or $
+            {HYBRID_SAVE} a year, so a $2,500 premium pays back in about{" "}
+            {(2500 / HYBRID_SAVE).toFixed(1)} years.
           </p>
           <p>
             Cost per mile is just the annual cost divided by annual miles. For
             the same Tesla Model 3 in California, that is $881 divided by
             12,775 miles, equal to about 6.9 cents per mile. A gas car at 28
-            MPG and $3.50 per gallon runs 12.5 cents per mile, so the EV is
-            about 45 percent cheaper per mile under these assumptions.
+            MPG and {GAS} per gallon runs {GAS_CENTS} cents per mile, so the EV
+            is about {EV_CHEAPER} percent cheaper per mile under these
+            assumptions.
           </p>
 
           <h2 id="range">Real-world range model</h2>

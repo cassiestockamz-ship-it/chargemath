@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import { getAllStateGuides } from "@/data/state-guides";
+import { US_GAS_PRICE } from "@/data/fuel-prices";
 
 export const metadata: Metadata = {
   title: "EV Charging Cost by State: Complete 2026 Guide",
@@ -182,8 +183,9 @@ export default function GuidesHubPage() {
         <p>
           Despite this variation, EV charging is cheaper than gasoline in every
           single U.S. state. Even in Hawaii, the most expensive state for
-          electricity, an EV costs roughly $0.10/mile compared to $0.13/mile for
-          a 28 MPG gas car at $3.50/gallon. In cheap-electricity states like
+          electricity, an EV costs roughly $0.10/mile compared to {`$${(US_GAS_PRICE / 28).toFixed(2)}`}/mile
+          for a 28 MPG gas car at the US average of{" "}
+          {`$${US_GAS_PRICE.toFixed(2)}`}/gallon. In cheap-electricity states like
           Idaho, Washington, and Utah, EV fuel costs drop below $0.03/mile.
         </p>
         <h3 className="text-lg font-semibold text-[var(--color-text)]">
