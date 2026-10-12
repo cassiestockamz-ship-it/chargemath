@@ -1,3 +1,12 @@
+import { US_GAS_PRICE } from "@/data/fuel-prices";
+
+// Gas side of the worked FAQ examples: 12,775 miles a year in a 28 MPG car.
+const GAS_YEAR = (12775 / 28) * US_GAS_PRICE;
+const GAS_MONTH = Math.round(GAS_YEAR / 12 / 5) * 5;
+// EV electricity for the same miles runs about $400 to $800 a year.
+const SAVE_LO = Math.round((GAS_YEAR - 800) / 100) * 100;
+const SAVE_HI = Math.round((GAS_YEAR - 400) / 100) * 100;
+
 export const chargingCostFAQ = [
   {
     question: "How much does it cost to charge an EV at home?",
@@ -12,7 +21,7 @@ export const chargingCostFAQ = [
   {
     question: "How much does it cost to charge a Tesla Model 3?",
     answer:
-      "A Tesla Model 3 has a 60 kWh battery. At the national average rate of 16.11\u00A2/kWh, a full charge costs about $9.67 and provides roughly 272 miles of range. That works out to about $0.036 per mile, compared to $0.125 per mile for a 28 MPG gas car at $3.50/gallon.",
+      `A Tesla Model 3 has a 60 kWh battery. At the national average rate of 16.11\u00A2/kWh, a full charge costs about $9.67 and provides roughly 272 miles of range. That works out to about $0.036 per mile, compared to $${(US_GAS_PRICE / 28).toFixed(3)} per mile for a 28 MPG gas car at the US average of $${US_GAS_PRICE.toFixed(2)}/gallon.`,
   },
   {
     question: "Does electricity cost vary by state for EV charging?",
@@ -22,7 +31,7 @@ export const chargingCostFAQ = [
   {
     question: "How much do EV owners save on fuel per year?",
     answer:
-      "The average EV driver covering 12,775 miles per year saves roughly $800\u2013$1,200 annually compared to a 28 MPG gas car at $3.50/gallon. Savings are higher in states with cheap electricity and for drivers who do more miles. Over 5 years, that adds up to $4,000\u2013$6,000.",
+      `The average EV driver covering 12,775 miles per year saves roughly $${SAVE_LO.toLocaleString("en-US")}\u2013$${SAVE_HI.toLocaleString("en-US")} annually compared to a 28 MPG gas car at the US average of $${US_GAS_PRICE.toFixed(2)}/gallon. Savings are higher in states with cheap electricity and for drivers who do more miles. Over 5 years, that adds up to $${(SAVE_LO * 5).toLocaleString("en-US")}\u2013$${(SAVE_HI * 5).toLocaleString("en-US")}.`,
   },
 ];
 
@@ -30,7 +39,7 @@ export const gasVsElectricFAQ = [
   {
     question: "Are electric cars really cheaper to fuel than gas cars?",
     answer:
-      "Yes, in virtually all cases. The average EV costs about $0.04 per mile for electricity, while the average gas car costs $0.10\u2013$0.15 per mile at $3.50/gallon. Even in expensive electricity states like California, EVs cost less per mile than gas vehicles.",
+      `Yes, in virtually all cases. The average EV costs about $0.04 per mile for electricity, while the average gas car (23 to 35 MPG) costs $${(US_GAS_PRICE / 35).toFixed(2)}\u2013$${(US_GAS_PRICE / 23).toFixed(2)} per mile at the US average of $${US_GAS_PRICE.toFixed(2)}/gallon. Even in expensive electricity states like California, EVs cost less per mile than gas vehicles.`,
   },
   {
     question: "How much do you save per year driving an EV vs gas?",
@@ -50,7 +59,7 @@ export const gasVsElectricFAQ = [
   {
     question: "How do EV fuel costs compare when electricity is expensive?",
     answer:
-      "Even at California\u2019s high residential rate of about 27.6\u00A2/kWh, an EV costs roughly $0.07 per mile, still cheaper than a 28 MPG gas car at $3.50/gallon ($0.125/mile). The break-even point where EVs lose their fuel advantage is around 45\u201350\u00A2/kWh, which virtually no US residential rate reaches.",
+      `Even at California\u2019s high residential rate of about 27.6\u00A2/kWh, an EV costs roughly $0.07 per mile, still cheaper than a 28 MPG gas car at the US average of $${US_GAS_PRICE.toFixed(2)}/gallon ($${(US_GAS_PRICE / 28).toFixed(3)}/mile). The break-even point where EVs lose their fuel advantage is around 45\u201350\u00A2/kWh, which virtually no US residential rate reaches.`,
   },
 ];
 
@@ -164,7 +173,7 @@ export const billImpactFAQ = [
   {
     question: "How does EV charging compare to gas in total monthly costs?",
     answer:
-      "At average rates, EV charging adds $40\u2013$55/month to your electric bill. Compare that to $130\u2013$180/month for gas at 12,775 miles per year and $3.50/gallon in a 28 MPG car. Even accounting for the electricity increase, you\u2019re saving $75\u2013$125/month by driving electric.",
+      `At average rates, EV charging adds $40\u2013$55/month to your electric bill. Compare that to about $${GAS_MONTH}/month for gas at 12,775 miles per year and the US average of $${US_GAS_PRICE.toFixed(2)}/gallon in a 28 MPG car. Even accounting for the electricity increase, you\u2019re saving $${GAS_MONTH - 55}\u2013$${GAS_MONTH - 40}/month by driving electric.`,
   },
 ];
 
