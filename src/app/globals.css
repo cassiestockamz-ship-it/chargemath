@@ -351,3 +351,6 @@ body {
     color: #999;
   }
 }
+
+/* SavingsMeter strips: glyphs drawn by CSS so page text carries the value once (sr-only span) */
+.cm-glyph::before { content: attr(data-d); }

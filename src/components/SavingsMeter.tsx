@@ -194,6 +194,8 @@ function OdometerNumber({
         const posFromRight = MAX_WIDTH - 1 - i;
         return <DigitSlot key={`pos-${posFromRight}`} char={ch} />;
       })}
+      {/* The one text copy of the value; the strips below draw glyphs with CSS only. */}
+      <span className="sr-only">{formatted}</span>
     </span>
   );
 }
@@ -220,7 +222,7 @@ function DigitSlot({ char }: { char: string }) {
       }}
     >
       {/* Width holder (invisible 0, provides the tabular slot width) */}
-      <span style={{ visibility: "hidden" }}>0</span>
+      <span className="cm-glyph" data-d="0" style={{ visibility: "hidden" }} />
 
       {/* Rolling digit column (0-9) */}
       <span
@@ -236,10 +238,10 @@ function DigitSlot({ char }: { char: string }) {
         {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((d) => (
           <span
             key={d}
+            className="cm-glyph"
+            data-d={d}
             style={{ display: "block", height: "1em", lineHeight: 1 }}
-          >
-            {d}
-          </span>
+          />
         ))}
       </span>
 
@@ -253,7 +255,7 @@ function DigitSlot({ char }: { char: string }) {
           pointerEvents: "none",
         }}
       >
-        ,
+        <span className="cm-glyph" data-d="," />
       </span>
       {/* Hidden fallback so the isEmpty case is handled silently */}
       {isEmpty && <span className="sr-only">{" "}</span>}
