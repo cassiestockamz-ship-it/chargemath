@@ -7,6 +7,8 @@ interface Props {
   rightValue: number;
   period?: string;
   verb?: string;
+  /** Savings figure already shown elsewhere on the page; keeps meter and tiles in agreement. */
+  savings?: number;
   className?: string;
 }
 
@@ -29,9 +31,10 @@ export default function SavingsMeter({
   rightValue,
   period = "/yr",
   verb = "SAVES",
+  savings,
   className = "",
 }: Props) {
-  const delta = Math.max(0, leftValue - rightValue);
+  const delta = savings ?? Math.max(0, leftValue - rightValue);
   const total = leftValue + rightValue;
   const leftPct = total > 0 ? Math.round((leftValue / total) * 100) : 50;
   const rightPct = 100 - leftPct;

@@ -302,6 +302,7 @@ export default function GasVsElectricPage() {
         leftValue={results.gasAnnualCost}
         rightLabel="EV"
         rightValue={results.evAnnualCost}
+        savings={Math.max(0, results.annualSavings)}
       />
 
       <h2 className="cm-eyebrow mt-8 mb-3">Cost breakdown</h2>

@@ -442,6 +442,7 @@ export default function TotalCostPage() {
         rightLabel="EV TOTAL"
         rightValue={results.evTotal}
         period={`/${ownershipYears}yr`}
+        savings={heroAmount}
       />
 
       <h2 className="cm-eyebrow mt-8 mb-3">Year by year</h2>

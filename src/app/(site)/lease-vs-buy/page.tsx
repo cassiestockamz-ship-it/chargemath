@@ -419,6 +419,7 @@ export default function LeaseVsBuyPage() {
         rightLabel="BUY"
         rightValue={results.buyNetCost}
         period={`/${leaseTermMonths}mo`}
+        savings={Math.max(0, results.savings)}
       />
 
       {/* Contextual cross-links */}

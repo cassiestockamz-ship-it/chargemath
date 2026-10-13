@@ -161,6 +161,7 @@ export default function StateCalculatorEmbed({
         leftValue={Math.round(results.gasAnnual)}
         rightLabel="EV"
         rightValue={Math.round(results.evAnnual)}
+        savings={Math.max(0, Math.round(results.annualSavings))}
       />
 
       <div className="flex flex-wrap gap-3 text-sm">

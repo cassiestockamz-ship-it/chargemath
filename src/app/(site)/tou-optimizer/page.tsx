@@ -308,6 +308,7 @@ export default function TOUOptimizerPage() {
         leftValue={results.annualPeak}
         rightLabel="TOU"
         rightValue={results.annualSuperOff}
+        savings={Math.max(0, results.annualSavingsSuperOff)}
       />
 
       {/* Contextual cross-links */}

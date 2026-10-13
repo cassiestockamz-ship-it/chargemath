@@ -222,6 +222,7 @@ export default function HomeLiveHero() {
           leftValue={Math.round(results.gasAnnual)}
           rightLabel="EV"
           rightValue={Math.round(results.evAnnual)}
+          savings={Math.max(0, Math.round(results.annualSavings))}
         />
       </div>
 
