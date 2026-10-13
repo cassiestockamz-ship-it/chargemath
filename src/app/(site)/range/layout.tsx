@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "EV Range Calculator and Range Converter",
+  title: "EV Range Converter: EPA to Real-World Range Calculator",
   description:
-    "Calculate your EV's real-world range based on temperature, speed, terrain, climate control, and cargo. See how each factor reduces your EPA-rated range.",
+    "Convert EPA range to real-world range: about x0.9 at 70 mph in mild weather, about x0.5 at 70 mph in freezing weather with the heat on. Pick your EV and conditions for your own number.",
   alternates: {
     canonical: "/range",
   },
   openGraph: {
-    title: "EV Range Calculator and Range Converter",
+    title: "EV Range Converter: EPA to Real-World Range Calculator",
     description:
-      "Calculate your EV's real-world range based on temperature, speed, terrain, climate control, and cargo. See exactly how many miles each factor costs you.",
+      "Convert EPA range to real-world range for your EV, speed and weather. See how many miles cold, heat and highway speed cost you.",
     type: "website",
   },
 };
