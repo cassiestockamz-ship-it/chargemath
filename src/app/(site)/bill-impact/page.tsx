@@ -297,7 +297,7 @@ export default function BillImpactPage() {
       <EducationalContent>
         <h2>How we estimate your bill impact</h2>
         <p>
-          This calculator converts your daily mileage into energy consumption using your vehicle&apos;s EPA efficiency rating, then multiplies by your state&apos;s average residential electricity rate from the EIA. The home charging percentage lets you account for workplace or public charging that would not appear on your home bill.
+          This calculator converts your daily mileage into energy consumption using your vehicle&apos;s EPA efficiency rating, then multiplies by your state&apos;s average residential electricity rate from the EIA. The home charging percentage lets you account for workplace or public charging that would not appear on your home bill. For the cost of a single full charge and the cost per mile, use the <Link href="/ev-charging-cost">cost to charge an electric car calculator</Link>.
         </p>
         <h3>Time-of-use plans can cut EV costs 30-50%</h3>
         <p>

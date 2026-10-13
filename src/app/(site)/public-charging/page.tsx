@@ -365,7 +365,7 @@ export default function PublicChargingCostPage() {
         <h3>Tips to Save on Public Charging</h3>
         <ul>
           <li>Join network membership programs. Electrify America&apos;s Pass+ membership ($4/month) drops DC fast rates from ~$0.43 to ~$0.31/kWh, paying for itself after about 3-4 sessions.</li>
-          <li>Use Level 2 public chargers when you have time. They cost 30-50% less than DC fast chargers and are gentler on your battery.</li>
+          <li>Use Level 2 public chargers when you have time. They cost 30-50% less than DC fast chargers and are gentler on your battery. The <Link href="/charging-time">EV charging time calculator</Link> shows how long a Level 2 session takes for your car.</li>
           <li>Check for free workplace charging. Many employers offer Level 2 chargers as a perk, which can eliminate your public charging costs entirely on work days.</li>
           <li>Charge at home overnight whenever possible. Even shifting 10% of your charging from public to home saves $100-$200 per year for the average driver.</li>
           <li>Use apps like PlugShare or ABRP to compare prices at nearby stations before you charge. Prices can vary by $0.10-$0.20/kWh between stations just a few miles apart.</li>

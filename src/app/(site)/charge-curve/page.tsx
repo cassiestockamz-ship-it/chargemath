@@ -410,7 +410,10 @@ export default function ChargeCurvePage() {
           the charge takes roughly twice as long for half the energy. On road trips,
           stopping at 10% and leaving at 60% is almost always faster-per-mile than
           stopping at 30% and leaving at 80%, even if you make more stops. This
-          calculator lets you run that comparison numerically for your car.
+          calculator lets you run that comparison numerically for your car. For the
+          total minutes from any start level to any end level, on Level 1, Level 2 or
+          DC fast, use the{" "}
+          <Link href="/charging-time">EV charging time calculator</Link>.
         </p>
         <h3>Why 800V Matters</h3>
         <p>

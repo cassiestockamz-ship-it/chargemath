@@ -366,11 +366,11 @@ export default function GasVsElectricPage() {
       <EducationalContent>
         <h2>How the Gas vs Electric Comparison Works</h2>
         <p>
-          We calculate the per-mile fuel cost for both drivetrains using real data: your EV&apos;s EPA efficiency rating in kWh/100 miles multiplied by your local electricity rate, versus your gas car&apos;s MPG rating divided into the current gas price. CO2 emissions use the EPA&apos;s standard of 8,887 grams per gallon of gasoline and 0.86 lbs of CO2 per kWh of electricity (the U.S. grid average).
+          We calculate the per-mile fuel cost for both drivetrains using real data: your EV&apos;s EPA efficiency rating in kWh/100 miles multiplied by your local electricity rate, versus your gas car&apos;s MPG rating divided into the current gas price. CO2 emissions use the EPA&apos;s standard of 8,887 grams per gallon of gasoline and 0.86 lbs of CO2 per kWh of electricity (the U.S. grid average). The electric side is the same math as the <Link href="/ev-charging-cost">cost to charge an electric car calculator</Link>, which also shows the cost of a full charge.
         </p>
         <h3>Why EV Fuel Costs Are Lower</h3>
         <p>
-          Electric motors convert 85 to 90% of electrical energy into motion, while internal combustion engines convert only 20 to 35% of gasoline energy. This efficiency gap means EVs travel 3 to 4 miles per kWh equivalent, compared to gas cars at roughly 1 mile per kWh equivalent. Home electricity at 12 to 16 cents per kWh is also far cheaper per unit of energy than gasoline.
+          Electric motors convert 85 to 90% of electrical energy into motion, while internal combustion engines convert only 20 to 35% of gasoline energy. This efficiency gap means EVs travel 3 to 4 miles per kWh equivalent, compared to gas cars at roughly 1 mile per kWh equivalent. Home electricity at 12 to 16 cents per kWh is also far cheaper per unit of energy than gasoline. If the car you are weighing is a hybrid rather than an EV, the <Link href="/hybrid-vs-gas">hybrid vs gas calculator</Link> runs the per-mile math with the hybrid price premium and the payback year.
         </p>
         <h3>What This Comparison Does Not Include</h3>
         <ul>
