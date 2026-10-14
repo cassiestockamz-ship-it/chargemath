@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import { getAllStateGuides } from "@/data/state-guides";
 import { US_GAS_PRICE } from "@/data/fuel-prices";
-import { ELECTRICITY_RATES, RATES_AS_OF } from "@/data/electricity-rates";
+import { ELECTRICITY_RATES, RATES_AS_OF, RATES_YEAR } from "@/data/electricity-rates";
 
 const RATES_SORTED = Object.values(ELECTRICITY_RATES).sort((a, b) => a.residential - b.residential);
 const LOW = RATES_SORTED[0];
@@ -12,12 +12,12 @@ const HIGH = RATES_SORTED[RATES_SORTED.length - 1];
 const MODEL3_KWH_MONTH = ((35 * 365) / 100) * 25 / 12;
 
 export const metadata: Metadata = {
-  title: "EV Charging Cost by State: Complete 2026 Guide",
+  title: `EV Charging Cost by State: Complete ${RATES_YEAR} Guide`,
   description:
     "Compare EV charging costs across all 50 states. See monthly costs, electricity rates, gas savings, and cost per mile for every state with real EIA and EPA data.",
   alternates: { canonical: "/guides" },
   openGraph: {
-    title: "EV Charging Cost by State: 2026 Guide",
+    title: `EV Charging Cost by State: ${RATES_YEAR} Guide`,
     description:
       "Compare EV charging costs across all 50 states with real EIA electricity rates and EPA vehicle data.",
   },

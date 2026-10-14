@@ -60,4 +60,7 @@ export const ELECTRICITY_RATES: Record<
 export const NATIONAL_AVERAGE_RATE = 18.19;
 
 /** Source and vintage of the rates above, shown next to results */
+/** Year of the rate data, used in titles instead of a typed year */
+export const RATES_YEAR = 2026;
+
 export const RATES_AS_OF = "EIA Electric Power Monthly table 5.6.B, residential, January to July 2026";
