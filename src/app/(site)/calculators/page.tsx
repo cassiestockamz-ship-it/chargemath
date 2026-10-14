@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "All EV Calculators",
   description:
-    "31 free EV calculators: live data tools (will-i-make-it-home, winter range forecast by ZIP, charge curve simulator), NEC 220.83 panel load check, ev tire cost, charging costs, range estimates, solar sizing, and more.",
+    "31 free EV calculators: charging cost, winter range forecast by ZIP, charge curve simulator, NEC panel load check, tire cost, solar sizing and more.",
   alternates: { canonical: "/calculators" },
 };
 

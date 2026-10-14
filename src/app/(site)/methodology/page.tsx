@@ -14,7 +14,7 @@ const EV_CHEAPER = Math.round((1 - 6.9 / ((US_GAS_PRICE / 28) * 100)) * 100);
 export const metadata: Metadata = {
   title: "Methodology: How ChargeMath calculates everything",
   description:
-    "The exact formulas, data sources, and assumptions behind every ChargeMath calculator. EPA FuelEconomy.gov efficiency, EIA state electricity rates, Recurrent cold-weather retention curves, and the federal tax credits after Section 30D ended.",
+    "The formulas, data sources and assumptions behind every ChargeMath calculator: EPA efficiency, EIA state electricity rates, cold-weather range curves and tax credits.",
   alternates: { canonical: "/methodology" },
   openGraph: {
     title: "ChargeMath Methodology: formulas, sources, assumptions",
