@@ -428,7 +428,7 @@ export default function CommuteCostPage() {
         </p>
         <h3>Why EV commuting is cheaper</h3>
         <p>
-          Electric motors are roughly 3 to 4 times more efficient than internal combustion engines at converting energy into motion. At the national average electricity rate of 16.11 cents/kWh, most EVs cost between $0.03 and $0.05 per mile. A gas car averaging 28 MPG at the US average of {`$${US_GAS_PRICE.toFixed(2)}`}/gallon costs about {`$${(US_GAS_PRICE / 28).toFixed(2)}`} per mile. That efficiency gap adds up quickly over 250+ commute days per year.
+          Electric motors are roughly 3 to 4 times more efficient than internal combustion engines at converting energy into motion. At the national average electricity rate of {NATIONAL_AVERAGE_RATE} cents/kWh, most EVs cost between {`$${((0.2 * NATIONAL_AVERAGE_RATE) / 100).toFixed(2)}`} and {`$${((0.3 * NATIONAL_AVERAGE_RATE) / 100).toFixed(2)}`} per mile. A gas car averaging 28 MPG at the US average of {`$${US_GAS_PRICE.toFixed(2)}`}/gallon costs about {`$${(US_GAS_PRICE / 28).toFixed(2)}`} per mile. That efficiency gap adds up quickly over 250+ commute days per year.
         </p>
         <h3>Factors that affect your real commute cost</h3>
         <ul>

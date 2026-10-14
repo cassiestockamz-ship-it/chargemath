@@ -1,3 +1,4 @@
+import { NATIONAL_AVERAGE_RATE } from "./electricity-rates";
 import {
   US_GAS_PRICE,
   EXAMPLE_GAS_YEAR,
@@ -11,7 +12,7 @@ export const chargingCostFAQ = [
   {
     question: "How much does it cost to charge an EV at home?",
     answer:
-      "At the national average electricity rate of 16.11\u00A2/kWh, charging a typical EV with a 60 kWh battery from empty to full costs about $9.67. Most daily charging sessions cost $2\u20135 depending on how far you drive, since most people only charge 20\u201340% of the battery each night.",
+      `At the national average electricity rate of ${NATIONAL_AVERAGE_RATE}\u00A2/kWh, charging a typical EV with a 60 kWh battery from empty to full costs about $${((60 * NATIONAL_AVERAGE_RATE) / 100).toFixed(2)}. Most daily charging sessions cost $2\u20135 depending on how far you drive, since most people only charge 20\u201340% of the battery each night.`,
   },
   {
     question: "Is it cheaper to charge an EV at home or at a public station?",
@@ -21,7 +22,7 @@ export const chargingCostFAQ = [
   {
     question: "How much does it cost to charge a Tesla Model 3?",
     answer:
-      `A Tesla Model 3 has a 60 kWh battery. At the national average rate of 16.11\u00A2/kWh, a full charge costs about $9.67 and provides roughly 272 miles of range. That works out to about $0.036 per mile, compared to $${(US_GAS_PRICE / 28).toFixed(3)} per mile for a 28 MPG gas car at the US average of $${US_GAS_PRICE.toFixed(2)}/gallon.`,
+      `A Tesla Model 3 has a 60 kWh battery. At the national average rate of ${NATIONAL_AVERAGE_RATE}\u00A2/kWh, a full charge costs about $${((60 * NATIONAL_AVERAGE_RATE) / 100).toFixed(2)} and provides roughly 272 miles of range. That works out to about $${((60 * NATIONAL_AVERAGE_RATE) / 100 / 272).toFixed(3)} per mile, compared to $${(US_GAS_PRICE / 28).toFixed(3)} per mile for a 28 MPG gas car at the US average of $${US_GAS_PRICE.toFixed(2)}/gallon.`,
   },
   {
     question: "Does electricity cost vary by state for EV charging?",
@@ -153,7 +154,7 @@ export const billImpactFAQ = [
   {
     question: "How much will an EV increase my electricity bill?",
     answer:
-      "For the average driver doing 35 miles per day, an EV adds about 250\u2013350 kWh per month to your electricity usage. At the national average rate of 16.11\u00A2/kWh, that\u2019s roughly $40\u2013$55/month added to your bill. The exact amount depends on your vehicle\u2019s efficiency, your electricity rate, and how much you drive.",
+      `For the average driver doing 35 miles per day, an EV adds about 250\u2013350 kWh per month to your electricity usage. At the national average rate of ${NATIONAL_AVERAGE_RATE}\u00A2/kWh, that\u2019s roughly $${Math.round((250 * NATIONAL_AVERAGE_RATE) / 100)}\u2013$${Math.round((350 * NATIONAL_AVERAGE_RATE) / 100)}/month added to your bill. The exact amount depends on your vehicle\u2019s efficiency, your electricity rate, and how much you drive.`,
   },
   {
     question: "Is it cheaper to charge at home or at a public charger?",

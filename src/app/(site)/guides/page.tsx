@@ -3,6 +3,13 @@ import type { Metadata } from "next";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import { getAllStateGuides } from "@/data/state-guides";
 import { US_GAS_PRICE } from "@/data/fuel-prices";
+import { ELECTRICITY_RATES } from "@/data/electricity-rates";
+
+const RATES_SORTED = Object.values(ELECTRICITY_RATES).sort((a, b) => a.residential - b.residential);
+const LOW = RATES_SORTED[0];
+const HIGH = RATES_SORTED[RATES_SORTED.length - 1];
+// Tesla Model 3, 35 miles a day, 25 kWh per 100 miles (methodology worked example)
+const MODEL3_KWH_MONTH = ((35 * 365) / 100) * 25 / 12;
 
 export const metadata: Metadata = {
   title: "EV Charging Cost by State: Complete 2026 Guide",
@@ -57,8 +64,8 @@ export default function GuidesHubPage() {
           EV Charging Cost by State
         </h1>
         <p className="mx-auto mt-3 max-w-2xl text-lg text-[var(--color-text-muted)]">
-          Electricity rates vary by more than 3x across the U.S., from 10.58¢/kWh
-          in Idaho to 38.57¢/kWh in Hawaii. See exactly what EV charging costs in
+          Electricity rates vary by more than 3x across the U.S., from {LOW.residential}¢/kWh
+          in {LOW.state} to {HIGH.residential}¢/kWh in {HIGH.state}. See exactly what EV charging costs in
           your state.
         </p>
         <p className="mt-2 text-xs text-[var(--color-text-muted)]">
@@ -175,18 +182,18 @@ export default function GuidesHubPage() {
         </h2>
         <p>
           The cost of charging an electric vehicle depends almost entirely on your
-          local electricity rate. A Tesla Model 3 owner in Idaho (10.58¢/kWh)
-          pays about $28/month to charge, while the same driver in Hawaii
-          (38.57¢/kWh) pays over $101/month. That 3.6x difference makes state
+          local electricity rate. A Tesla Model 3 owner in {LOW.state} ({LOW.residential}¢/kWh)
+          pays about {`$${Math.round((MODEL3_KWH_MONTH * LOW.residential) / 100)}`}/month to charge, while the same driver in {HIGH.state}{" "}
+          ({HIGH.residential}¢/kWh) pays about {`$${Math.round((MODEL3_KWH_MONTH * HIGH.residential) / 100)}`}/month. That {(HIGH.residential / LOW.residential).toFixed(1)}x difference makes state
           electricity rates the single most important factor in EV ownership costs.
         </p>
         <p>
           Despite this variation, EV charging is cheaper than gasoline in every
-          single U.S. state. Even in Hawaii, the most expensive state for
-          electricity, an EV costs roughly $0.10/mile compared to {`$${(US_GAS_PRICE / 28).toFixed(2)}`}/mile
+          single U.S. state. Even in {HIGH.state}, the most expensive state for
+          electricity, an EV costs roughly {`$${((0.25 * HIGH.residential) / 100).toFixed(2)}`}/mile compared to {`$${(US_GAS_PRICE / 28).toFixed(2)}`}/mile
           for a 28 MPG gas car at the US average of{" "}
-          {`$${US_GAS_PRICE.toFixed(2)}`}/gallon. In cheap-electricity states like
-          Idaho, Washington, and Utah, EV fuel costs drop below $0.03/mile.
+          {`$${US_GAS_PRICE.toFixed(2)}`}/gallon. In the cheapest state,{" "}
+          {LOW.state}, EV fuel costs drop to about {`$${((0.25 * LOW.residential) / 100).toFixed(2)}`}/mile.
         </p>
         <h3 className="text-lg font-semibold text-[var(--color-text)]">
           Why Rates Vary So Much

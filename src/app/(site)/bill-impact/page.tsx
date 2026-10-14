@@ -198,7 +198,7 @@ export default function BillImpactPage() {
     <CalculatorShell
       eyebrow="Bill impact"
       title="How Much Will an EV Raise My Electric Bill?"
-      quickAnswer="A Tesla Model 3 driven 35 miles a day adds about $42 a month at the 16.11¢ national average rate, or about $72 in California (27.57¢). Enter your own bill and state below."
+      quickAnswer={`A Tesla Model 3 driven 35 miles a day adds about $${Math.round((((35 * 365) / 100) * 25 / 12) * NATIONAL_AVERAGE_RATE / 100)} a month at the ${NATIONAL_AVERAGE_RATE}¢ national average rate, or about $${Math.round((((35 * 365) / 100) * 25 / 12) * ELECTRICITY_RATES.CA.residential / 100)} in California (${ELECTRICITY_RATES.CA.residential}¢). Enter your own bill and state below.`}
       inputs={inputs}
       hero={hero}
     >
