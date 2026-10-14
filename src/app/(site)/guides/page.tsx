@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import { getAllStateGuides } from "@/data/state-guides";
 import { US_GAS_PRICE } from "@/data/fuel-prices";
-import { ELECTRICITY_RATES } from "@/data/electricity-rates";
+import { ELECTRICITY_RATES, RATES_AS_OF } from "@/data/electricity-rates";
 
 const RATES_SORTED = Object.values(ELECTRICITY_RATES).sort((a, b) => a.residential - b.residential);
 const LOW = RATES_SORTED[0];
@@ -69,8 +69,7 @@ export default function GuidesHubPage() {
           your state.
         </p>
         <p className="mt-2 text-xs text-[var(--color-text-muted)]">
-          Data last updated: March 2026 · Rates from U.S. Energy Information
-          Administration (EIA)
+          Electricity rates: {RATES_AS_OF}
         </p>
       </div>
 
