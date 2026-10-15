@@ -257,7 +257,7 @@ export default function ChargerROIPage() {
       amountPrefix=""
       amountDecimals={0}
       amountUnit=" months"
-      sub="Versus using public fast chargers at $0.40 to $0.60 per kWh"
+      sub={`Versus public fast charging at $${publicRate.toFixed(2)} per kWh (change it under Advanced inputs)`}
       dialPercent={returnPct}
       dialLabel="RECOVERED BY YR 5"
     >
