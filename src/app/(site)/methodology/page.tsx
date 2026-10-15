@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
+import { ELECTRICITY_RATES } from "@/data/electricity-rates";
 import { US_GAS_PRICE } from "@/data/fuel-prices";
 
 // Worked examples below, all at the current US gas price.
@@ -133,8 +134,9 @@ export default function MethodologyPage() {
           <p>
             <strong>Annual electricity cost.</strong> Annual energy multiplied
             by your electricity rate in dollars per kWh. For the Tesla Model 3
-            at California&apos;s 27.57 cents per kWh, that is 3,194 times
-            0.2757, equal to 881 dollars per year.
+            at California&apos;s {ELECTRICITY_RATES.CA.residential} cents per kWh, that is 3,194 times{" "}
+            {(ELECTRICITY_RATES.CA.residential / 100).toFixed(4)}, equal to{" "}
+            {Math.round((3194 * ELECTRICITY_RATES.CA.residential) / 100).toLocaleString("en-US")} dollars per year.
           </p>
           <p>
             <strong>Annual gas cost for comparison.</strong> Daily miles times
