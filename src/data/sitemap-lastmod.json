@@ -1,17 +1,17 @@
 {
   "/about": "2026-10-09",
   "/battery-degradation": "2026-10-09",
-  "/bill-impact": "2026-10-14",
+  "/bill-impact": "2026-10-15",
   "/calculators": "2026-10-14",
   "/carbon-footprint": "2026-10-09",
   "/charge-curve": "2026-10-13",
-  "/charger-roi": "2026-10-09",
+  "/charger-roi": "2026-10-15",
   "/charging-time": "2026-10-09",
-  "/commute-cost": "2026-10-14",
+  "/commute-cost": "2026-10-15",
   "/dashboard": "2026-10-09",
   "/dashboard/scorecard": "2026-10-09",
   "/embed": "2026-10-09",
-  "/ev-charging-cost": "2026-10-11",
+  "/ev-charging-cost": "2026-10-15",
   "/ev-tire-cost": "2026-10-09",
   "/ev-vs-hybrid": "2026-10-13",
   "/fleet": "2026-10-12",
@@ -22,7 +22,7 @@
   "/lease-vs-buy": "2026-10-13",
   "/methodology": "2026-10-14",
   "/panel-load-check": "2026-10-09",
-  "/payback-period": "2026-10-11",
+  "/payback-period": "2026-10-15",
   "/privacy": "2026-10-09",
   "/public-charging": "2026-10-13",
   "/range": "2026-10-13",
@@ -41,5 +41,5 @@
   "/winter-range": "2026-10-09",
   "/winter-range-forecast": "2026-10-09",
   "/": "2026-10-13",
-  "*": "2026-10-14"
+  "*": "2026-10-15"
 }
