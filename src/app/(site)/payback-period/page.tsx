@@ -22,6 +22,7 @@ import { paybackPeriodFAQ } from "@/data/faq-data";
 import {
   ELECTRICITY_RATES,
   NATIONAL_AVERAGE_RATE,
+  RATES_LABEL,
 } from "@/data/electricity-rates";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
 
@@ -182,6 +183,7 @@ export default function PaybackPeriodPage() {
         value={stateCode}
         onChange={setStateCode}
         options={stateOptions}
+        helpText={RATES_LABEL}
       />
       <SliderInput
         label="Daily miles driven"

@@ -23,6 +23,7 @@ import { chargingCostFAQ } from "@/data/faq-data";
 import {
   ELECTRICITY_RATES,
   NATIONAL_AVERAGE_RATE,
+  RATES_LABEL,
 } from "@/data/electricity-rates";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
 
@@ -144,7 +145,7 @@ export default function EVChargingCostPage() {
           value={stateCode}
           onChange={setStateCode}
           options={stateOptions}
-          helpText="EIA residential rate"
+          helpText={RATES_LABEL}
         />
         <SliderInput
           label="Daily Miles"

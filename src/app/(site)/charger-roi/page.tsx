@@ -23,6 +23,7 @@ import { chargerRoiFAQ } from "@/data/faq-data";
 import {
   ELECTRICITY_RATES,
   NATIONAL_AVERAGE_RATE,
+  RATES_LABEL,
 } from "@/data/electricity-rates";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
 
@@ -225,7 +226,7 @@ export default function ChargerROIPage() {
             value={stateCode}
             onChange={setStateCode}
             options={stateOptions}
-            helpText="Sets your home electricity rate"
+            helpText={`Sets your home rate (${RATES_LABEL})`}
           />
           <NumberInput
             label="Custom home rate (optional)"

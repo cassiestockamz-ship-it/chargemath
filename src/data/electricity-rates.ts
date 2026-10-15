@@ -64,3 +64,6 @@ export const NATIONAL_AVERAGE_RATE = 18.19;
 export const RATES_YEAR = 2026;
 
 export const RATES_AS_OF = "EIA Electric Power Monthly table 5.6.B, residential, January to July 2026";
+
+/** Short vintage label for the help text under state pickers */
+export const RATES_LABEL = `EIA residential average, Jan to Jul ${RATES_YEAR}`;

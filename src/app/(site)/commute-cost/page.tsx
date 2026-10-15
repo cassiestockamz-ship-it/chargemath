@@ -21,6 +21,7 @@ import { useUrlSync } from "@/lib/useUrlState";
 import {
   ELECTRICITY_RATES,
   NATIONAL_AVERAGE_RATE,
+  RATES_LABEL,
 } from "@/data/electricity-rates";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
 
@@ -208,6 +209,7 @@ export default function CommuteCostPage() {
         value={stateCode}
         onChange={setStateCode}
         options={stateOptions}
+        helpText={RATES_LABEL}
       />
       <SliderInput
         label="One-way commute"
