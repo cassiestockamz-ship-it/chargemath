@@ -7,10 +7,11 @@ import { US_GAS_PRICE } from "@/data/fuel-prices";
 // Worked examples below, all at the current US gas price.
 const GAS = `$${US_GAS_PRICE.toFixed(2)}`;
 const GAS_YEAR = Math.round((12775 / 28) * US_GAS_PRICE);
-const EV_YEAR = 881;
+const EV_YEAR = Math.round((3194 * ELECTRICITY_RATES.CA.residential) / 100);
+const EV_CENTS = ((EV_YEAR / 12775) * 100).toFixed(1);
 const HYBRID_SAVE = Math.round(150 * US_GAS_PRICE);
 const GAS_CENTS = ((US_GAS_PRICE / 28) * 100).toFixed(1);
-const EV_CHEAPER = Math.round((1 - 6.9 / ((US_GAS_PRICE / 28) * 100)) * 100);
+const EV_CHEAPER = Math.round((1 - Number(EV_CENTS) / ((US_GAS_PRICE / 28) * 100)) * 100);
 
 export const metadata: Metadata = {
   title: "Methodology: How ChargeMath calculates everything",
@@ -136,7 +137,7 @@ export default function MethodologyPage() {
             by your electricity rate in dollars per kWh. For the Tesla Model 3
             at California&apos;s {ELECTRICITY_RATES.CA.residential} cents per kWh, that is 3,194 times{" "}
             {(ELECTRICITY_RATES.CA.residential / 100).toFixed(4)}, equal to{" "}
-            {Math.round((3194 * ELECTRICITY_RATES.CA.residential) / 100).toLocaleString("en-US")} dollars per year.
+            {EV_YEAR.toLocaleString("en-US")} dollars per year.
           </p>
           <p>
             <strong>Annual gas cost for comparison.</strong> Daily miles times
@@ -148,7 +149,7 @@ export default function MethodologyPage() {
           <p>
             <strong>Annual savings.</strong> Annual gas cost minus annual
             electricity cost. In the example above, ${GAS_YEAR.toLocaleString("en-US")} minus
-            ${EV_YEAR}, equal to ${(GAS_YEAR - EV_YEAR).toLocaleString("en-US")}. That is the number the homepage hero shows by default.
+            ${EV_YEAR.toLocaleString("en-US")}, equal to ${(GAS_YEAR - EV_YEAR).toLocaleString("en-US")}. That is the number the homepage hero shows by default.
           </p>
           <p>
             <strong>Hybrid payback.</strong> The{" "}
@@ -164,8 +165,8 @@ export default function MethodologyPage() {
           </p>
           <p>
             Cost per mile is just the annual cost divided by annual miles. For
-            the same Tesla Model 3 in California, that is $881 divided by
-            12,775 miles, equal to about 6.9 cents per mile. A gas car at 28
+            the same Tesla Model 3 in California, that is ${EV_YEAR.toLocaleString("en-US")} divided by
+            12,775 miles, equal to about {EV_CENTS} cents per mile. A gas car at 28
             MPG and {GAS} per gallon runs {GAS_CENTS} cents per mile, so the EV
             is about {EV_CHEAPER} percent cheaper per mile under these
             assumptions.
