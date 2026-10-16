@@ -25,11 +25,20 @@ import {
 } from "@/data/electricity-rates";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
 
+// Worked example for prose: 25 miles each way, 5 days, 50 weeks (12,500 miles a year),
+// a 28 MPG gas car at the EIA average, an EV at 0.25 to 0.33 kWh a mile at the US average rate.
+const EX_MONTH_MILES = (50 * 250) / 12;
+const EX_GAS_MONTH = Math.round((EX_MONTH_MILES / 28) * US_GAS_PRICE / 10) * 10;
+const EX_EV_MONTH_LO = Math.round((EX_MONTH_MILES * 0.25 * NATIONAL_AVERAGE_RATE) / 100 / 5) * 5;
+const EX_EV_MONTH_HI = Math.round((EX_MONTH_MILES * 0.33 * NATIONAL_AVERAGE_RATE) / 100 / 5) * 5;
+const EX_EV_DAY = (50 * 0.25 * NATIONAL_AVERAGE_RATE) / 100;
+const EX_EV_MONTH_TEXT = `$${EX_EV_MONTH_LO} to $${EX_EV_MONTH_HI}`;
+
 const commuteFAQ = [
   {
     question: "How much does it cost to commute with an EV?",
     answer:
-      "The average EV commuter with a 25-mile one-way trip spends roughly $30-50 per month on electricity for commuting, compared to $100-150 for a gas car. Your actual cost depends on your vehicle's efficiency, local electricity rate, and commute distance.",
+      `An EV commuter with a 25-mile one-way trip spends roughly ${EX_EV_MONTH_TEXT} per month on electricity at the US average rate, compared to about $${EX_GAS_MONTH} for a 28 MPG gas car at $${US_GAS_PRICE.toFixed(2)} a gallon. Your actual cost depends on your vehicle's efficiency, local electricity rate, and commute distance.`,
   },
   {
     question: "Should I charge my EV at home or at work for commuting?",
@@ -44,7 +53,7 @@ const commuteFAQ = [
   {
     question: "Does cold weather affect EV commuting costs?",
     answer:
-      "Yes, cold weather can increase EV energy consumption by 20-40% due to cabin heating and reduced battery efficiency. A commute that costs $1.50 in summer might cost $2.00-2.10 in winter. However, preconditioning your car while plugged in can reduce this impact significantly.",
+      `Yes, cold weather can increase EV energy consumption by 20-40% due to cabin heating and reduced battery efficiency. A 50-mile round trip that costs about $${EX_EV_DAY.toFixed(2)} in summer at the US average rate might cost $${(EX_EV_DAY * 1.2).toFixed(2)} to $${(EX_EV_DAY * 1.4).toFixed(2)} in winter. However, preconditioning your car while plugged in can reduce this impact significantly.`,
   },
   {
     question: "Are tolls and parking included in commute cost calculations?",
@@ -279,7 +288,7 @@ export default function CommuteCostPage() {
     <CalculatorShell
       eyebrow="Commute cost"
       title="EV Commute Cost"
-      quickAnswer="A 25-mile one-way EV commute typically costs $30 to $50 per month in electricity, compared to $100 to $150 for a gas car."
+      quickAnswer={`A 25-mile one-way EV commute costs about ${EX_EV_MONTH_TEXT} a month in electricity at the US average rate, compared to about $${EX_GAS_MONTH} for a 28 MPG gas car.`}
       inputs={inputs}
       hero={hero}
     >
