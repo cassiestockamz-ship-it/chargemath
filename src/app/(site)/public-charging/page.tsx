@@ -22,17 +22,18 @@ import {
   NATIONAL_AVERAGE_RATE,
 } from "@/data/electricity-rates";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
+import { PUBLIC_DCFC_RATE, PUBLIC_DCFC_RATE_PERIOD } from "@/data/fuel-prices";
 
 const publicChargingFAQ = [
   {
     question: "How much does it cost to charge an EV at a public station?",
     answer:
-      "Public charging costs vary widely by network and charging speed. Level 2 public chargers typically cost $0.20-$0.35 per kWh, while DC fast chargers range from $0.30-$0.60 per kWh. Many stations also charge a per-session fee of $1-$2. On average, a full DC fast charge costs 2-3x more than charging the same amount at home.",
+      `Public charging costs vary widely by network and charging speed. Level 2 public chargers typically cost $0.20-$0.35 per kWh, while DC fast chargers averaged $${PUBLIC_DCFC_RATE.toFixed(2)} per kWh in ${PUBLIC_DCFC_RATE_PERIOD} (Paren), with most between $0.50 and $0.60. Many stations also charge a per-session fee of $1-$2. On average, a full DC fast charge costs 2-3x more than charging the same amount at home.`,
   },
   {
     question: "Is it cheaper to charge at home or at a public station?",
     answer:
-      "Home charging is almost always cheaper. The national average residential electricity rate is about 16 cents per kWh, while public Level 2 chargers average 25 cents per kWh and DC fast chargers average 35-45 cents per kWh. Home charging can save you 40-70% compared to public charging, which is why most EV owners do the majority of their charging at home.",
+      `Home charging is almost always cheaper. The national average residential electricity rate is about ${Math.round(NATIONAL_AVERAGE_RATE)} cents per kWh, while public Level 2 chargers average about 25 cents per kWh and DC fast chargers average about ${Math.round(PUBLIC_DCFC_RATE * 100)} cents per kWh. Home charging can cost ${Math.round((1 - NATIONAL_AVERAGE_RATE / (PUBLIC_DCFC_RATE * 100)) * 100)}% less than fast charging, which is why most EV owners do the majority of their charging at home.`,
   },
   {
     question: "Why do DC fast chargers cost more than Level 2?",
@@ -56,7 +57,7 @@ export default function PublicChargingCostPage() {
   const [stateCode, setStateCode] = useState("CA");
   const [publicPercent, setPublicPercent] = useState(30);
   const [level2Rate, setLevel2Rate] = useState(25);
-  const [dcFastRate, setDcFastRate] = useState(40);
+  const [dcFastRate, setDcFastRate] = useState(Math.round(PUBLIC_DCFC_RATE * 100));
   const [sessionFee, setSessionFee] = useState(1.0);
   const [sessionsPerMonth, setSessionsPerMonth] = useState(8);
   const [dailyMiles, setDailyMiles] = useState(35);

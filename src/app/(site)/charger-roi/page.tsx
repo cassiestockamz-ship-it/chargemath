@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { PUBLIC_DCFC_RATE, PUBLIC_DCFC_RATE_PERIOD } from "@/data/fuel-prices";
 import CalculatorShell from "@/components/CalculatorShell";
 import SavingsVerdict from "@/components/SavingsVerdict";
 import SavingsMeter from "@/components/SavingsMeter";
@@ -36,7 +37,7 @@ export default function ChargerROIPage() {
   const [dailyMiles, setDailyMiles] = useState(35);
   const [chargerCost, setChargerCost] = useState(500);
   const [installCost, setInstallCost] = useState(800);
-  const [publicRate, setPublicRate] = useState(0.35);
+  const [publicRate, setPublicRate] = useState(PUBLIC_DCFC_RATE);
   const [publicSplit, setPublicSplit] = useState<PublicSplit>("100");
 
   const [stateDetected, setStateDetected] = useState(false);
@@ -361,7 +362,7 @@ export default function ChargerROIPage() {
         <EducationalContent>
           <h2>How the Charger ROI Calculation Works</h2>
           <p>
-            The payback period divides your total upfront cost (charger plus installation) by the monthly savings from charging at home versus your current mix of public and Level 1 charging. Home electricity rates come from EIA state averages. Public charging rates default to $0.35 per kWh, which reflects the 2026 average across major networks like Electrify America and ChargePoint.
+            The payback period divides your total upfront cost (charger plus installation) by the monthly savings from charging at home versus your current mix of public and Level 1 charging. Home electricity rates come from EIA state averages. Public charging rates default to ${PUBLIC_DCFC_RATE.toFixed(2)} per kWh, the US average DC fast charging price in {PUBLIC_DCFC_RATE_PERIOD} (Paren, excluding free stations).
           </p>
           <h3>Installation Costs: What to Expect</h3>
           <p>

@@ -22,3 +22,9 @@ export const EV_PCT_BELOW_GAS_HI = Math.round((1 - EV_YEAR_LO / EXAMPLE_GAS_YEAR
 // EV per mile (above) vs a 50 MPG hybrid over 12,000 miles.
 export const EV_SAVE_VS_HYBRID_LO = Math.round(((US_GAS_PRICE / 50 - EV_PER_MILE_HI) * 12000) / 10) * 10;
 export const EV_SAVE_VS_HYBRID_HI = Math.round(((US_GAS_PRICE / 50 - EV_PER_MILE_LO) * 12000) / 10) * 10;
+
+// US average DC fast charging price, excluding free stations (Paren State of
+// the Industry, Q3 2026). Default for public charging inputs and prose.
+export const PUBLIC_DCFC_RATE = 0.54;
+export const PUBLIC_DCFC_RATE_PERIOD = "Q3 2026";
+export const PUBLIC_DCFC_RATE_SOURCE = "https://www.paren.app/reports";
