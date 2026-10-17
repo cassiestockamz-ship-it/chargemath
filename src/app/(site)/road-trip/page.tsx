@@ -1,7 +1,21 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
-import { US_GAS_PRICE } from "@/data/fuel-prices";
+import { US_GAS_PRICE, PUBLIC_DCFC_RATE, PUBLIC_DCFC_RATE_PERIOD } from "@/data/fuel-prices";
+import { NATIONAL_AVERAGE_RATE } from "@/data/electricity-rates";
+
+// 500-mile worked example, computed from the shared price data.
+const RT_MILES = 500;
+const RT_KWH_PER_100 = 25;
+const RT_GAS_MPG = 28;
+const DCFC_CENTS = Math.round(PUBLIC_DCFC_RATE * 100);
+const HOME_CENTS = Math.round(NATIONAL_AVERAGE_RATE);
+const RT_EV_FAST = Math.round((RT_MILES / 100) * RT_KWH_PER_100 * PUBLIC_DCFC_RATE);
+const RT_EV_HOME = Math.round(((RT_MILES / 100) * RT_KWH_PER_100 * NATIONAL_AVERAGE_RATE) / 100);
+const RT_GAS = Math.round((RT_MILES / RT_GAS_MPG) * US_GAS_PRICE);
+const RT_SAVE_PCT = Math.round((1 - RT_EV_FAST / RT_GAS) * 100);
+const RT_VS_GAS =
+  RT_SAVE_PCT >= 5 ? `about ${RT_SAVE_PCT} percent less than gas` : "about the same as gas";
 import Link from "next/link";
 import CalculatorShell from "@/components/CalculatorShell";
 import SavingsVerdict from "@/components/SavingsVerdict";
@@ -27,7 +41,7 @@ const roadTripFAQ = [
   {
     question: "How much does it cost to road trip in an EV vs a gas car?",
     answer:
-      `EV road trips using DC fast chargers typically cost 30 to 50 percent less than gas. At 40 cents per kWh for fast charging and 25 kWh per 100 miles, a 500-mile trip costs about $50 in an EV. The same trip in a 28 MPG gas car at the US average of $${US_GAS_PRICE.toFixed(2)} per gallon costs about $${Math.round((500 / 28) * US_GAS_PRICE)}. If you charge at home before leaving, EV costs drop further.`,
+      `Fast charging the whole way costs ${RT_VS_GAS}. At the US average public DC fast price of ${DCFC_CENTS} cents per kWh (Paren, ${PUBLIC_DCFC_RATE_PERIOD}) and 25 kWh per 100 miles, a 500-mile trip costs about $${RT_EV_FAST} in an EV. The same trip in a 28 MPG gas car at the US average of $${US_GAS_PRICE.toFixed(2)} per gallon costs about $${RT_GAS}. At the US home rate of ${HOME_CENTS} cents, the same energy costs about $${RT_EV_HOME}, so every mile you start with from home charging cuts the bill.`,
   },
   {
     question: "How long does it take to charge an EV on a road trip?",
@@ -37,7 +51,7 @@ const roadTripFAQ = [
   {
     question: "Should I charge my EV at home before a road trip?",
     answer:
-      "Yes. Charging at home before departure is significantly cheaper than DC fast charging. Home electricity averages 13 to 27 cents per kWh, while DC fast chargers cost 30 to 60 cents per kWh. Starting with a full battery from home charging reduces the number of paid fast charging stops needed.",
+      "Yes. Charging at home before departure is significantly cheaper than DC fast charging. Home electricity averages about " + HOME_CENTS + " cents per kWh in the US, while public DC fast charging averages about " + DCFC_CENTS + " cents. Starting with a full battery from home charging reduces the number of paid fast charging stops needed.",
   },
   {
     question: "What percentage should I charge to at DC fast chargers?",
@@ -49,8 +63,8 @@ const roadTripFAQ = [
 export default function RoadTripPage() {
   const [vehicleId, setVehicleId] = useState(EV_VEHICLES[0].id);
   const [tripDistance, setTripDistance] = useState(500);
-  const [homeRate, setHomeRate] = useState(16);
-  const [dcfcRate, setDcfcRate] = useState(40);
+  const [homeRate, setHomeRate] = useState(HOME_CENTS);
+  const [dcfcRate, setDcfcRate] = useState(DCFC_CENTS);
   const [homeChargePercent, setHomeChargePercent] = useState(20);
   const [gasPrice, setGasPrice] = useState(US_GAS_PRICE);
   const [gasMpg, setGasMpg] = useState(28);
@@ -254,7 +268,7 @@ export default function RoadTripPage() {
     <CalculatorShell
       eyebrow="Road trip plan"
       title="EV Road Trip Planner"
-      quickAnswer="A 500-mile EV trip typically needs 2 to 3 DC fast charging stops of 20 to 40 minutes each and costs 30 to 50 percent less than driving gas."
+      quickAnswer={`A 500-mile EV trip typically needs 2 to 3 DC fast charging stops of 20 to 40 minutes each. Fast charging all the way costs ${RT_VS_GAS}; leaving with a full battery charged at home saves more.`}
       inputs={inputs}
       hero={hero}
     >
@@ -385,7 +399,7 @@ export default function RoadTripPage() {
         </p>
         <h3>Charge at Home Before You Leave</h3>
         <p>
-          Home electricity costs 13 to 27 cents per kWh in most states, while DC fast chargers along highways typically cost 30 to 60 cents per kWh. Starting your trip with a full battery from home charging can save 50 percent or more on the first leg of your trip. Always plug in the night before a road trip.
+          {`Home electricity averages about ${HOME_CENTS} cents per kWh in the US, while public DC fast charging averages about ${DCFC_CENTS} cents, roughly three times as much. Starting your trip with a full battery from home charging makes the first leg the cheapest part of the trip. Always plug in the night before a road trip.`}
         </p>
         <h3>The 80 Percent Rule for Fast Charging</h3>
         <p>
