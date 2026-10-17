@@ -25,9 +25,9 @@ function EmbedCodeBlock({ slug, title }: { slug: string; title: string }) {
 
   return (
     <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
-      <h3 className="mb-2 text-base font-semibold text-[var(--color-text)]">
+      <h2 className="mb-2 text-base font-semibold text-[var(--color-text)]">
         {title}
-      </h3>
+      </h2>
       <div className="relative">
         <pre className="overflow-x-auto rounded-lg bg-[var(--color-surface-alt)] p-3 text-xs text-[var(--color-text-muted)]">
           <code>{code}</code>

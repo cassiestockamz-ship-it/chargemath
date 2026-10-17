@@ -82,7 +82,7 @@ export default function SavingsVerdict({
             <span className="cm-eyebrow">{eyebrow}</span>
           </div>
 
-          <h1
+          <p
             id="cm-verdict-headline"
             className="cm-hero-number text-[var(--color-ink)]"
             data-speakable="true"
@@ -101,7 +101,7 @@ export default function SavingsVerdict({
             <span className="text-[0.35em] font-medium text-[var(--color-ink-3)]">
               {amountUnit}
             </span>
-          </h1>
+          </p>
 
           {sub && (
             <p className="max-w-prose text-sm text-[var(--color-ink-2)] sm:text-base">
