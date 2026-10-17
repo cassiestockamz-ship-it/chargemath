@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
-import { GAS_PRICE } from "@/data/state-guides";
+import { GAS_PRICE, GUIDE_EV, GUIDE_EV_LABEL } from "@/data/state-guides";
 const GAS_PER_MILE = GAS_PRICE / 28;
 import FAQSection from "@/components/FAQSection";
 import StateCalculatorEmbed from "@/components/StateCalculatorEmbed";
@@ -81,7 +81,7 @@ export default async function StateGuidePage({
   const faqs = [
     {
       question: `How much does it cost to charge an EV in ${guide.state}?`,
-      answer: `At ${guide.state}'s average residential rate of ${guide.rate}¢/kWh, charging a Tesla Model 3 (60 kWh battery) from empty costs ${fmt.format(guide.costPerFullCharge)}. For a typical driver covering 35 miles per day, monthly charging costs are about ${fmt.format(guide.monthlyCharging)}.`,
+      answer: `At ${guide.state}'s average residential rate of ${guide.rate}¢/kWh, charging a ${GUIDE_EV_LABEL} (${GUIDE_EV.batteryCapacityKwh} kWh battery) from empty costs ${fmt.format(guide.costPerFullCharge)}. For a typical driver covering 35 miles per day, monthly charging costs are about ${fmt.format(guide.monthlyCharging)}.`,
     },
     {
       question: `Is it cheaper to drive an EV than a gas car in ${guide.state}?`,
@@ -244,7 +244,7 @@ export default async function StateGuidePage({
             At ${guide.costPerMile.toFixed(3)} per mile for electricity versus ${GAS_PER_MILE.toFixed(3)} per mile for gas, driving electric in {guide.state} costs {((1 - guide.costPerMile / GAS_PER_MILE) * 100).toFixed(0)}% less per mile. Over 5 years of typical driving (12,775 miles per year), that adds up to {fmtShort.format(guide.annualGasSavings * 5)} in fuel savings alone, before accounting for reduced maintenance costs.
           </p>
           <p>
-            A full charge on a Tesla Model 3 (60 kWh battery, 272 miles of range) costs {fmt.format(guide.costPerFullCharge)} in {guide.state}. Most daily charging sessions only use 20 to 40 percent of the battery, so a typical overnight charge costs {fmt.format(guide.costPerFullCharge * 0.3)} to {fmt.format(guide.costPerFullCharge * 0.4)}.
+            {`A full charge on a ${GUIDE_EV_LABEL} (${GUIDE_EV.batteryCapacityKwh} kWh battery, ${GUIDE_EV.epaRangeMiles} miles of range) costs`} {fmt.format(guide.costPerFullCharge)} in {guide.state}. Most daily charging sessions only use 20 to 40 percent of the battery, so a typical overnight charge costs {fmt.format(guide.costPerFullCharge * 0.3)} to {fmt.format(guide.costPerFullCharge * 0.4)}.
           </p>
         </div>
       </section>

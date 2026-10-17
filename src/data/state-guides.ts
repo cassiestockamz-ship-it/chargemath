@@ -1,5 +1,6 @@
 import { ELECTRICITY_RATES, NATIONAL_AVERAGE_RATE } from "./electricity-rates";
 import { US_GAS_PRICE } from "./fuel-prices";
+import { EV_VEHICLES } from "./ev-vehicles";
 
 export interface StateGuideData {
   code: string;
@@ -15,9 +16,12 @@ export interface StateGuideData {
   rank: number; // 1 = cheapest
 }
 
-// Tesla Model 3 defaults: 25 kWh/100mi, 60 kWh battery, 272 mi range
-const KWH_PER_100MI = 25;
-const BATTERY_KWH = 60;
+// Worked example = the calculators' default car (EV_VEHICLES[0]), so guide prose
+// and the embedded calculator always describe the same Model 3.
+export const GUIDE_EV = EV_VEHICLES[0];
+export const GUIDE_EV_LABEL = `${GUIDE_EV.year} ${GUIDE_EV.make} ${GUIDE_EV.model}`;
+const KWH_PER_100MI = GUIDE_EV.kwhPer100Miles;
+const BATTERY_KWH = GUIDE_EV.batteryCapacityKwh;
 const DAILY_MILES = 35;
 export const GAS_PRICE = US_GAS_PRICE;
 const GAS_MPG = 28;

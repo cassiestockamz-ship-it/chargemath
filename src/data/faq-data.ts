@@ -1,4 +1,10 @@
 import { NATIONAL_AVERAGE_RATE } from "./electricity-rates";
+import { EV_VEHICLES } from "./ev-vehicles";
+
+// Worked example = the calculators' default car.
+const EX_EV = EV_VEHICLES[0];
+const EX_KWH = EX_EV.batteryCapacityKwh;
+const EX_RANGE = EX_EV.epaRangeMiles;
 import {
   US_GAS_PRICE,
   EXAMPLE_GAS_YEAR,
@@ -22,7 +28,7 @@ export const chargingCostFAQ = [
   {
     question: "How much does it cost to charge a Tesla Model 3?",
     answer:
-      `A Tesla Model 3 has a 60 kWh battery. At the national average rate of ${NATIONAL_AVERAGE_RATE}\u00A2/kWh, a full charge costs about $${((60 * NATIONAL_AVERAGE_RATE) / 100).toFixed(2)} and provides roughly 272 miles of range. That works out to about $${((60 * NATIONAL_AVERAGE_RATE) / 100 / 272).toFixed(3)} per mile, compared to $${(US_GAS_PRICE / 28).toFixed(3)} per mile for a 28 MPG gas car at the US average of $${US_GAS_PRICE.toFixed(2)}/gallon.`,
+      `A ${EX_EV.year} ${EX_EV.make} ${EX_EV.model} has about a ${EX_KWH} kWh battery. At the national average rate of ${NATIONAL_AVERAGE_RATE}\u00A2/kWh, a full charge costs about $${((EX_KWH * NATIONAL_AVERAGE_RATE) / 100).toFixed(2)} and provides roughly ${EX_RANGE} miles of EPA range. That works out to about $${((EX_KWH * NATIONAL_AVERAGE_RATE) / 100 / EX_RANGE).toFixed(3)} per mile, compared to $${(US_GAS_PRICE / 28).toFixed(3)} per mile for a 28 MPG gas car at the US average of $${US_GAS_PRICE.toFixed(2)}/gallon.`,
   },
   {
     question: "Does electricity cost vary by state for EV charging?",
