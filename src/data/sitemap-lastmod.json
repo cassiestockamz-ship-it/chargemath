@@ -6,11 +6,11 @@
   "/carbon-footprint": "2026-10-09",
   "/charge-curve": "2026-10-13",
   "/charger-roi": "2026-10-16",
-  "/charging-time": "2026-10-09",
+  "/charging-time": "2026-10-17",
   "/commute-cost": "2026-10-16",
   "/dashboard": "2026-10-09",
   "/dashboard/scorecard": "2026-10-09",
-  "/embed": "2026-10-09",
+  "/embed": "2026-10-17",
   "/ev-charging-cost": "2026-10-15",
   "/ev-tire-cost": "2026-10-09",
   "/ev-vs-hybrid": "2026-10-13",
@@ -26,7 +26,7 @@
   "/privacy": "2026-10-09",
   "/public-charging": "2026-10-16",
   "/range": "2026-10-13",
-  "/road-trip": "2026-10-12",
+  "/road-trip": "2026-10-17",
   "/solar-battery-ev": "2026-10-09",
   "/solar-ev": "2026-10-09",
   "/solar-ev-sizing": "2026-10-09",
@@ -41,5 +41,5 @@
   "/winter-range": "2026-10-09",
   "/winter-range-forecast": "2026-10-09",
   "/": "2026-10-13",
-  "*": "2026-10-15"
+  "*": "2026-10-17"
 }
