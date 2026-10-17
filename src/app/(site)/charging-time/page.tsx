@@ -18,6 +18,7 @@ import { useUrlSync } from "@/lib/useUrlState";
 import { chargingTimeFAQ } from "@/data/faq-data";
 import { NATIONAL_AVERAGE_RATE } from "@/data/electricity-rates";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
+import { PUBLIC_DCFC_RATE } from "@/data/fuel-prices";
 import { CHARGE_CURVES, simulateChargeSession, interpolateKw } from "@/data/charge-curves";
 import type { ChargeCurve } from "@/data/charge-curves";
 
@@ -200,7 +201,10 @@ export default function ChargingTimePage() {
       ((effectiveTarget - startPercent) / 100) * vehicle.epaRangeMiles;
     const milesPerHour =
       (vehicle.epaRangeMiles * power) / vehicle.batteryCapacityKwh;
-    const cost = (kwhNeeded * NATIONAL_AVERAGE_RATE) / 100;
+    // DC fast is paid at a public station; Level 1 and 2 at the home rate.
+    const rateCents =
+      chargingLevel === "dcfast" ? PUBLIC_DCFC_RATE * 100 : NATIONAL_AVERAGE_RATE;
+    const cost = (kwhNeeded * rateCents) / 100;
 
     return {
       kwhNeeded,
@@ -208,6 +212,7 @@ export default function ChargingTimePage() {
       milesAdded,
       milesPerHour,
       cost,
+      rateCents,
       power,
     };
   }, [vehicle, startPercent, effectiveTarget, chargingLevel]);
@@ -315,6 +320,7 @@ export default function ChargingTimePage() {
         value={results.cost}
         prefix="$"
         decimals={2}
+        sub={`at ${Math.round(results.rateCents)}¢/kWh ${chargingLevel === "dcfast" ? "public fast" : "US home avg"}`}
         tier="volt"
       />
     </SavingsVerdict>
