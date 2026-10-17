@@ -61,6 +61,8 @@ function calcChargeTime(
 
 // Vehicles that have a measured curve on /charge-curve.
 const CURVE_FOR_VEHICLE: Record<string, string> = {
+  "tesla-model-3-premium-rwd-2026": "tesla-model-3-lr-2024",
+  "tesla-model-y-lr-rwd-2026": "tesla-model-y-lr-2024",
   "tesla-model-y-2024": "tesla-model-y-lr-2024",
   "chevy-equinox-ev-2024": "equinox-ev-lt-2024",
   "ford-mustang-mach-e-2024": "ford-mustang-mach-e-2024",

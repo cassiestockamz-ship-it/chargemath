@@ -21,7 +21,7 @@ const DEFAULT_GAS_PRICE = US_GAS_PRICE;
 
 /**
  * Live homepage hero. Runs a real SavingsVerdict on first paint with
- * sensible defaults (geo-IP state, 2024 Tesla Model 3, 35 daily miles,
+ * sensible defaults (geo-IP state, the newest Tesla Model 3, 35 daily miles,
  * national-average gas price and a 28 MPG reference car). Any input
  * change re-animates the result via CountUp and digit rolls.
  *

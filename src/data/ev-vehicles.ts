@@ -14,6 +14,29 @@ export interface EVVehicle {
 }
 
 export const EV_VEHICLES: EVVehicle[] = [
+  // MY2026 rows: EPA range and kWh/100mi from fueleconomy.gov (ids 50038, 49743).
+  // Tesla publishes no pack size; 75 kWh usable is the spec-database estimate
+  // (bev-database.com), consistent with EPA wall energy. Checked 2026-10-17.
+  {
+    id: "tesla-model-3-premium-rwd-2026",
+    make: "Tesla",
+    model: "Model 3 Premium RWD",
+    year: 2026,
+    batteryCapacityKwh: 75,
+    epaRangeMiles: 363,
+    kwhPer100Miles: 25,
+    chargerTypes: { level1KW: 1.4, level2KW: 11.5, dcFastKW: 250 },
+  },
+  {
+    id: "tesla-model-y-lr-rwd-2026",
+    make: "Tesla",
+    model: "Model Y Long Range RWD",
+    year: 2026,
+    batteryCapacityKwh: 75,
+    epaRangeMiles: 357,
+    kwhPer100Miles: 25,
+    chargerTypes: { level1KW: 1.4, level2KW: 11.5, dcFastKW: 250 },
+  },
   {
     id: "tesla-model-3-2024",
     make: "Tesla",
