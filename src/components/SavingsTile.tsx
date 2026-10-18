@@ -180,14 +180,14 @@ export default function SavingsTile({
             const max = Math.max(...compareBars.map((b) => b.value));
             const pct = max === 0 ? 0 : Math.round((bar.value / max) * 100);
             return (
-              <div key={i} className="flex items-center gap-2">
+              <div key={i} className="flex items-center gap-1 sm:gap-2">
                 <span
-                  className="cm-mono w-12 shrink-0"
+                  className="cm-mono w-9 shrink-0 sm:w-12"
                   style={{ color: "var(--color-ink-3)" }}
                 >
                   {bar.label}
                 </span>
-                <div className="relative h-2 flex-1 overflow-hidden rounded-full bg-[var(--color-surface-alt)]">
+                <div className="relative h-2 min-w-0 flex-1 overflow-hidden rounded-full bg-[var(--color-surface-alt)]">
                   <div
                     className="animate-bar-fill absolute inset-y-0 left-0 rounded-full"
                     style={{
@@ -196,7 +196,7 @@ export default function SavingsTile({
                     }}
                   />
                 </div>
-                <span className="cm-mono w-14 shrink-0 text-right tabular-nums">
+                <span className="cm-mono w-12 shrink-0 text-right tabular-nums sm:w-14">
                   {bar.value.toLocaleString(undefined, {
                     style: "currency",
                     currency: "USD",
