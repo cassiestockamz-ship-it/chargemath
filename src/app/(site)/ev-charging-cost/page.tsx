@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useCallback } from "react";
-import { US_GAS_PRICE } from "@/data/fuel-prices";
+import { US_GAS_PRICE, US_GAS_PRICE_LABEL, PUBLIC_DCFC_RATE, PUBLIC_DCFC_RATE_PERIOD } from "@/data/fuel-prices";
 import Link from "next/link";
 import CalculatorShell from "@/components/CalculatorShell";
 import SavingsVerdict from "@/components/SavingsVerdict";
@@ -27,14 +27,13 @@ import {
 } from "@/data/electricity-rates";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
 
-type ChargingLevel = "level1" | "level2" | "dcfast";
-
 export default function EVChargingCostPage() {
   const [vehicleId, setVehicleId] = useState(EV_VEHICLES[0].id);
   const [stateCode, setStateCode] = useState("CA");
   const [customRate, setCustomRate] = useState<number | null>(null);
   const [dailyMiles, setDailyMiles] = useState(35);
-  const [chargingLevel, setChargingLevel] = useState<ChargingLevel>("level2");
+  const [publicShare, setPublicShare] = useState(0);
+  const [gasMpg, setGasMpg] = useState(28);
 
   // Auto-detect state from timezone on first visit
   const [stateDetected, setStateDetected] = useState(false);
@@ -47,12 +46,15 @@ export default function EVChargingCostPage() {
 
   // Sync state to/from URL for shareable links
   useUrlSync(
-    { vehicle: vehicleId, state: stateCode, miles: dailyMiles, level: chargingLevel },
+    { vehicle: vehicleId, state: stateCode, miles: dailyMiles, public: publicShare, mpg: gasMpg },
     useCallback((p: Record<string, string>) => {
       if (p.vehicle && EV_VEHICLES.some((v) => v.id === p.vehicle)) setVehicleId(p.vehicle);
       if (p.state && p.state in ELECTRICITY_RATES) setStateCode(p.state);
       if (p.miles) setDailyMiles(Number(p.miles));
-      if (p.level && ["level1", "level2", "dcfast"].includes(p.level)) setChargingLevel(p.level as ChargingLevel);
+      if (p.public && Number(p.public) >= 0 && Number(p.public) <= 100) setPublicShare(Number(p.public));
+      // Old shared links used level=dcfast for all-public charging
+      if (p.level === "dcfast" && !p.public) setPublicShare(100);
+      if (p.mpg && Number(p.mpg) > 0) setGasMpg(Number(p.mpg));
     }, [])
   );
 
@@ -67,35 +69,37 @@ export default function EVChargingCostPage() {
     return (stateRate?.residential ?? NATIONAL_AVERAGE_RATE) / 100;
   }, [customRate, stateCode]);
 
-  const effectiveRate = useMemo(() => {
-    if (chargingLevel === "dcfast") return rate * 2.5;
-    return rate;
-  }, [rate, chargingLevel]);
+  // Blended rate: home share at the residential rate, the rest at public DC fast prices
+  const effectiveRate = useMemo(
+    () => rate * (1 - publicShare / 100) + PUBLIC_DCFC_RATE * (publicShare / 100),
+    [rate, publicShare]
+  );
 
   const results = useMemo(() => {
     const dailyKwh = (dailyMiles / 100) * vehicle.kwhPer100Miles;
     const monthlyKwh = dailyKwh * 30;
     const annualKwh = dailyKwh * 365;
 
-    const costPerFullCharge = vehicle.batteryCapacityKwh * effectiveRate;
+    const homeFullCharge = vehicle.batteryCapacityKwh * rate;
+    const fastCharge10to80 = vehicle.batteryCapacityKwh * 0.7 * PUBLIC_DCFC_RATE;
     const monthlyCost = monthlyKwh * effectiveRate;
     const annualCost = annualKwh * effectiveRate;
     const costPerMile = effectiveRate * (vehicle.kwhPer100Miles / 100);
 
     // Gas comparison
-    const gasMpg = 28;
     const gasPrice = US_GAS_PRICE;
     const gasMonthlyCost = ((dailyMiles * 30) / gasMpg) * gasPrice;
-    const gasAnnualCost = gasMonthlyCost * 12;
+    const gasAnnualCost = ((dailyMiles * 365) / gasMpg) * gasPrice;
     const gasCostPerMile = gasPrice / gasMpg;
     const monthlySavings = gasMonthlyCost - monthlyCost;
-    const annualSavings = monthlySavings * 12;
+    const annualSavings = gasAnnualCost - annualCost;
 
     return {
       dailyKwh,
       monthlyKwh,
       annualKwh,
-      costPerFullCharge,
+      homeFullCharge,
+      fastCharge10to80,
       monthlyCost,
       annualCost,
       costPerMile,
@@ -105,7 +109,7 @@ export default function EVChargingCostPage() {
       monthlySavings,
       annualSavings,
     };
-  }, [dailyMiles, vehicle, effectiveRate]);
+  }, [dailyMiles, vehicle, effectiveRate, rate, gasMpg]);
 
   const vehicleOptions = EV_VEHICLES.map((v) => ({
     value: v.id,
@@ -118,12 +122,6 @@ export default function EVChargingCostPage() {
       value: code,
       label: `${data.state} (${data.residential}\u00A2/kWh)`,
     }));
-
-  const chargingLevelOptions: { value: ChargingLevel; label: string }[] = [
-    { value: "level1", label: "Level 1 (120V)" },
-    { value: "level2", label: "Level 2 (240V)" },
-    { value: "dcfast", label: "DC Fast Charging" },
-  ];
 
   // Dial: share of gas cost eliminated (0-100)
   const gasEliminatedPct = results.gasMonthlyCost > 0
@@ -158,6 +156,21 @@ export default function EVChargingCostPage() {
           showValue
         />
       </div>
+      <div>
+        <SliderInput
+          label="Share charged at public fast chargers"
+          value={publicShare}
+          onChange={setPublicShare}
+          min={0}
+          max={100}
+          step={5}
+          unit="%"
+          showValue
+        />
+        <p className="mt-1.5 text-xs text-[var(--color-text-muted)]">
+          {`Home at your state rate, public DC fast at $${PUBLIC_DCFC_RATE.toFixed(2)}/kWh (US average excluding free sessions, Paren ${PUBLIC_DCFC_RATE_PERIOD}). 0% means you charge only at home.`}
+        </p>
+      </div>
       <details className="group rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-3">
         <summary className="cursor-pointer text-sm font-medium text-[var(--color-text)]">
           Advanced inputs
@@ -173,33 +186,16 @@ export default function EVChargingCostPage() {
             unit={"\u00A2/kWh"}
             helpText="Leave at 0 to use state average"
           />
-          <div>
-            <span className="mb-1.5 block text-sm font-medium text-[var(--color-text)]">
-              Charging level
-            </span>
-            <div className="flex gap-2">
-              {chargingLevelOptions.map((cl) => (
-                <button
-                  key={cl.value}
-                  type="button"
-                  onClick={() => setChargingLevel(cl.value)}
-                  aria-pressed={chargingLevel === cl.value}
-                  className={`flex-1 rounded-lg border px-3 py-2.5 text-xs font-medium transition-colors ${
-                    chargingLevel === cl.value
-                      ? "border-[var(--color-primary)] bg-[var(--color-primary)]/5 text-[var(--color-primary)]"
-                      : "border-[var(--color-border)] text-[var(--color-text-muted)] hover:bg-[var(--color-surface)]"
-                  }`}
-                >
-                  {cl.label}
-                </button>
-              ))}
-            </div>
-            {chargingLevel === "dcfast" && (
-              <p className="mt-1.5 text-xs text-[var(--color-text-muted)]">
-                DC Fast uses public station rates (about 2.5x home rates)
-              </p>
-            )}
-          </div>
+          <NumberInput
+            label="Gas car you are comparing (MPG)"
+            value={gasMpg}
+            onChange={(v) => setGasMpg(v > 0 ? v : 28)}
+            min={5}
+            max={80}
+            step={1}
+            unit="mpg"
+            helpText={`Gas at ${US_GAS_PRICE_LABEL}`}
+          />
         </div>
       </details>
     </div>
@@ -211,18 +207,11 @@ export default function EVChargingCostPage() {
       headline="YOU PAY"
       amount={results.monthlyCost}
       amountUnit="/month"
-      sub="Based on your state rate and driving habits, paid to your electric utility"
+      sub={`${publicShare === 0 ? "All home charging at your state rate" : `With ${publicShare}% of your charging at public fast chargers`}: $${Math.round(results.annualCost).toLocaleString()} a year`}
       dialPercent={gasEliminatedPct}
       dialLabel="VS GAS"
     >
       <>
-        <SavingsTile
-          label="ANNUAL COST"
-          value={results.annualCost}
-          prefix="$"
-          unit="/yr"
-          tier="brand"
-        />
         <SavingsTile
           label="COST PER MILE"
           value={results.costPerMile}
@@ -232,9 +221,19 @@ export default function EVChargingCostPage() {
           tier="good"
         />
         <SavingsTile
-          label="KWH PER YEAR"
-          value={Math.round(results.annualKwh)}
-          unit=" kWh"
+          label="FULL CHARGE AT HOME"
+          value={results.homeFullCharge}
+          prefix="$"
+          decimals={2}
+          unit=" 0-100%"
+          tier="mid"
+        />
+        <SavingsTile
+          label="FAST CHARGE 10-80%"
+          value={results.fastCharge10to80}
+          prefix="$"
+          decimals={2}
+          unit=" public"
           tier="mid"
         />
         <SavingsTile
@@ -315,7 +314,7 @@ export default function EVChargingCostPage() {
         <EducationalContent>
           <h2>How We Calculate EV Charging Costs</h2>
           <p>
-            This calculator multiplies your vehicle&apos;s EPA-rated efficiency (kWh per 100 miles) by your daily mileage to determine energy consumption, then applies your state&apos;s residential electricity rate from the U.S. Energy Information Administration (EIA). DC Fast charging uses a 2.5x rate multiplier to reflect typical public station pricing.
+            This calculator multiplies your vehicle&apos;s EPA-rated efficiency (kWh per 100 miles) by your daily mileage to determine energy consumption, then applies your state&apos;s residential electricity rate from the U.S. Energy Information Administration (EIA). Whatever share you charge at public DC fast chargers is priced at {`$${PUBLIC_DCFC_RATE.toFixed(2)}`} per kWh, the US average paid at public fast chargers excluding free sessions (Paren, {PUBLIC_DCFC_RATE_PERIOD}). EPA efficiency is measured from the wall plug, so charging losses are already inside the kWh figure; we do not add them twice.
           </p>
           <h3>Where the Data Comes From</h3>
           <p>
@@ -324,7 +323,7 @@ export default function EVChargingCostPage() {
           <h3>Tips for Accuracy</h3>
           <ul>
             <li>Check your actual electricity rate on your utility bill. It may differ from the state average, especially if you have a time-of-use plan.</li>
-            <li>DC Fast charging rates vary widely by network ($0.25 to $0.60 per kWh). Check your preferred network&apos;s pricing.</li>
+            <li>Public fast charging prices vary by network, location and membership plan. Check the price your network&apos;s app shows before you plug in, and set the public share slider to how often you use it.</li>
             <li>Cold weather can increase energy consumption by 30 to 40%, so winter costs may be noticeably higher.</li>
             <li>Most EV owners charge to 80% daily, not 100%. A full charge estimate assumes you occasionally need maximum range.</li>
           </ul>

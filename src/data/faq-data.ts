@@ -1,4 +1,4 @@
-import { NATIONAL_AVERAGE_RATE } from "./electricity-rates";
+import { NATIONAL_AVERAGE_RATE, ELECTRICITY_RATES } from "./electricity-rates";
 import { EV_VEHICLES } from "./ev-vehicles";
 
 // Worked example = the calculators' default car.
@@ -10,6 +10,8 @@ import {
   EXAMPLE_GAS_YEAR,
   EV_SAVE_VS_GAS_LO as SAVE_LO,
   EV_SAVE_VS_GAS_HI as SAVE_HI,
+  PUBLIC_DCFC_RATE,
+  PUBLIC_DCFC_RATE_PERIOD,
 } from "@/data/fuel-prices";
 
 const GAS_MONTH = Math.round(EXAMPLE_GAS_YEAR / 12 / 5) * 5;
@@ -23,7 +25,7 @@ export const chargingCostFAQ = [
   {
     question: "Is it cheaper to charge an EV at home or at a public station?",
     answer:
-      "Home charging is significantly cheaper. Residential electricity averages 13\u201327\u00A2/kWh depending on your state, while public DC fast chargers typically cost 30\u201360\u00A2/kWh. Charging at home can save you 50\u201370% compared to public fast charging.",
+      `Home is cheaper almost everywhere. Residential electricity averages ${NATIONAL_AVERAGE_RATE}\u00A2/kWh nationally (${Math.min(...Object.values(ELECTRICITY_RATES).map((r) => r.residential))} to ${Math.max(...Object.values(ELECTRICITY_RATES).map((r) => r.residential))}\u00A2 by state), while public DC fast charging averages $${PUBLIC_DCFC_RATE.toFixed(2)}/kWh (Paren, ${PUBLIC_DCFC_RATE_PERIOD}, excluding free sessions). At the national average, charging at home costs about ${Math.round((1 - NATIONAL_AVERAGE_RATE / 100 / PUBLIC_DCFC_RATE) * 100)}% less than fast charging. Use the public share slider above to see your own mix.`,
   },
   {
     question: "How much does it cost to charge a Tesla Model 3?",
