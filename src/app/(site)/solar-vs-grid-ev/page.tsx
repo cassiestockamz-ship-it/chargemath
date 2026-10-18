@@ -20,6 +20,18 @@ import {
   ELECTRICITY_RATES,
   NATIONAL_AVERAGE_RATE,
 } from "@/data/electricity-rates";
+
+// FAQ worked examples: 35 mi/day, 25-35 kWh/100 mi, 3% yearly rate rise over 25 years
+const FAQ_KWH_LO = (35 * 365 * 25) / 100;
+const FAQ_KWH_HI = (35 * 365 * 35) / 100;
+const FAQ_ESC_25 = (1.03 ** 25 - 1) / 0.03;
+const round = (x: number, to: number) => Math.round(x / to) * to;
+const FAQ_YEAR_LO = round((FAQ_KWH_LO * NATIONAL_AVERAGE_RATE) / 100, 10);
+const FAQ_YEAR_HI = round((FAQ_KWH_HI * NATIONAL_AVERAGE_RATE) / 100, 10);
+const FAQ_25_LO = round(((FAQ_KWH_LO * NATIONAL_AVERAGE_RATE) / 100) * FAQ_ESC_25, 1000);
+const FAQ_25_HI = round(((FAQ_KWH_HI * NATIONAL_AVERAGE_RATE) / 100) * FAQ_ESC_25, 1000);
+const FAQ_25_CA_LO = round(((FAQ_KWH_LO * ELECTRICITY_RATES.CA.residential) / 100) * FAQ_ESC_25, 1000);
+const FAQ_25_CA_HI = round(((FAQ_KWH_HI * ELECTRICITY_RATES.CA.residential) / 100) * FAQ_ESC_25, 1000);
 import { EV_VEHICLES } from "@/data/ev-vehicles";
 import {
   SOLAR_DATA,
@@ -36,7 +48,7 @@ const solarVsGridFAQ = [
   {
     question: "How much does it cost to charge an EV from the grid over 25 years?",
     answer:
-      "It depends on your state's electricity rate and how much you drive. A driver covering 35 miles per day in a mid-efficiency EV at the national average rate of about 16 cents per kWh pays roughly $800 to $1,000 per year in EV charging costs. With 3% annual rate escalation, that compounds to approximately $27,000 to $35,000 over 25 years. High-rate states like California or Connecticut can push that figure to $50,000 or more.",
+      `It depends on your state's electricity rate and how much you drive. A driver covering 35 miles per day in an EV using 25 to 35 kWh per 100 miles, at the national average rate of ${NATIONAL_AVERAGE_RATE} cents per kWh, pays roughly $${FAQ_YEAR_LO.toLocaleString()} to $${FAQ_YEAR_HI.toLocaleString()} per year in EV charging costs. With 3% annual rate escalation, that compounds to approximately $${FAQ_25_LO.toLocaleString()} to $${FAQ_25_HI.toLocaleString()} over 25 years. At California's ${ELECTRICITY_RATES.CA.residential} cents the same driving costs about $${FAQ_25_CA_LO.toLocaleString()} to $${FAQ_25_CA_HI.toLocaleString()} over 25 years.`,
   },
   {
     question: "What if my solar panels do not produce enough for my EV?",
@@ -51,7 +63,7 @@ const solarVsGridFAQ = [
   {
     question: "How does utility rate escalation affect EV charging costs?",
     answer:
-      "Dramatically, over long periods. If you pay 16 cents per kWh today and rates rise 3% per year, you will pay about 21 cents in year 10, 29 cents in year 20, and 34 cents in year 25. That means your annual EV charging bill roughly doubles over 25 years. Solar locks in a near-zero marginal cost for charging because the panels are already paid for.",
+      `Dramatically, over long periods. If you pay the national average of ${NATIONAL_AVERAGE_RATE} cents per kWh today and rates rise 3% per year, you will pay about ${Math.round(NATIONAL_AVERAGE_RATE * 1.03 ** 9)} cents in year 10, ${Math.round(NATIONAL_AVERAGE_RATE * 1.03 ** 19)} cents in year 20, and ${Math.round(NATIONAL_AVERAGE_RATE * 1.03 ** 24)} cents in year 25. That means your annual EV charging bill roughly doubles over 25 years. Solar locks in a near-zero marginal cost for charging because the panels are already paid for.`,
   },
 ];
 

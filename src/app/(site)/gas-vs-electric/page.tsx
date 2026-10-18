@@ -370,7 +370,7 @@ export default function GasVsElectricPage() {
         </p>
         <h3>Why EV Fuel Costs Are Lower</h3>
         <p>
-          Electric motors convert 85 to 90% of electrical energy into motion, while internal combustion engines convert only 20 to 35% of gasoline energy. This efficiency gap means EVs travel 3 to 4 miles per kWh equivalent, compared to gas cars at roughly 1 mile per kWh equivalent. Home electricity at 12 to 16 cents per kWh is also far cheaper per unit of energy than gasoline. If the car you are weighing is a hybrid rather than an EV, the <Link href="/hybrid-vs-gas">hybrid vs gas calculator</Link> runs the per-mile math with the hybrid price premium and the payback year.
+          Electric motors convert 85 to 90% of electrical energy into motion, while internal combustion engines convert only 20 to 35% of gasoline energy. This efficiency gap means EVs travel 3 to 4 miles per kWh equivalent, compared to gas cars at roughly 1 mile per kWh equivalent. Home electricity at the US average of {NATIONAL_AVERAGE_RATE} cents per kWh is also far cheaper per unit of energy than gasoline. If the car you are weighing is a hybrid rather than an EV, the <Link href="/hybrid-vs-gas">hybrid vs gas calculator</Link> runs the per-mile math with the hybrid price premium and the payback year.
         </p>
         <h3>What This Comparison Does Not Include</h3>
         <ul>
