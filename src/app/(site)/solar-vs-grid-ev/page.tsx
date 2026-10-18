@@ -434,8 +434,10 @@ export default function SolarVsGridEvPage() {
             driven by aging grid infrastructure requiring expensive upgrades,
             growing peak demand from electrification, fuel price volatility,
             and regulatory mandates. A 3% annual escalation rate means the
-            electricity you pay 16 cents per kWh for today will cost about 29
-            cents by year 20 and 34 cents by year 25. That compounding effect
+            electricity you pay the US average of {NATIONAL_AVERAGE_RATE} cents
+            per kWh for today will cost about{" "}
+            {Math.round(NATIONAL_AVERAGE_RATE * 1.03 ** 19)} cents by year 20 and{" "}
+            {Math.round(NATIONAL_AVERAGE_RATE * 1.03 ** 24)} cents by year 25. That compounding effect
             is why EV drivers who lock in solar upfront end up with a
             significant structural cost advantage over the long term.
           </p>

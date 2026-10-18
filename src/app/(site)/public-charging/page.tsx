@@ -297,7 +297,7 @@ export default function PublicChargingCostPage() {
             max={100}
             step={1}
             unit={"\u00A2/kWh"}
-            helpText="Typical range: 30-60 cents/kWh"
+            helpText={`US average ${Math.round(PUBLIC_DCFC_RATE * 100)} cents/kWh (Paren, ${PUBLIC_DCFC_RATE_PERIOD}); use your network\u2019s app price`}
           />
           <NumberInput
             label="Session fee"

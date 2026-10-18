@@ -55,7 +55,7 @@ const evVsHybridFAQ = [
   {
     question: "When does a hybrid make more sense than an EV?",
     answer:
-      "Hybrids can be a better choice if you frequently drive long distances without access to charging, live in an area with very expensive electricity (above 30 cents/kWh), or need to minimize upfront purchase cost. Hybrids also make sense as a transitional vehicle if charging infrastructure in your area is still limited.",
+      `Hybrids can be a better choice if you frequently drive long distances without access to charging, pay a lot for electricity, or need to minimize upfront purchase cost. With gas at $${US_GAS_PRICE.toFixed(2)}, a 50 MPG hybrid costs $${(US_GAS_PRICE / 50).toFixed(3)} per mile; the ${EV_VEHICLES[0].year} ${EV_VEHICLES[0].make} ${EV_VEHICLES[0].model} (${EV_VEHICLES[0].kwhPer100Miles} kWh/100 mi) costs more than that only above about ${Math.round((US_GAS_PRICE / 50 / (EV_VEHICLES[0].kwhPer100Miles / 100)) * 100)} cents/kWh, above every state's average home rate except ${Object.values(ELECTRICITY_RATES).filter((r) => r.residential > (US_GAS_PRICE / 50 / (EV_VEHICLES[0].kwhPer100Miles / 100)) * 100).map((r) => r.state).join(" and ") || "none"}. Hybrids also make sense as a transitional vehicle if charging infrastructure in your area is still limited.`,
   },
   {
     question: "What maintenance costs differ between EVs, hybrids, and gas cars?",
