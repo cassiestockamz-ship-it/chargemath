@@ -14,6 +14,11 @@ import {
   PUBLIC_DCFC_RATE_PERIOD,
 } from "@/data/fuel-prices";
 
+const RATE_ROWS = Object.values(ELECTRICITY_RATES).sort((a, b) => a.residential - b.residential);
+const RATE_LO = RATE_ROWS[0];
+const RATE_HI = RATE_ROWS[RATE_ROWS.length - 1];
+const HOME_VS_DCFC_PCT = Math.round((1 - NATIONAL_AVERAGE_RATE / 100 / PUBLIC_DCFC_RATE) * 100);
+
 const GAS_MONTH = Math.round(EXAMPLE_GAS_YEAR / 12 / 5) * 5;
 
 export const chargingCostFAQ = [
@@ -25,7 +30,7 @@ export const chargingCostFAQ = [
   {
     question: "Is it cheaper to charge an EV at home or at a public station?",
     answer:
-      `Home is cheaper almost everywhere. Residential electricity averages ${NATIONAL_AVERAGE_RATE}\u00A2/kWh nationally (${Math.min(...Object.values(ELECTRICITY_RATES).map((r) => r.residential))} to ${Math.max(...Object.values(ELECTRICITY_RATES).map((r) => r.residential))}\u00A2 by state), while public DC fast charging averages $${PUBLIC_DCFC_RATE.toFixed(2)}/kWh (Paren, ${PUBLIC_DCFC_RATE_PERIOD}, excluding free sessions). At the national average, charging at home costs about ${Math.round((1 - NATIONAL_AVERAGE_RATE / 100 / PUBLIC_DCFC_RATE) * 100)}% less than fast charging. Use the public share slider above to see your own mix.`,
+      `Home is cheaper almost everywhere. Residential electricity averages ${NATIONAL_AVERAGE_RATE}\u00A2/kWh nationally (${RATE_LO.residential} to ${RATE_HI.residential}\u00A2 by state), while public DC fast charging averages $${PUBLIC_DCFC_RATE.toFixed(2)}/kWh (Paren, ${PUBLIC_DCFC_RATE_PERIOD}, excluding free sessions). At the national average, charging at home costs about ${HOME_VS_DCFC_PCT}% less than fast charging. Use the public share slider above to see your own mix.`,
   },
   {
     question: "How much does it cost to charge a Tesla Model 3?",
@@ -35,7 +40,7 @@ export const chargingCostFAQ = [
   {
     question: "Does electricity cost vary by state for EV charging?",
     answer:
-      "Yes, significantly. Hawaii has the highest residential rates at about 38.6\u00A2/kWh, while states like Idaho and Louisiana are around 10\u201312\u00A2/kWh. A full charge that costs $6 in Idaho could cost over $23 in Hawaii. Use your state\u2019s actual rate for an accurate estimate.",
+      `Yes, by almost 4x. ${RATE_HI.state} has the highest residential rate at ${RATE_HI.residential}\u00A2/kWh and ${RATE_LO.state} the lowest at ${RATE_LO.residential}\u00A2/kWh (EIA). A full ${EX_EV.batteryCapacityKwh} kWh charge of the ${EX_EV.year} ${EX_EV.make} ${EX_EV.model} costs about $${((EX_EV.batteryCapacityKwh * RATE_LO.residential) / 100).toFixed(2)} in ${RATE_LO.state} and $${((EX_EV.batteryCapacityKwh * RATE_HI.residential) / 100).toFixed(2)} in ${RATE_HI.state}. Use your state\u2019s actual rate for an accurate estimate.`,
   },
   {
     question: "How much do EV owners save on fuel per year?",
@@ -68,7 +73,7 @@ export const gasVsElectricFAQ = [
   {
     question: "How do EV fuel costs compare when electricity is expensive?",
     answer:
-      `Even at California\u2019s high residential rate of about 27.6\u00A2/kWh, an EV costs roughly $0.07 per mile, still cheaper than a 28 MPG gas car at the US average of $${US_GAS_PRICE.toFixed(2)}/gallon ($${(US_GAS_PRICE / 28).toFixed(3)}/mile). The break-even point where EVs lose their fuel advantage is around 45\u201350\u00A2/kWh, which virtually no US residential rate reaches.`,
+      `Even at ${RATE_HI.state}\u2019s ${RATE_HI.residential}\u00A2/kWh, the highest US residential rate, the ${EX_EV.year} ${EX_EV.make} ${EX_EV.model} (${EX_EV.kwhPer100Miles} kWh/100 mi) costs about $${((RATE_HI.residential / 100) * (EX_EV.kwhPer100Miles / 100)).toFixed(3)} per mile, against $${(US_GAS_PRICE / 28).toFixed(3)} for a 28 MPG gas car at the US average of $${US_GAS_PRICE.toFixed(2)}/gallon. For that car, electricity would have to pass about ${Math.round((US_GAS_PRICE / 28 / (EX_EV.kwhPer100Miles / 100)) * 100)}\u00A2/kWh before gas became cheaper per mile. Public fast charging at $${PUBLIC_DCFC_RATE.toFixed(2)}/kWh is close to that line, which is why charging at home matters most.`,
   },
 ];
 
@@ -167,7 +172,7 @@ export const billImpactFAQ = [
   {
     question: "Is it cheaper to charge at home or at a public charger?",
     answer:
-      "Home charging is almost always cheaper. Residential electricity rates average 13\u201328\u00A2/kWh, while public DC fast chargers charge 30\u201360\u00A2/kWh. If you charge 100% at home, you\u2019ll save 50\u201370% on charging costs compared to relying on public chargers.",
+      `Home charging is almost always cheaper. Residential electricity averages ${NATIONAL_AVERAGE_RATE}\u00A2/kWh nationally (${RATE_LO.residential} to ${RATE_HI.residential}\u00A2 by state), while public DC fast charging averages $${PUBLIC_DCFC_RATE.toFixed(2)}/kWh (Paren, ${PUBLIC_DCFC_RATE_PERIOD}, excluding free sessions). At the national average, charging at home costs about ${HOME_VS_DCFC_PCT}% less than relying on fast chargers.`,
   },
   {
     question: "What is a time-of-use (TOU) rate plan?",
