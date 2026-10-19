@@ -312,7 +312,7 @@ export default function LeaseVsBuyPage() {
     <CalculatorShell
       eyebrow="Lease vs buy"
       title="Lease vs Buy EV Calculator"
-      quickAnswer="Buying usually wins if you drive 12,000+ miles a year or plan to keep the car 5+ years. Leasing wins on low-mileage 2 to 3 year cycles."
+      quickAnswer="Buying usually wins with high mileage and long ownership; leasing wins on short, low-mileage cycles. The result below shows which wins for your numbers, and by how much."
       inputs={inputs}
       hero={hero}
     >

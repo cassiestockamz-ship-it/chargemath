@@ -355,7 +355,7 @@ export default function SolarBatteryEvPage() {
       <CalculatorShell
         eyebrow="Battery sizing"
         title="Solar Battery Size for EV Charging"
-        quickAnswer="For a daily-driver EV plus normal overnight home loads, plan on 18 to 25 kWh of nominal battery capacity."
+        quickAnswer={`For ${results.dailyEvKwh.toFixed(1)} kWh of daily EV charging plus ${overnightHomeKwh} kWh of overnight home use, plan on about ${Math.round(results.nominalCapacity)} kWh of nominal battery capacity.`}
         inputs={inputs}
         hero={hero}
       >

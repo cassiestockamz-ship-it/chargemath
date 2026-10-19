@@ -324,7 +324,7 @@ export default function ChargerROIPage() {
       <CalculatorShell
         eyebrow="Home charger"
         title="Home Charger ROI"
-        quickAnswer="A Level 2 home charger typically pays for itself in 1 to 3 years versus public fast charging."
+        quickAnswer={isFinite(results.paybackMonths) ? `Against public fast charging at $${publicRate.toFixed(2)} per kWh, this home charger pays for itself in about ${paybackDisplay} months at these settings. Change the state, miles or price below.` : `At these settings home charging does not beat public fast charging at $${publicRate.toFixed(2)} per kWh, so the charger never pays for itself. Change the state, miles or price below.`}
         inputs={inputs}
         hero={hero}
       >

@@ -400,7 +400,7 @@ export default function SolarVsGridEvPage() {
       <CalculatorShell
         eyebrow="Solar vs grid"
         title="Solar vs Grid EV Charging"
-        quickAnswer="Solar locks in near-zero marginal charging cost. Grid rates keep escalating. The crossover is usually year 10 to 14."
+        quickAnswer="Solar locks in a near-zero cost per mile while grid rates keep rising. The result below shows which wins in your state and by how much each year."
         inputs={inputs}
         hero={hero}
       >

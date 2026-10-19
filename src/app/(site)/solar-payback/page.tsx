@@ -389,7 +389,7 @@ export default function SolarPaybackPage() {
       <CalculatorShell
         eyebrow="Solar payback"
         title="Solar Payback Calculator"
-        quickAnswer="With Section 25D repealed, most homeowner-owned solar systems now pay off in 10 to 16 years through pure energy savings."
+        quickAnswer={isFinite(results.paybackWithEv) ? `With Section 25D repealed, a ${systemSizeKw} kW system in ${stateName} pays off in about ${results.paybackWithEv.toFixed(1)} years on energy savings alone at these settings.` : `With Section 25D repealed, a ${systemSizeKw} kW system in ${stateName} does not pay off on energy savings alone at these settings.`}
         inputs={inputs}
         hero={hero}
       >

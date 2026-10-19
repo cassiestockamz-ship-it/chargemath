@@ -319,7 +319,7 @@ export default function SolarEvSizingPage() {
       <CalculatorShell
         eyebrow="Solar sizing"
         title="Solar Panel Sizing for EV Charging"
-        quickAnswer="For a typical commuter EV, plan on 2.5 to 3.5 kW of solar just for the car, plus more to offset your home."
+        quickAnswer={`At these settings, plan on about ${results.actualSystemKw} kW (${results.numberOfPanels} panels) in ${stateName}, covering ${coveragePct}% of your EV driving plus ${homeOffset}% of home usage.`}
         inputs={inputs}
         hero={hero}
       >

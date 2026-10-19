@@ -252,7 +252,7 @@ export default function PaybackPeriodPage() {
     <CalculatorShell
       eyebrow="Payback period"
       title="EV Payback Period Calculator"
-      quickAnswer="Most EV buyers break even in 3 to 7 years. Higher daily miles and state incentives shorten the timeline."
+      quickAnswer={isFinite(results.paybackYears) ? `At these settings the EV pays back its higher price in about ${results.paybackYears.toFixed(1)} years of fuel and maintenance savings. More daily miles and state incentives shorten it.` : `At these settings the EV's savings never pay back its higher price. More daily miles and state incentives shorten the timeline.`}
       inputs={inputs}
       hero={hero}
     >

@@ -355,7 +355,7 @@ export default function SolarEVPage() {
       <CalculatorShell
         eyebrow="Solar + EV"
         title="Solar Charging Your EV"
-        quickAnswer="A 4 to 6 kW solar array typically covers a daily driver EV in most of the country."
+        quickAnswer={`A ${solarSizeKw} kW array in ${stateName} makes enough for about ${Math.round(results.milesPoweredPerDay)} miles of driving a day, about $${annualSavingsRounded.toLocaleString()} a year saved versus grid charging.`}
         inputs={inputs}
         hero={hero}
       >
