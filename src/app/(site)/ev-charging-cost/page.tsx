@@ -276,7 +276,7 @@ export default function EVChargingCostPage() {
       <CalculatorShell
         eyebrow="EV charging"
         title="Cost to Charge an Electric Car Calculator"
-        quickAnswer="The typical EV costs $40 to $80 per month to charge at home. Your exact number depends on your car, state rate, and miles driven."
+        quickAnswer={`At ${dailyMiles} miles a day and ${(effectiveRate * 100).toFixed(1)} cents per kWh, charging this EV costs about $${results.monthlyCost.toFixed(0)} a month. Change the car, state rate or miles below and the number follows.`}
         inputs={inputs}
         hero={hero}
       >
