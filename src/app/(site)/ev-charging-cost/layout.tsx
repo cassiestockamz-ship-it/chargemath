@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Cost to Charge an Electric Car Calculator",
+  title: "EV Charging Cost Calculator: Cost to Charge an Electric Car",
   description:
-    "Calculate your monthly and annual EV charging costs. Select your vehicle and state to see personalized estimates using real EPA data and EIA electricity rates.",
+    "EV charging cost calculator: pick your EV, state and daily miles to see what charging costs a month, a year, per mile and per full charge, at home or at public fast chargers, using EPA efficiency and EIA state rates.",
   alternates: {
     canonical: "/ev-charging-cost",
   },
   openGraph: {
-    title: "Cost to Charge an Electric Car Calculator",
+    title: "EV Charging Cost Calculator: Cost to Charge an Electric Car",
     description:
-      "Calculate your monthly and annual EV charging costs with real EPA data for 22+ vehicles and electricity rates for all 50 states.",
+      "See what charging your EV costs a month, a year and per charge, with EPA efficiency data and every state's electricity rate.",
     type: "website",
   },
 };
