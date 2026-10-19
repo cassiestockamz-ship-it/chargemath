@@ -11,8 +11,8 @@ export const US_GAS_PRICE_SOURCE = "https://www.eia.gov/petroleum/gasdiesel/";
 // Gas side: 12,775 miles a year (35 a day) in a 28 MPG car.
 export const EXAMPLE_GAS_YEAR = (12775 / 28) * US_GAS_PRICE;
 // EV electricity for the same miles at the national average rate, 0.2 to 0.3 kWh a mile.
-const EV_PER_MILE_LO = (0.2 * NATIONAL_AVERAGE_RATE) / 100;
-const EV_PER_MILE_HI = (0.3 * NATIONAL_AVERAGE_RATE) / 100;
+export const EV_PER_MILE_LO = (0.2 * NATIONAL_AVERAGE_RATE) / 100;
+export const EV_PER_MILE_HI = (0.3 * NATIONAL_AVERAGE_RATE) / 100;
 const EV_YEAR_LO = 12775 * EV_PER_MILE_LO;
 const EV_YEAR_HI = 12775 * EV_PER_MILE_HI;
 export const EV_SAVE_VS_GAS_LO = Math.round((EXAMPLE_GAS_YEAR - EV_YEAR_HI) / 100) * 100;

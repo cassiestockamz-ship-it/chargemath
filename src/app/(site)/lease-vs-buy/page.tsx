@@ -30,7 +30,7 @@ const leaseVsBuyFAQ = [
   {
     question: "What happens if I go over the mileage limit on an EV lease?",
     answer:
-      "You will pay an excess mileage fee for every mile over your limit, typically $0.15 to $0.30 per mile. On a 36-month lease with a 12,000-mile annual limit, going 5,000 miles over would cost $1,250 to $1,500 at turn-in. If you expect to drive more, negotiate a higher mileage limit upfront since it costs less per mile than the overage penalty.",
+      "You will pay an excess mileage fee for every mile over your limit, typically $0.15 to $0.30 per mile. On a 36-month lease with a 12,000-mile annual limit, going 5,000 miles over would cost $750 to $1,500 at turn-in. If you expect to drive more, negotiate a higher mileage limit upfront since it costs less per mile than the overage penalty.",
   },
   {
     question: "How does EV battery depreciation affect lease vs buy decisions?",

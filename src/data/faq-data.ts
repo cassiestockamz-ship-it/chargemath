@@ -12,7 +12,13 @@ import {
   EV_SAVE_VS_GAS_HI as SAVE_HI,
   PUBLIC_DCFC_RATE,
   PUBLIC_DCFC_RATE_PERIOD,
+  EV_PER_MILE_LO,
+  EV_PER_MILE_HI,
 } from "@/data/fuel-prices";
+
+// EV adds 250 to 350 kWh a month at 35 miles a day; same range as the bill-impact FAQ.
+const EV_MONTH_LO = Math.round((250 * NATIONAL_AVERAGE_RATE) / 100);
+const EV_MONTH_HI = Math.round((350 * NATIONAL_AVERAGE_RATE) / 100);
 
 const RATE_ROWS = Object.values(ELECTRICITY_RATES).sort((a, b) => a.residential - b.residential);
 const RATE_LO = RATE_ROWS[0];
@@ -53,7 +59,7 @@ export const gasVsElectricFAQ = [
   {
     question: "Are electric cars really cheaper to fuel than gas cars?",
     answer:
-      `Yes, in virtually all cases. The average EV costs about $0.04 per mile for electricity, while the average gas car (23 to 35 MPG) costs $${(US_GAS_PRICE / 35).toFixed(2)}\u2013$${(US_GAS_PRICE / 23).toFixed(2)} per mile at the US average of $${US_GAS_PRICE.toFixed(2)}/gallon. Even in expensive electricity states like California, EVs cost less per mile than gas vehicles.`,
+      `Yes, in virtually all cases. At the ${NATIONAL_AVERAGE_RATE}\u00A2/kWh national average, an EV using 0.2 to 0.3 kWh a mile costs about ${(EV_PER_MILE_LO * 100).toFixed(1)} to ${(EV_PER_MILE_HI * 100).toFixed(1)} cents per mile for electricity, while the average gas car (23 to 35 MPG) costs $${(US_GAS_PRICE / 35).toFixed(2)}\u2013$${(US_GAS_PRICE / 23).toFixed(2)} per mile at the US average of $${US_GAS_PRICE.toFixed(2)}/gallon. Even in expensive electricity states like California, EVs cost less per mile than gas vehicles.`,
   },
   {
     question: "How much do you save per year driving an EV vs gas?",
@@ -170,7 +176,7 @@ export const billImpactFAQ = [
   {
     question: "How much will an EV increase my electricity bill?",
     answer:
-      `For the average driver doing 35 miles per day, an EV adds about 250\u2013350 kWh per month to your electricity usage. At the national average rate of ${NATIONAL_AVERAGE_RATE}\u00A2/kWh, that\u2019s roughly $${Math.round((250 * NATIONAL_AVERAGE_RATE) / 100)}\u2013$${Math.round((350 * NATIONAL_AVERAGE_RATE) / 100)}/month added to your bill. The exact amount depends on your vehicle\u2019s efficiency, your electricity rate, and how much you drive.`,
+      `For the average driver doing 35 miles per day, an EV adds about 250\u2013350 kWh per month to your electricity usage. At the national average rate of ${NATIONAL_AVERAGE_RATE}\u00A2/kWh, that\u2019s roughly $${EV_MONTH_LO}\u2013$${EV_MONTH_HI}/month added to your bill. The exact amount depends on your vehicle\u2019s efficiency, your electricity rate, and how much you drive.`,
   },
   {
     question: "Is it cheaper to charge at home or at a public charger?",
@@ -190,7 +196,7 @@ export const billImpactFAQ = [
   {
     question: "How does EV charging compare to gas in total monthly costs?",
     answer:
-      `At average rates, EV charging adds $40\u2013$55/month to your electric bill. Compare that to about $${GAS_MONTH}/month for gas at 12,775 miles per year and the US average of $${US_GAS_PRICE.toFixed(2)}/gallon in a 28 MPG car. Even accounting for the electricity increase, you\u2019re saving $${GAS_MONTH - 55}\u2013$${GAS_MONTH - 40}/month by driving electric.`,
+      `At the ${NATIONAL_AVERAGE_RATE}\u00A2/kWh national average, EV charging adds about $${EV_MONTH_LO}\u2013$${EV_MONTH_HI}/month to your electric bill. Compare that to about $${GAS_MONTH}/month for gas at 12,775 miles per year and the US average of $${US_GAS_PRICE.toFixed(2)}/gallon in a 28 MPG car. Even accounting for the electricity increase, you\u2019re saving $${GAS_MONTH - EV_MONTH_HI}\u2013$${GAS_MONTH - EV_MONTH_LO}/month by driving electric.`,
   },
 ];
 

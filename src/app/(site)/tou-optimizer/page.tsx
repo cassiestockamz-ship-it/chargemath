@@ -44,7 +44,7 @@ const touFAQ = [
   {
     question: "How much can I save by charging during off-peak hours?",
     answer:
-      "Savings vary by utility, but most EV owners save 40 to 60 percent on charging costs by switching from peak to off-peak hours. In states like California, the difference between peak and off-peak rates can be 20 to 30 cents per kWh, which adds up to $500 to $1,500 per year depending on how much you drive.",
+      "Savings depend on the gap between your utility's peak and off-peak rates and on how much you drive. Enter the rates from your plan in the calculator above to see the percent and dollars you save a year; the gap is widest on California-style plans with a super off-peak window.",
   },
   {
     question: "Do I need a special charger to use TOU rates?",
