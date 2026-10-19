@@ -147,7 +147,7 @@ export const rangeFAQ = [
   {
     question: "How much range do electric cars lose in cold weather?",
     answer:
-      "At 20\u00B0F, expect to lose about 25\u201335% of your EPA-rated range. Below 0\u00B0F, range loss can exceed 40%. Using seat heaters instead of cabin heat helps: seat heaters use about 75 watts versus 3,000\u20135,000 watts for full cabin heating. Pre-conditioning the cabin while plugged in also helps.",
+      "At 20\u00B0F many EVs lose a third or more of their EPA-rated range, and more below 0\u00B0F; the Winter Range calculator estimates it for your car and temperature. Using seat heaters instead of cabin heat helps: seat heaters use about 75 watts versus 3,000\u20135,000 watts for full cabin heating. Pre-conditioning the cabin while plugged in also helps.",
   },
   {
     question: "Does driving fast reduce EV range?",

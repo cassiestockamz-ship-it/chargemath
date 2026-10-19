@@ -112,7 +112,7 @@ export default function PublicChargingCostPage() {
 
   const results = useMemo(() => {
     const dailyKwh = (dailyMiles / 100) * vehicle.kwhPer100Miles;
-    const monthlyKwh = dailyKwh * 30;
+    const monthlyKwh = (dailyKwh * 365) / 12;
 
     const publicFraction = publicPercent / 100;
     const homeFraction = 1 - publicFraction;
@@ -129,12 +129,12 @@ export default function PublicChargingCostPage() {
     const mixPublicKwh = monthlyKwh * publicFraction;
     const mixMonthly = mixHomeKwh * homeRate + mixPublicKwh * blendedPublicRate + monthlySessionFees;
     const mixAnnual = mixMonthly * 12;
-    const mixCostPerMile = mixMonthly / (dailyMiles * 30);
+    const mixCostPerMile = mixMonthly / ((dailyMiles * 365) / 12);
 
     // Scenario 3: 100% public charging
     const publicOnlyMonthly = monthlyKwh * blendedPublicRate + monthlySessionFees;
     const publicOnlyAnnual = publicOnlyMonthly * 12;
-    const publicOnlyCostPerMile = publicOnlyMonthly / (dailyMiles * 30);
+    const publicOnlyCostPerMile = publicOnlyMonthly / ((dailyMiles * 365) / 12);
 
     // Extra cost of public vs home
     const extraMonthlyCost = mixMonthly - homeOnlyMonthly;
