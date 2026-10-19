@@ -287,7 +287,7 @@ export default function FleetElectrificationPage() {
     <CalculatorShell
       eyebrow="Fleet electrification"
       title="Fleet Electrification Calculator"
-      quickAnswer="Commercial fleets typically see a 2 to 4 year payback on EV price premium and 30 to 50 percent lower TCO over 7 years."
+      quickAnswer={`At these settings a fleet of ${fleetSize} EVs saves about $${Math.round(Math.max(0, results.annualTotalSavings)).toLocaleString()} a year on fuel and maintenance, a ${Math.round(results.fuelCutPercent)} percent cut in fuel spend. Enter your own fleet below.`}
       inputs={inputs}
       hero={hero}
     >

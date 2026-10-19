@@ -300,7 +300,7 @@ export default function BatteryDegradationPage() {
       <CalculatorShell
         eyebrow="Battery health"
         title="EV Battery Degradation Estimator"
-        quickAnswer="Most EV batteries lose 2 to 3 percent of capacity per year. After 10 years, expect 75 to 85 percent of original range."
+        quickAnswer={`At these settings this battery keeps about ${capacityRounded} percent of its original capacity${ageYears > 0 ? ` after ${ageYears} years` : ""}. Heat, frequent DC fast charging, and sitting at 100 percent wear it fastest.`}
         inputs={inputs}
         hero={hero}
       >

@@ -77,7 +77,7 @@ export default function EVChargingCostPage() {
 
   const results = useMemo(() => {
     const dailyKwh = (dailyMiles / 100) * vehicle.kwhPer100Miles;
-    const monthlyKwh = dailyKwh * 30;
+    const monthlyKwh = (dailyKwh * 365) / 12;
     const annualKwh = dailyKwh * 365;
 
     const homeFullCharge = vehicle.batteryCapacityKwh * rate;
@@ -88,7 +88,7 @@ export default function EVChargingCostPage() {
 
     // Gas comparison
     const gasPrice = US_GAS_PRICE;
-    const gasMonthlyCost = ((dailyMiles * 30) / gasMpg) * gasPrice;
+    const gasMonthlyCost = ((dailyMiles * 365) / 12 / gasMpg) * gasPrice;
     const gasAnnualCost = ((dailyMiles * 365) / gasMpg) * gasPrice;
     const gasCostPerMile = gasPrice / gasMpg;
     const monthlySavings = gasMonthlyCost - monthlyCost;
@@ -276,7 +276,7 @@ export default function EVChargingCostPage() {
       <CalculatorShell
         eyebrow="EV charging"
         title="Cost to Charge an Electric Car Calculator"
-        quickAnswer={`At ${dailyMiles} miles a day and ${(effectiveRate * 100).toFixed(1)} cents per kWh, charging this EV costs about $${results.monthlyCost.toFixed(0)} a month. Change the car, state rate or miles below and the number follows.`}
+        quickAnswer={`At ${dailyMiles} miles a day and ${(effectiveRate * 100).toFixed(2)} cents per kWh, charging this EV costs about $${results.monthlyCost.toFixed(0)} a month. Change the car, state rate or miles below and the number follows.`}
         inputs={inputs}
         hero={hero}
       >

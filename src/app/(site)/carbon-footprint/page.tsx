@@ -265,7 +265,7 @@ export default function CarbonFootprintPage() {
       <CalculatorShell
         eyebrow="Carbon footprint"
         title="Carbon Footprint Savings"
-        quickAnswer="EVs produce less CO2 than gas cars in all 50 states. In clean-grid states the reduction tops 90 percent."
+        quickAnswer={`On the ${stateName} grid this ${vehicle.make} ${vehicle.model} emits about ${Math.round(results.percentReduction)} percent less CO2 than a ${gasMpg} MPG gas car, about ${Math.round(Math.max(0, results.annualSavingsLbs)).toLocaleString()} lbs a year. Pick your state to see your grid.`}
         inputs={inputs}
         hero={hero}
       >

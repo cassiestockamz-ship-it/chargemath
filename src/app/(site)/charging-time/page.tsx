@@ -355,7 +355,7 @@ export default function ChargingTimePage() {
       <CalculatorShell
         eyebrow="Charging time"
         title="EV Charging Time Calculator"
-        quickAnswer="Level 1 adds 3 to 5 miles per hour. Level 2 adds 20 to 30. DC fast charging gets you from 10 to 80 percent in 20 to 40 minutes."
+        quickAnswer={`On a ${chargerLabel}, ${startPercent}% to ${effectiveTarget}% takes about ${showMinutes ? `${Math.round(results.chargeTimeHours * 60)} minutes` : `${results.chargeTimeHours.toFixed(1)} hours`} and adds about ${Math.round(results.milesAdded)} miles of range. Switch the charger to compare Level 1, Level 2, and DC fast.`}
         inputs={inputs}
         hero={hero}
       >

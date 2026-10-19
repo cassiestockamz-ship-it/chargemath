@@ -272,7 +272,7 @@ export default function WinterRangePage() {
     <CalculatorShell
       eyebrow="Cold weather range"
       title="Winter Range Calculator"
-      quickAnswer="Most EVs lose 20 to 40 percent of range in cold weather. The biggest factors are temperature, cabin heat, and highway speed."
+      quickAnswer={`At ${temperature}\u00B0F this EV keeps about ${Math.round(results.percentRetained)} percent of its EPA range (${Math.round(results.winterRange)} of ${Math.round(results.epaRange)} miles). The biggest factors are temperature, cabin heat, and highway speed.`}
       inputs={inputs}
       hero={hero}
     >

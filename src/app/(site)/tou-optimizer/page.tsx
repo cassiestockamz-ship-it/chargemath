@@ -240,7 +240,7 @@ export default function TOUOptimizerPage() {
     <CalculatorShell
       eyebrow="Time of use"
       title="TOU Optimizer"
-      quickAnswer="Shifting EV charging to super off-peak hours typically cuts your charging bill by 50 to 75 percent on most TOU plans."
+      quickAnswer={`Moving EV charging from peak (${peakRate}\u00A2/kWh) to super off-peak (${superOffPeakRate}\u00A2/kWh) cuts the charging bill about ${Math.round(results.pctSavingsSuperOff)} percent, or $${Math.round(Math.max(0, results.annualSavingsSuperOff)).toLocaleString()} a year at these settings.`}
       inputs={inputs}
       hero={hero}
     >

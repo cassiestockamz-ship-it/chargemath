@@ -266,7 +266,7 @@ export default function PublicChargingCostPage() {
     <CalculatorShell
       eyebrow="Public charging"
       title="Public Charging Cost Calculator"
-      quickAnswer="Public DC fast charging runs 2 to 3x home rates. A typical session costs $15 to $25, versus $5 to $10 at home for the same energy."
+      quickAnswer={`A DC fast session at ${dcFastRate}\u00A2/kWh costs about $${perSessionCost.toFixed(2)} here. Your charging mix runs about $${Math.round(results.mixMonthly)} a month, versus $${Math.round(results.homeOnlyMonthly)} charging only at home.`}
       inputs={inputs}
       hero={hero}
     >

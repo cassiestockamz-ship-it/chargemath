@@ -292,7 +292,7 @@ export default function UsedEvValuePage() {
     <CalculatorShell
       eyebrow="Used EV value"
       title="Used EV Value Estimator"
-      quickAnswer="Used EV prices hinge on battery health. A 3 year old EV at 90% battery typically holds 55 to 65% of its original MSRP."
+      quickAnswer={`Used EV prices hinge on battery health and mileage. This ${ageYears}-year-old ${vehicle.make} ${vehicle.model} with ${totalMileage.toLocaleString()} miles works out to about $${Math.round(results.estimatedValue).toLocaleString()}, ${Math.round(dialPercent)} percent of its original MSRP.`}
       inputs={inputs}
       hero={hero}
     >

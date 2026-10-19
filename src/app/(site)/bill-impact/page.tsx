@@ -66,7 +66,7 @@ export default function BillImpactPage() {
   const results = useMemo(() => {
     const dailyKwh = (dailyMiles / 100) * vehicle.kwhPer100Miles;
     const homeChargePercent = chargingHome / 100;
-    const monthlyEvKwh = dailyKwh * 30 * homeChargePercent;
+    const monthlyEvKwh = ((dailyKwh * 365) / 12) * homeChargePercent;
 
     let effectiveRate = rate;
     if (hasTOU === "yes") {

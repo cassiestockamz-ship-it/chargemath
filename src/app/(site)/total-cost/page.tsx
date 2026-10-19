@@ -325,7 +325,7 @@ export default function TotalCostPage() {
     <CalculatorShell
       eyebrow="Total cost of ownership"
       title="EV vs Gas Total Cost"
-      quickAnswer="An average EV saves $5,000 to $12,000 over 5 years vs a comparable gas car, once fuel, insurance, and maintenance are counted."
+      quickAnswer={`Over ${ownershipYears} years at these settings ${evWins ? "the EV saves" : "the gas car saves"} about $${Math.round(heroAmount).toLocaleString()} once purchase, fuel, insurance, and maintenance are counted.`}
       inputs={inputs}
       hero={hero}
     >

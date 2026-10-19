@@ -68,7 +68,8 @@ export const gasVsElectricFAQ = [
   {
     question: "Is the total cost of ownership lower for EVs?",
     answer:
-      "Generally yes. Besides lower fuel costs, EVs have fewer moving parts and lower maintenance costs: no oil changes, fewer brake replacements due to regenerative braking, and no transmission service. Over 5 years, total ownership savings can reach $6,000\u2013$10,000 compared to a gas car.",
+      `Generally yes. Fuel is the biggest gap: at the US average gas price ($${US_GAS_PRICE.toFixed(2)}) and average electricity, a typical driver saves about $${SAVE_LO.toLocaleString()} to $${SAVE_HI.toLocaleString()} a year on fuel. EVs also skip oil changes, most brake jobs, and transmission service. Whether that outweighs a higher purchase price depends on the car and your state; the Total Cost of Ownership calculator works it out for yours.`,
+
   },
   {
     question: "How do EV fuel costs compare when electricity is expensive?",
@@ -115,23 +116,25 @@ export const chargerRoiFAQ = [
   {
     question: "How much does it cost to install a home EV charger?",
     answer:
-      "The charger itself costs $300\u2013$600 for most models. Installation by an electrician typically adds $400\u2013$1,500 depending on whether you need a new 240V circuit, panel upgrades, or a longer conduit run. Total cost is usually $700\u2013$2,000.",
+      "The charger is usually the smaller part; current prices for popular models are on our Charger ROI page. Installation depends mostly on whether you need a new 240V circuit, a panel upgrade, or a long conduit run, so it varies more than the charger does. Get a quote from a licensed electrician and enter the total in the Charger ROI calculator to see your payback.",
+
   },
   {
     question: "How long until a home EV charger pays for itself?",
     answer:
-      "If you currently rely on public DC fast charging at $0.30\u2013$0.50/kWh, switching to home charging at $0.13\u2013$0.16/kWh saves $50\u2013$100+ per month. A typical $1,300 installation pays for itself in 12\u201324 months. Drivers with higher mileage break even faster.",
+      `Switching from public DC fast charging (US average $${PUBLIC_DCFC_RATE.toFixed(2)}/kWh, Paren ${PUBLIC_DCFC_RATE_PERIOD}) to home charging at the ${NATIONAL_AVERAGE_RATE} cents national average saves about $${Math.round(((35 * 365) / 12) * (EX_EV.kwhPer100Miles / 100) * (PUBLIC_DCFC_RATE - NATIONAL_AVERAGE_RATE / 100))} a month for a ${EX_EV.make} ${EX_EV.model} driven 35 miles a day. Divide your installed cost by your monthly saving for the payback in months; the Charger ROI calculator does it with your state rate. Drivers with higher mileage break even faster.`,
+
   },
   {
     question:
       "Do I need to upgrade my electrical panel for a Level 2 charger?",
     answer:
-      "Not always. A Level 2 charger needs a 240V, 40\u201350 amp circuit. If your panel has spare capacity (at least 40 amps available), you can add a circuit without an upgrade. Older homes with 100-amp panels may need an upgrade to 200 amps, which adds $1,000\u2013$3,000 to the cost.",
+      "Not always. A Level 2 charger needs a 240V, 40\u201350 amp circuit. If your panel has spare capacity (at least 40 amps available), you can add a circuit without an upgrade. Older homes with 100-amp panels may need an upgrade to 200 amps, which an electrician quotes separately; the Panel Load Check calculator estimates whether yours needs one.",
   },
   {
     question: "What is the best Level 2 EV home charger?",
     answer:
-      "Top-rated options include the ChargePoint Home Flex (adjustable 16\u201350A, WiFi-enabled, $400\u2013$550), the Emporia Smart Charger (energy monitoring integration, $450\u2013$550), and the Grizzl-E Classic (rugged, weather-resistant, $400\u2013$460). All work with every EV and offer reliable performance.",
+      "Top-rated options include the ChargePoint Home Flex (adjustable 16\u201350A, WiFi-enabled), the Emporia Smart Charger (energy monitoring integration), and the Grizzl-E Classic (rugged, weather-resistant). All work with every EV and offer reliable performance.",
   },
 ];
 
@@ -182,7 +185,7 @@ export const billImpactFAQ = [
   {
     question: "Will my electric panel handle an EV charger?",
     answer:
-      "A Level 2 EV charger typically needs a dedicated 240V, 40\u201350 amp circuit. If your home has a 200-amp panel with available capacity, you likely won\u2019t need an upgrade. Older homes with 100-amp panels may need a panel upgrade ($1,000\u2013$3,000). A qualified electrician can assess your panel in about 30 minutes.",
+      "A Level 2 EV charger typically needs a dedicated 240V, 40\u201350 amp circuit. If your home has a 200-amp panel with available capacity, you likely won\u2019t need an upgrade. Older homes with 100-amp panels may need a panel upgrade; our Panel Load Check estimates whether yours does. A qualified electrician can assess your panel in about 30 minutes.",
   },
   {
     question: "How does EV charging compare to gas in total monthly costs?",

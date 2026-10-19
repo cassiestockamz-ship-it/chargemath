@@ -236,7 +236,7 @@ export default function EvTireCostPage() {
     <CalculatorShell
       eyebrow="Tire tax"
       title="EV Tire Cost Calculator"
-      quickAnswer="EV tires wear about 20 percent faster than gas tires on an equivalent car. A typical crossover pays roughly $1,300 extra over five years."
+      quickAnswer={`EV tires wear faster than gas car tires because of weight and instant torque. At ${annualMiles.toLocaleString()} miles a year that costs about $${r.tireTax.toFixed(0)} more over ${years} years, a ${r.tireTaxPct.toFixed(0)} percent markup.`}
       inputs={inputs}
       hero={hero}
     >

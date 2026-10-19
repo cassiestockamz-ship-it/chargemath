@@ -222,7 +222,7 @@ export default function TowingRangePage() {
     <CalculatorShell
       eyebrow="Trailer range"
       title="EV Towing Range Calculator"
-      quickAnswer="Towing with an EV typically cuts range by 30 to 60 percent. Weight, highway speed, hills, and headwind all stack up fast."
+      quickAnswer={`With a ${towWeight.toLocaleString()} lb trailer at ${speed} mph this EV keeps about ${Math.round(percentRetained)} percent of its EPA range (${Math.round(results.towingRange)} of ${Math.round(results.epaRange)} miles). Weight, speed, hills, and headwind all stack up.`}
       inputs={inputs}
       hero={hero}
     >
