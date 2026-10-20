@@ -149,7 +149,7 @@ function formatHours(hours: number): string {
 // Static reference tables, rendered into the page HTML.
 const HOME_CHARGE_TABLE = EV_VEHICLES.map((v) => ({
   id: v.id,
-  name: `${v.make} ${v.model}`,
+  name: `${v.year} ${v.make} ${v.model}`,
   battery: v.batteryCapacityKwh,
   l1Hours: v.batteryCapacityKwh / v.chargerTypes.level1KW,
   l2KW: v.chargerTypes.level2KW,
