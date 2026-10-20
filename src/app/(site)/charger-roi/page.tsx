@@ -30,13 +30,15 @@ import { EV_VEHICLES } from "@/data/ev-vehicles";
 
 type PublicSplit = "100" | "75_25" | "50_50";
 
+const INSTALL_DEFAULT = 800;
+
 export default function ChargerROIPage() {
   const [vehicleId, setVehicleId] = useState(EV_VEHICLES[0].id);
   const [stateCode, setStateCode] = useState("CA");
   const [customRate, setCustomRate] = useState<number | null>(null);
   const [dailyMiles, setDailyMiles] = useState(35);
   const [chargerCost, setChargerCost] = useState(500);
-  const [installCost, setInstallCost] = useState(800);
+  const [installCost, setInstallCost] = useState(INSTALL_DEFAULT);
   const [publicRate, setPublicRate] = useState(PUBLIC_DCFC_RATE);
   const [publicSplit, setPublicSplit] = useState<PublicSplit>("100");
 
@@ -309,7 +311,7 @@ export default function ChargerROIPage() {
         totalTime="PT2M"
         steps={[
           { name: "Pick your EV", text: "Select your EV from the dropdown. The calculator uses the EPA efficiency rating to estimate how many kilowatt-hours you need per day." },
-          { name: "Enter the charger price", text: "Type the price of the Level 2 home charger you are considering. Common units run $300 to $600. Leave installation at the $800 default, or set it higher for a panel upgrade." },
+          { name: "Enter the charger price", text: `Type the price of the Level 2 home charger you are considering; the picks below show current prices. Leave installation at the $${INSTALL_DEFAULT} default, or set it higher for a panel upgrade.` },
           { name: "Set your daily miles", text: "Drag the slider to your typical daily driving miles. The calculator multiplies this by 365 for annual kilowatt-hours." },
           { name: "Open advanced inputs if needed", text: "Adjust the public charging rate, the state electricity rate, or the public or Level 1 split you would use without a home charger." },
           { name: "Read the verdict", text: "The hero shows the payback period in months. The dial shows the share of your upfront cost recovered by year 5. Anything above 80% means the charger is a clear win." },

@@ -263,7 +263,7 @@ export default function EVChargingCostPage() {
           { name: "Pick your EV", text: "Choose your vehicle. The calculator pulls its EPA efficiency in kilowatt-hours per 100 miles." },
           { name: "Pick your state", text: "Your state selector sets the residential electricity rate (EIA averages). Rates vary by roughly 3x across the country, so this matters." },
           { name: "Set daily driving miles", text: "Drag the slider to your typical daily mileage. The calculator multiplies by 365 to get annual kilowatt-hours." },
-          { name: "Optionally customize the rate", text: "If you know your actual cents per kilowatt-hour from a recent bill, open Advanced inputs and enter it. Time-of-use plans can be 30 to 50 percent below the state average." },
+          { name: "Optionally customize the rate", text: "If you know your actual cents per kilowatt-hour from a recent bill, open Advanced inputs and enter it. On a time-of-use plan, use your off-peak rate; the TOU Optimizer shows what that saves." },
           { name: "Read the monthly bill impact", text: "The hero shows the monthly cost. The Cost Per Mile tile shows how that compares to gas. The split meter below shows your fuel budget before and after going electric." },
         ]}
       />
