@@ -77,7 +77,7 @@ const CONVERTER_SCENARIOS = [
 
 const CONVERTER_TABLE = EV_VEHICLES.map((v) => ({
   id: v.id,
-  name: `${v.make} ${v.model}`,
+  name: `${v.year} ${v.make} ${v.model}`,
   epa: v.epaRangeMiles,
   real: CONVERTER_SCENARIOS.map((sc) => Math.round(v.epaRangeMiles * sc.factor)),
 }));
