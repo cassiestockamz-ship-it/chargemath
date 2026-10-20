@@ -87,6 +87,17 @@ export const EV_VEHICLES: EVVehicle[] = [
     kwhPer100Miles: 41,
     chargerTypes: { level1KW: 1.4, level2KW: 11.5, dcFastKW: 250 },
   },
+  // MY2026: EPA id 49953 (31.08 kWh/100mi, 319 mi). Same 85 kWh pack as 2024.
+  {
+    id: "chevy-equinox-ev-fwd-2026",
+    make: "Chevrolet",
+    model: "Equinox EV FWD",
+    year: 2026,
+    batteryCapacityKwh: 85,
+    epaRangeMiles: 319,
+    kwhPer100Miles: 31,
+    chargerTypes: { level1KW: 1.4, level2KW: 11.5, dcFastKW: 150 },
+  },
   {
     id: "chevy-equinox-ev-2024",
     make: "Chevrolet",
@@ -106,6 +117,17 @@ export const EV_VEHICLES: EVVehicle[] = [
     epaRangeMiles: 324,
     kwhPer100Miles: 35,
     chargerTypes: { level1KW: 1.4, level2KW: 11.5, dcFastKW: 190 },
+  },
+  // MY2026: EPA id 50205 (30.67 kWh/100mi, 320 mi). Extended Range pack, 91 kWh usable, same as 2024.
+  {
+    id: "ford-mustang-mach-e-rwd-ext-2026",
+    make: "Ford",
+    model: "Mustang Mach-E Extended Range RWD",
+    year: 2026,
+    batteryCapacityKwh: 91,
+    epaRangeMiles: 320,
+    kwhPer100Miles: 31,
+    chargerTypes: { level1KW: 1.4, level2KW: 10.5, dcFastKW: 150 },
   },
   {
     id: "ford-mustang-mach-e-2024",
@@ -127,6 +149,17 @@ export const EV_VEHICLES: EVVehicle[] = [
     kwhPer100Miles: 46,
     chargerTypes: { level1KW: 1.4, level2KW: 19.2, dcFastKW: 150 },
   },
+  // MY2026: EPA id 49960 (30.0 kWh/100mi, 318 mi). 84.0 kWh per hyundaiusa.com (checked 2026-10-20).
+  {
+    id: "hyundai-ioniq-5-lr-rwd-2026",
+    make: "Hyundai",
+    model: "IONIQ 5 Long Range RWD",
+    year: 2026,
+    batteryCapacityKwh: 84,
+    epaRangeMiles: 318,
+    kwhPer100Miles: 30,
+    chargerTypes: { level1KW: 1.4, level2KW: 10.9, dcFastKW: 233 },
+  },
   {
     id: "hyundai-ioniq-5-2024",
     make: "Hyundai",
@@ -145,6 +178,17 @@ export const EV_VEHICLES: EVVehicle[] = [
     batteryCapacityKwh: 77.4,
     epaRangeMiles: 361,
     kwhPer100Miles: 24,
+    chargerTypes: { level1KW: 1.4, level2KW: 10.9, dcFastKW: 233 },
+  },
+  // MY2026: EPA id 50214 (29.58 kWh/100mi, 319 mi). 84.0 kWh per kia.com/us/en/ev6/specs (checked 2026-10-20).
+  {
+    id: "kia-ev6-lr-rwd-2026",
+    make: "Kia",
+    model: "EV6 Long Range RWD",
+    year: 2026,
+    batteryCapacityKwh: 84,
+    epaRangeMiles: 319,
+    kwhPer100Miles: 30,
     chargerTypes: { level1KW: 1.4, level2KW: 10.9, dcFastKW: 233 },
   },
   {

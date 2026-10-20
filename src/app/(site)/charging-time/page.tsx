@@ -66,6 +66,8 @@ const CURVE_FOR_VEHICLE: Record<string, string> = {
   "tesla-model-y-lr-rwd-2026": "tesla-model-y-lr-2024",
   "tesla-model-y-2024": "tesla-model-y-lr-2024",
   "chevy-equinox-ev-2024": "equinox-ev-lt-2024",
+  "chevy-equinox-ev-fwd-2026": "equinox-ev-lt-2024",
+  "ford-mustang-mach-e-rwd-ext-2026": "ford-mustang-mach-e-2024",
   "ford-mustang-mach-e-2024": "ford-mustang-mach-e-2024",
   "hyundai-ioniq-5-2024": "hyundai-ioniq-5-2024",
   "kia-ev6-2024": "kia-ev6-2024",
@@ -83,6 +85,8 @@ const DC_FAST_CLAIMS: Record<string, { from: number; to: number; minutes: number
   "hyundai-ioniq-6-2024": { from: 10, to: 80, minutes: 18, source: "hyundaiusa.com Ioniq 6 specs, 350 kW" },
   "kia-ev9-2024": { from: 10, to: 80, minutes: 24, source: "kia.com/us/en/ev9, 350 kW" },
   "nissan-ariya-2024": { from: 10, to: 80, minutes: 37, source: "nissanusa.com Ariya FAQ, 35 to 40 min" },
+  "hyundai-ioniq-5-lr-rwd-2026": { from: 10, to: 80, minutes: 20, source: "hyundaiusa.com Ioniq 5, 84 kWh, 350 kW" },
+  "kia-ev6-lr-rwd-2026": { from: 10, to: 80, minutes: 20, source: "kia.com/us/en/ev6/specs, 84 kWh, 350 kW" },
   "ford-f150-lightning-2024": { from: 15, to: 80, minutes: 41, source: "Ford launch figure, InsideEVs tests 38 to 43 min" },
 };
 
