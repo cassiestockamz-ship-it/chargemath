@@ -301,9 +301,9 @@ export default function BillImpactPage() {
         <p>
           This calculator converts your daily mileage into energy consumption using your vehicle&apos;s EPA efficiency rating, then multiplies by your state&apos;s average residential electricity rate from the EIA. The home charging percentage lets you account for workplace or public charging that would not appear on your home bill. For the cost of a single full charge and the cost per mile, use the <Link href="/ev-charging-cost">cost to charge an electric car calculator</Link>.
         </p>
-        <h3>Time-of-use plans can cut EV costs 30-50%</h3>
+        <h3>Time-of-use plans can cut EV costs</h3>
         <p>
-          Many utilities offer time-of-use (TOU) rate plans with heavily discounted overnight rates, exactly when most people charge their EVs. In California, PG&amp;E&apos;s EV rate charges 25&cent;/kWh off-peak versus 55&cent;/kWh peak. Most smart EV chargers can schedule charging to start automatically when off-peak rates begin.
+          Many utilities offer time-of-use (TOU) rate plans with heavily discounted overnight rates, exactly when most people charge their EVs. The <Link href="/tou-optimizer">TOU Optimizer</Link> compares your own peak and off-peak rates. Most smart EV chargers can schedule charging to start automatically when off-peak rates begin.
         </p>
         <h3>Reducing your EV&apos;s impact on your bill</h3>
         <ul>

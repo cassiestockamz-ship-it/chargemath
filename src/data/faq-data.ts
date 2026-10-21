@@ -186,7 +186,7 @@ export const billImpactFAQ = [
   {
     question: "What is a time-of-use (TOU) rate plan?",
     answer:
-      "TOU plans charge different electricity rates based on the time of day. Off-peak hours (typically 9pm\u20137am) are 20\u201350% cheaper than peak hours. Since most EV charging happens overnight, switching to a TOU plan can significantly reduce your charging costs. Most smart EV chargers let you schedule charging during off-peak hours automatically.",
+      "TOU plans charge different electricity rates based on the time of day. Off-peak hours are usually overnight, and that is when most EV charging happens, so a TOU plan can cut what charging adds to your bill. How much depends on your utility's peak and off-peak rates; the TOU Optimizer calculator works it out from yours. Most smart EV chargers let you schedule charging during off-peak hours automatically.",
   },
   {
     question: "Will my electric panel handle an EV charger?",

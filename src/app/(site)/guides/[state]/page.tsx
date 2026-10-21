@@ -93,7 +93,7 @@ export default async function StateGuidePage({
     },
     {
       question: `How much will my electric bill go up if I charge an EV in ${guide.state}?`,
-      answer: `Charging a Tesla Model 3 at home in ${guide.state} adds approximately ${fmt.format(guide.monthlyCharging)} to your monthly electricity bill, assuming 35 miles of daily driving. A time-of-use rate plan can reduce this by 30 to 50 percent.`,
+      answer: `Charging a Tesla Model 3 at home in ${guide.state} adds approximately ${fmt.format(guide.monthlyCharging)} to your monthly electricity bill, assuming 35 miles of daily driving. A time-of-use rate plan can lower this if you charge overnight; the TOU Optimizer works out how much from your utility's rates.`,
     },
   ];
 
