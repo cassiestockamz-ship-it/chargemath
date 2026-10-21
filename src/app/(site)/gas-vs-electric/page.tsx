@@ -236,7 +236,7 @@ export default function GasVsElectricPage() {
     <CalculatorShell
       eyebrow="Cost comparison"
       title="Gas vs Electric Car Calculator"
-      quickAnswer={`EV fuel costs run ${EV_PCT_BELOW_GAS_LO}-${EV_PCT_BELOW_GAS_HI}% below gas. Typical savings: $${EV_SAVE_VS_GAS_LO.toLocaleString("en-US")} to $${EV_SAVE_VS_GAS_HI.toLocaleString("en-US")} per year at $${US_GAS_PRICE.toFixed(2)} gas.`}
+      quickAnswer={results.annualSavings > 0 ? `In ${stateName}, ${dailyMiles} miles a day costs about ${Math.round(dialPercent)}% less to fuel electric than in a ${gasMpg} MPG gas car: ${fmtWhole.format(results.annualSavings)} a year at $${gasPrice.toFixed(2)} gas. Change the state, car or miles below.` : `At these settings the EV does not cost less to fuel than a ${gasMpg} MPG gas car in ${stateName}. Change the state, car or miles below.`}
       inputs={inputs}
       hero={hero}
     >
