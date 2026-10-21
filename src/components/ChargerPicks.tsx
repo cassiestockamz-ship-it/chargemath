@@ -4,7 +4,7 @@ const TAG = "kawaiiguy0f-cm-20";
 // Prices from Keepa (Amazon US, new) on this date. Refresh with the ASINs below.
 const PRICES_CHECKED = "October 8, 2026";
 
-const CHARGERS = [
+export const CHARGERS = [
   {
     asin: "B082LMVSLY",
     name: "Grizzl-E Classic",
@@ -27,6 +27,9 @@ const CHARGERS = [
     fit: "Load management can let it share a full panel, which may avoid a $1,000 to $3,000 panel upgrade.",
   },
 ];
+
+export const CHARGER_PRICE_MIN = Math.min(...CHARGERS.map((c) => c.price));
+export const CHARGER_PRICE_MAX = Math.max(...CHARGERS.map((c) => c.price));
 
 export default function ChargerPicks({ context, intro }: { context: "roi" | "payback" | "time"; intro?: ReactNode }) {
   return (

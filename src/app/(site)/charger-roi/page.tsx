@@ -11,7 +11,7 @@ import SelectInput from "@/components/SelectInput";
 import NumberInput from "@/components/NumberInput";
 import SliderInput from "@/components/SliderInput";
 import RelatedCalculators from "@/components/RelatedCalculators";
-import ChargerPicks from "@/components/ChargerPicks";
+import ChargerPicks, { CHARGER_PRICE_MIN, CHARGER_PRICE_MAX } from "@/components/ChargerPicks";
 import CalculatorSchema from "@/components/CalculatorSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import HowToSchema from "@/components/HowToSchema";
@@ -361,6 +361,8 @@ export default function ChargerROIPage() {
           </Link>
         </div>
 
+        <ChargerPicks context="roi" />
+
         <EducationalContent>
           <h2>How the Charger ROI Calculation Works</h2>
           <p>
@@ -368,17 +370,16 @@ export default function ChargerROIPage() {
           </p>
           <h3>Installation Costs: What to Expect</h3>
           <p>
-            The charger unit itself typically costs $300 to $600. Installation costs vary more: a simple NEMA 14-50 outlet install runs $200 to $500 if your panel is nearby and has capacity. Panel upgrades add $1,000 to $3,000. Running new wire from a distant panel adds $500 to $1,500. Get three quotes from licensed electricians. Prices vary significantly by region.
+            The chargers in our picks above run about ${CHARGER_PRICE_MIN} to ${CHARGER_PRICE_MAX} at our last price check. Installation costs vary more: a simple NEMA 14-50 outlet install runs $200 to $500 if your panel is nearby and has capacity. Panel upgrades add $1,000 to $3,000. Running new wire from a distant panel adds $500 to $1,500. Get three quotes from licensed electricians. Prices vary significantly by region.
           </p>
           <h3>Factors That Improve Your ROI</h3>
           <ul>
-            <li>High daily mileage: the more you drive, the faster a home charger pays off. Commuters driving 50+ miles per day typically break even in under a year.</li>
-            <li>Time-of-use electricity plans: many utilities offer overnight rates 30 to 50% below standard rates, making home charging even cheaper.</li>
+            <li>High daily mileage: the more you drive, the faster a home charger pays off. Raise the daily miles above to see how much sooner.</li>
+            <li>Time-of-use electricity plans: an overnight off-peak rate makes home charging cheaper still. The <Link href="/tou-optimizer">TOU Optimizer</Link> shows what your plan saves.</li>
             <li>The federal 30C charger tax credit ended for chargers placed in service after June 30, 2026, so payback is now figured on full cost. Check your utility and state for charger rebates that can still shorten it.</li>
             <li>Home chargers can increase property value. A 2024 Zillow study found homes with EV chargers sold for 3.3% more on average.</li>
           </ul>
         </EducationalContent>
-        <ChargerPicks context="roi" />
         <FAQSection questions={chargerRoiFAQ} />
         <EmailCapture source="charger-roi" />
         <RelatedCalculators currentPath="/charger-roi" />
