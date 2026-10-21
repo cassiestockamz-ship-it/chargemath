@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { US_GAS_PRICE } from "@/data/fuel-prices";
 import Link from "next/link";
+import { heatedLossAt, winterLossPct } from "@/data/winter-loss";
 import CalculatorShell from "@/components/CalculatorShell";
 import SavingsVerdict from "@/components/SavingsVerdict";
 import SavingsTile from "@/components/SavingsTile";
@@ -53,7 +54,7 @@ const commuteFAQ = [
   {
     question: "Does cold weather affect EV commuting costs?",
     answer:
-      `Yes, cold weather can increase EV energy consumption by 20-40% due to cabin heating and reduced battery efficiency. A 50-mile round trip that costs about $${EX_EV_DAY.toFixed(2)} in summer at the US average rate might cost $${(EX_EV_DAY * 1.2).toFixed(2)} to $${(EX_EV_DAY * 1.4).toFixed(2)} in winter. However, preconditioning your car while plugged in can reduce this impact significantly.`,
+      `Yes. At 20\u00B0F with the heater on, our Winter Range model cuts range by about ${winterLossPct(20)}%, which means about ${Math.round((1 / (1 - heatedLossAt(20)) - 1) * 100)}% more energy per mile from cabin heating and reduced battery efficiency. A 50-mile round trip that costs about $${EX_EV_DAY.toFixed(2)} in mild weather at the US average rate would cost about $${(EX_EV_DAY / (1 - heatedLossAt(20))).toFixed(2)} at 20\u00B0F. However, preconditioning your car while plugged in can reduce this impact significantly.`,
   },
   {
     question: "Are tolls and parking included in commute cost calculations?",

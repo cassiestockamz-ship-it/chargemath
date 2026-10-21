@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback } from "react";
 import Link from "next/link";
+import { winterLossPct } from "@/data/winter-loss";
 import CalculatorShell from "@/components/CalculatorShell";
 import SavingsVerdict from "@/components/SavingsVerdict";
 import SavingsTile from "@/components/SavingsTile";
@@ -362,7 +363,7 @@ export default function RangePage() {
           </p>
           <h3>Why EPA Range Doesn&apos;t Match Reality</h3>
           <p>
-            The EPA tests vehicles on a dynamometer at 73°F with no climate control, no wind, and a standardized drive cycle averaging about 48 mph. Real driving includes highway speeds, temperature extremes, hills, and passenger weight, all of which reduce efficiency. Most drivers see 10 to 20 percent less range than the EPA rating under normal conditions, and up to 40 percent less in extreme cold.
+            The EPA tests vehicles on a dynamometer at 73°F with no climate control, no wind, and a standardized drive cycle averaging about 48 mph. Real driving includes highway speeds, temperature extremes, hills, and passenger weight, all of which reduce efficiency. Most drivers see 10 to 20 percent less range than the EPA rating under normal conditions, and in the cold, with the heater on, about {winterLossPct(20)} percent less at 20°F and {winterLossPct(0)} percent less at 0°F.
           </p>
           <h3>Maximizing Your Range</h3>
           <ul>

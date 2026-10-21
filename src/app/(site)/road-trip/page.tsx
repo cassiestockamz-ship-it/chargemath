@@ -410,7 +410,7 @@ export default function RoadTripPage() {
           <li>Use apps like A Better Route Planner (ABRP) or your vehicle&apos;s built-in navigation to find chargers along your route.</li>
           <li>Plan charging stops near restaurants or rest areas so you can eat or stretch while the car charges.</li>
           <li>Check charger availability and reviews before your trip. Not all chargers are reliable, and having a backup location in mind avoids stress.</li>
-          <li>In cold weather, add 20 to 30 percent to your energy estimate. Pre-conditioning the battery before fast charging improves charging speeds.</li>
+          <li>In cold weather, plan on more energy per mile; the <Link href="/winter-range">Winter Range calculator</Link> shows how much range you lose at your temperature. Pre-conditioning the battery before fast charging improves charging speeds.</li>
           <li>Keep your speed at 65 to 70 mph on highways to maximize range between stops. Driving at 80 mph can reduce range by 15 to 25 percent.</li>
         </ul>
       </EducationalContent>

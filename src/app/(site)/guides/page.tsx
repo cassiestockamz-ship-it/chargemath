@@ -210,8 +210,9 @@ export default function GuidesHubPage() {
         </h3>
         <p>
           Regardless of your state, switching to a time-of-use (TOU) electricity
-          plan can reduce charging costs by 30-50%. Most utilities offer overnight
-          rates significantly below the standard residential rate. A smart Level 2
+          plan can reduce charging costs. Most utilities offer overnight
+          rates below the standard residential rate; the{" "}
+          <Link href="/tou-optimizer">TOU Optimizer</Link> works out what yours saves. A smart Level 2
           charger can automatically schedule charging during these off-peak windows.
         </p>
         <div className="mt-6 flex flex-wrap gap-3 text-sm">

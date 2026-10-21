@@ -310,7 +310,7 @@ export default function WinterRangePage() {
       <EducationalContent>
         <h2>How Cold Weather Affects EV Range</h2>
         <p>
-          Cold temperatures reduce EV range through several mechanisms. Lithium-ion batteries have higher internal resistance in the cold, which reduces the energy they can deliver. Cabin heating draws 3 to 5 kW continuously, and cold tires have higher rolling resistance. Together, these factors can cut your range by 30 to 50 percent in freezing conditions.
+          Cold temperatures reduce EV range through several mechanisms. Lithium-ion batteries have higher internal resistance in the cold, which reduces the energy they can deliver. Cabin heating draws 3 to 5 kW continuously, and cold tires have higher rolling resistance. Together, with the heater on, these factors cut range by about {winterLossPct(32)} percent at freezing and {winterLossPct(20)} percent at 20°F in our model.
         </p>
         <h3>Preconditioning: The Single Best Winter Habit</h3>
         <p>

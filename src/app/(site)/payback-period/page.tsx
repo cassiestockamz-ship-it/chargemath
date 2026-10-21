@@ -407,9 +407,9 @@ export default function PaybackPeriodPage() {
             credits (when available) to cut the effective price premium.
           </li>
           <li>
-            Charge at home on a time-of-use plan. Many utilities offer overnight
-            rates 30 to 50% below standard rates, further reducing your
-            electricity cost.
+            Charge at home on a time-of-use plan. Many utilities offer cheaper overnight
+            rates, further reducing your electricity cost; the{" "}
+            <Link href="/tou-optimizer">TOU Optimizer</Link> shows by how much.
           </li>
           <li>
             Compare similar vehicles. Matching the EV to a truly comparable gas

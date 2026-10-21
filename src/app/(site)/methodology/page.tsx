@@ -309,8 +309,8 @@ export default function MethodologyPage() {
             </li>
             <li>
               <strong>Time-of-use electricity plans.</strong> Many utilities
-              offer overnight rates 30 to 50 percent below the flat-rate
-              average. We use the flat residential rate unless you override it
+              offer cheaper overnight rates than the flat-rate average (the{" "}
+              <Link href="/tou-optimizer">TOU Optimizer</Link> models them). We use the flat residential rate unless you override it
               with a custom cents-per-kWh input.
             </li>
             <li>
