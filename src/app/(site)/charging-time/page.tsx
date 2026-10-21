@@ -13,6 +13,7 @@ import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import HowToSchema from "@/components/HowToSchema";
 import FAQSection from "@/components/FAQSection";
 import EducationalContent from "@/components/EducationalContent";
+import ChargerPicks from "@/components/ChargerPicks";
 import EmailCapture from "@/components/EmailCapture";
 import { useUrlSync } from "@/lib/useUrlState";
 import { chargingTimeFAQ } from "@/data/faq-data";
@@ -221,6 +222,14 @@ export default function ChargingTimePage() {
     };
   }, [vehicle, startPercent, effectiveTarget, chargingLevel]);
 
+  // Same session on a wall outlet vs a 40 A (9.6 kW) home Level 2 charger,
+  // capped at the car's onboard AC limit. Feeds the charger picks intro.
+  const homeCompare = useMemo(() => {
+    const l1 = calcChargeTime(vehicle.batteryCapacityKwh, startPercent, effectiveTarget, vehicle.chargerTypes.level1KW, "level1");
+    const l2 = calcChargeTime(vehicle.batteryCapacityKwh, startPercent, effectiveTarget, Math.min(vehicle.chargerTypes.level2KW, 9.6), "level2");
+    return { l1, l2 };
+  }, [vehicle, startPercent, effectiveTarget]);
+
   const vehicleOptions = EV_VEHICLES.map((v) => ({
     value: v.id,
     label: `${v.year} ${v.make} ${v.model}`,
@@ -384,6 +393,11 @@ export default function ChargingTimePage() {
             Is a home charger worth it?
           </Link>
         </div>
+
+        <ChargerPicks
+          context="time"
+          intro={`On a wall outlet, ${startPercent}% to ${effectiveTarget}% in the ${vehicle.year} ${vehicle.make} ${vehicle.model} takes about ${homeCompare.l1 < 10 ? homeCompare.l1.toFixed(1) : Math.round(homeCompare.l1)} hours. A 40 amp Level 2 home charger does the same charge in about ${homeCompare.l2.toFixed(1)} hours${homeCompare.l2 <= 8 ? ", well inside one night" : ""}. These three cover the common choices, based on published specs and owner reviews.`}
+        />
 
         <section className="mb-10">
           <h2 className="mb-3 text-xl font-bold text-[var(--color-text)]">EV Charging Time by Vehicle: Level 1 and Level 2</h2>

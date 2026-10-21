@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 const TAG = "kawaiiguy0f-cm-20";
 // Prices from Keepa (Amazon US, new) on this date. Refresh with the ASINs below.
 const PRICES_CHECKED = "October 8, 2026";
@@ -26,14 +28,14 @@ const CHARGERS = [
   },
 ];
 
-export default function ChargerPicks({ context }: { context: "roi" | "payback" }) {
+export default function ChargerPicks({ context, intro }: { context: "roi" | "payback" | "time"; intro?: ReactNode }) {
   return (
     <section className="my-8 rounded-xl border border-slate-200 bg-white p-4 sm:p-6">
       <h2 className="text-xl font-bold text-slate-900">Home Level 2 chargers at three price points</h2>
       <p className="mt-2 text-sm text-slate-600">
-        {context === "roi"
+        {intro ?? (context === "roi"
           ? "The charger price is the first number in your payback. These three cover the common choices, based on published specs and owner reviews."
-          : "Charging at home is what makes an EV's fuel savings real. These three Level 2 chargers cover the common choices, based on published specs and owner reviews."}
+          : "Charging at home is what makes an EV's fuel savings real. These three Level 2 chargers cover the common choices, based on published specs and owner reviews.")}
       </p>
       <ul className="mt-4 grid gap-4 md:grid-cols-3">
         {CHARGERS.map((c) => (
