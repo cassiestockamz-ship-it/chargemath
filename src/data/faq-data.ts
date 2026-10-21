@@ -1,5 +1,6 @@
 import { NATIONAL_AVERAGE_RATE, ELECTRICITY_RATES } from "./electricity-rates";
 import { EV_VEHICLES } from "./ev-vehicles";
+import { winterLossPct } from "./winter-loss";
 
 // Worked example = the calculators' default car.
 const EX_EV = EV_VEHICLES[0];
@@ -148,7 +149,7 @@ export const rangeFAQ = [
   {
     question: "What affects EV range the most?",
     answer:
-      "Temperature and speed have the biggest impact. Cold weather (below 20\u00B0F) can reduce range by 30\u201340% due to battery chemistry and cabin heating. Highway driving at 75+ mph can reduce range by 15\u201325% compared to city driving. Towing has the most dramatic effect, cutting range by roughly 40\u201350%.",
+      `Temperature and speed have the biggest impact. With the heater on, cold weather cuts range by about ${winterLossPct(20)}% at 20\u00B0F and ${winterLossPct(0)}% at 0\u00B0F, from battery chemistry and cabin heating. Highway driving at 75+ mph can reduce range by 15\u201325% compared to city driving. Towing has the most dramatic effect, cutting range by roughly 40\u201350%.`,
   },
   {
     question: "How much range do electric cars lose in cold weather?",

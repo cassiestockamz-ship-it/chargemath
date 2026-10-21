@@ -15,6 +15,7 @@ import EducationalContent from "@/components/EducationalContent";
 import EmailCapture from "@/components/EmailCapture";
 import { useUrlSync } from "@/lib/useUrlState";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
+import { winterLossPct } from "@/data/winter-loss";
 
 type Climate = "mild" | "hot" | "cold";
 type ChargingHabit = "level2" | "mixed" | "dcfc";
@@ -90,7 +91,7 @@ const degradationFAQ = [
   {
     question: "Does cold weather permanently damage EV batteries?",
     answer:
-      "Cold weather temporarily reduces range (sometimes by 30 to 40 percent) but does not cause significant permanent damage on its own. However, repeatedly charging in very cold temperatures without battery preconditioning can contribute to slightly faster long-term degradation. Most modern EVs have thermal management systems to mitigate this.",
+      `Cold weather temporarily reduces range (about ${winterLossPct(20)} percent at 20\u00B0F with the heater on) but does not cause significant permanent damage on its own. However, repeatedly charging in very cold temperatures without battery preconditioning can contribute to slightly faster long-term degradation. Most modern EVs have thermal management systems to mitigate this.`,
   },
 ];
 

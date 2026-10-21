@@ -324,7 +324,7 @@ export default function EVChargingCostPage() {
           <ul>
             <li>Check your actual electricity rate on your utility bill. It may differ from the state average, especially if you have a time-of-use plan.</li>
             <li>Public fast charging prices vary by network, location and membership plan. Check the price your network&apos;s app shows before you plug in, and set the public share slider to how often you use it.</li>
-            <li>Cold weather can increase energy consumption by 30 to 40%, so winter costs may be noticeably higher.</li>
+            <li>Cold weather raises energy use per mile, so winter costs run higher; the <Link href="/winter-range">Winter Range calculator</Link> shows how much range your car loses at your temperature.</li>
             <li>Most EV owners charge to 80% daily, not 100%. A full charge estimate assumes you occasionally need maximum range.</li>
           </ul>
         </EducationalContent>

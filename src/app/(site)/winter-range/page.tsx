@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback } from "react";
 import Link from "next/link";
+import { heatedLossAt, winterLossPct } from "@/data/winter-loss";
 import CalculatorShell from "@/components/CalculatorShell";
 import SavingsVerdict from "@/components/SavingsVerdict";
 import SavingsTile from "@/components/SavingsTile";
@@ -34,36 +35,7 @@ function getWinterLossFraction(
   preconditioning: boolean,
   drivingMode: DrivingMode
 ): number {
-  // Piecewise linear: temp breakpoints and corresponding loss with heating
-  const points: [number, number][] = [
-    [-20, 0.55],
-    [0, 0.50],
-    [20, 0.40],
-    [40, 0.15],
-    [70, 0.0],
-    [100, 0.0],
-  ];
-
-  let heatedLoss: number;
-
-  if (tempF <= points[0][0]) {
-    heatedLoss = points[0][1];
-  } else if (tempF >= points[points.length - 1][0]) {
-    heatedLoss = points[points.length - 1][1];
-  } else {
-    // Find the two surrounding points and interpolate
-    let lower = points[0];
-    let upper = points[1];
-    for (let i = 0; i < points.length - 1; i++) {
-      if (tempF >= points[i][0] && tempF <= points[i + 1][0]) {
-        lower = points[i];
-        upper = points[i + 1];
-        break;
-      }
-    }
-    const ratio = (tempF - lower[0]) / (upper[0] - lower[0]);
-    heatedLoss = lower[1] + ratio * (upper[1] - lower[1]);
-  }
+  const heatedLoss = heatedLossAt(tempF);
 
   // Without cabin heating, the loss is reduced by about 40% (no HVAC draw)
   let loss = cabinHeat ? heatedLoss : heatedLoss * 0.6;
@@ -104,7 +76,7 @@ const winterFAQs = [
   {
     question: "How much range do EVs lose in cold weather?",
     answer:
-      "Most EVs lose 20 to 40 percent of their EPA-rated range in cold weather. At 20 degrees Fahrenheit with the cabin heater running, expect about 40 percent less range than the EPA number. At 0 degrees Fahrenheit, that can climb to 50 percent. The exact amount depends on your vehicle, driving speed, and whether you use preconditioning.",
+      `At 40 degrees Fahrenheit with the cabin heater running, expect about ${winterLossPct(40)} percent less range than the EPA number. At 20 degrees it is about ${winterLossPct(20)} percent, and at 0 degrees Fahrenheit it can climb to ${winterLossPct(0)} percent. The exact amount depends on your vehicle, driving speed, and whether you use preconditioning.`,
   },
   {
     question: "Does turning off cabin heat really help EV range in winter?",

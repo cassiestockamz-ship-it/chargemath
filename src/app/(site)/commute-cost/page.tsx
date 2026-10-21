@@ -444,7 +444,7 @@ export default function CommuteCostPage() {
         <h3>Factors that affect your real commute cost</h3>
         <ul>
           <li>Highway vs city driving: EVs are more efficient at lower speeds, while gas cars often get better highway MPG. Stop-and-go commutes favor EVs even more due to regenerative braking.</li>
-          <li>Temperature: Cold weather increases EV energy use by 20 to 40%. Pre-conditioning while plugged in helps offset this.</li>
+          <li>Temperature: Cold weather raises EV energy use per mile; the <Link href="/winter-range">Winter Range calculator</Link> shows how much at your temperature. Pre-conditioning while plugged in helps offset this.</li>
           <li>Time-of-use rates: Many utilities charge less at night. Charging off-peak lowers your commute electricity cost; the <Link href="/tou-optimizer">TOU Optimizer</Link> shows by how much on your plan.</li>
           <li>Workplace charging: Free or subsidized workplace charging can eliminate commute fuel costs entirely.</li>
         </ul>
