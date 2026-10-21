@@ -64,6 +64,8 @@ const evVsHybridFAQ = [
   },
 ];
 
+const usd = (n: number) => `$${Math.round(Math.abs(n)).toLocaleString("en-US")}`;
+
 export default function EvVsHybridPage() {
   const [vehicleId, setVehicleId] = useState(EV_VEHICLES[0].id);
   const [stateCode, setStateCode] = useState("CA");
@@ -297,7 +299,7 @@ export default function EvVsHybridPage() {
     <CalculatorShell
       eyebrow="Cost comparison"
       title="EV vs Hybrid vs Gas"
-      quickAnswer={`An EV typically beats a 50 MPG hybrid by $${EV_SAVE_VS_HYBRID_LO} to $${EV_SAVE_VS_HYBRID_HI} per year on fuel, and beats a gas car by $${EV_SAVE_VS_GAS_LO.toLocaleString("en-US")} to $${EV_SAVE_VS_GAS_HI.toLocaleString("en-US")} per year, at $${US_GAS_PRICE.toFixed(2)} gas.`}
+      quickAnswer={`In ${ELECTRICITY_RATES[stateCode]?.state ?? stateCode} at ${dailyMiles} miles a day and $${gasPrice.toFixed(2)} gas, the EV costs ${results.evVsHybridSavings >= 0 ? `${usd(results.evVsHybridSavings)} a year less` : `${usd(results.evVsHybridSavings)} a year more`} to fuel than a ${hybridMpg} MPG hybrid and ${results.evVsGasSavings >= 0 ? `${usd(results.evVsGasSavings)} less` : `${usd(results.evVsGasSavings)} more`} than a ${gasMpg} MPG gas car. Change the state, car or miles below.`}
       inputs={inputs}
       hero={hero}
     >
