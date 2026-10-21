@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Gas vs Electric Cost Comparison Calculator",
+  title: "Gas vs Electric Car Calculator: EV vs Gas Cost per Mile",
   description:
     "Compare the true cost of driving electric vs gas. See fuel savings, cost per mile, and CO2 reduction with a side-by-side comparison using real EPA vehicle data.",
   alternates: {
     canonical: "/gas-vs-electric",
   },
   openGraph: {
-    title: "Gas vs Electric Cost Comparison",
+    title: "Gas vs Electric Car Calculator: EV vs Gas Cost per Mile",
     description:
       "Side-by-side cost comparison of electric vs gas vehicles. Calculate fuel savings, cost per mile, and environmental impact.",
     type: "website",

@@ -235,7 +235,7 @@ export default function GasVsElectricPage() {
   return (
     <CalculatorShell
       eyebrow="Cost comparison"
-      title="Gas vs Electric"
+      title="Gas vs Electric Car Calculator"
       quickAnswer={`EV fuel costs run ${EV_PCT_BELOW_GAS_LO}-${EV_PCT_BELOW_GAS_HI}% below gas. Typical savings: $${EV_SAVE_VS_GAS_LO.toLocaleString("en-US")} to $${EV_SAVE_VS_GAS_HI.toLocaleString("en-US")} per year at $${US_GAS_PRICE.toFixed(2)} gas.`}
       inputs={inputs}
       hero={hero}
