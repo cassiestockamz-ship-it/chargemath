@@ -14,6 +14,7 @@ import RelatedCalculators from "@/components/RelatedCalculators";
 import Link from "next/link";
 import {
   CHARGE_CURVES,
+  interpolateKw,
   simulateChargeSession,
   type ChargeCurve,
 } from "@/data/charge-curves";
@@ -108,6 +109,16 @@ export default function ChargeCurvePage() {
     .map((d, i) => `${i === 0 ? "M" : "L"}${x(d.soc)},${y(d.deliveredKw)}`)
     .join(" ");
 
+  // Quick answer reads the visitor's car and charger, never typed figures.
+  const firstHalf = useMemo(
+    () => simulateChargeSession(car, 10, 60, Number(chargerKw)),
+    [car, chargerKw]
+  );
+  const topUp = useMemo(
+    () => simulateChargeSession(car, 60, 80, Number(chargerKw)),
+    [car, chargerKw]
+  );
+
   const peakKw = Math.max(...car.curve.map(([, kw]) => kw));
   const avgKw = session.telemetry.length
     ? session.telemetry.reduce((s, t) => s + t.kw, 0) / session.telemetry.length
@@ -123,12 +134,13 @@ export default function ChargeCurvePage() {
       description="Simulate a full DC fast-charging session on 15 popular EVs. Real curve data, any charger speed, any SOC window. See the whole session in one chart."
       answerBlock={
         <p>
-          <strong>Quick answer:</strong> Charge curves collapse after about 60% SOC on
-          most EVs. A 2024 Hyundai Ioniq 5 at a 350 kW charger holds 235 kW from 5% to
-          about 50%, then steps down to 150 kW, then falls off a cliff at 80%. That is why
-          real road-trip advice is &ldquo;10% to 60% and go&rdquo;. You add ~40 kWh in 12
-          minutes, and the next 20% takes almost as long. This tool runs the exact session
-          for your specific car and charger.
+          <strong>Quick answer:</strong> Charge curves fall away in the upper half of the
+          battery on most EVs. A {car.year} {car.make} {car.model} on a {`${chargerKw} kW`}{" "}
+          charger goes from 10% to 60% in about {`${fmt(firstHalf.totalMinutes)} minutes`} and
+          adds {`${fmt(firstHalf.kwhAdded)} kWh`}; the next stretch, 60% to 80%, takes another{" "}
+          {`${fmt(topUp.totalMinutes)} minutes`} for only {`${fmt(topUp.kwhAdded)} kWh`}. That is why
+          road-trip advice is &ldquo;arrive low, leave around 60%&rdquo;. Pick your own car,
+          charger and window above to run the exact session.
         </p>
       }
       lastUpdated="April 2026"
@@ -405,9 +417,10 @@ export default function ChargeCurvePage() {
         </p>
         <h3>The 10%-to-60% Rule</h3>
         <p>
-          On most 2024+ EVs, you add 50-60% of total battery capacity in the first 12-18
-          minutes of a DC fast-charging session starting at 10% SOC. The second half of
-          the charge takes roughly twice as long for half the energy. On road trips,
+          On most recent EVs, half the battery goes in fast and the rest goes in slowly.
+          The {car.year} {car.make} {car.model} you picked, on a {`${chargerKw} kW`} charger,
+          goes from 10% to 60% in about {`${fmt(firstHalf.totalMinutes)} minutes`}, then needs{" "}
+          {`${fmt(topUp.totalMinutes)} more minutes`} for the 20 points from 60% to 80%. On road trips,
           stopping at 10% and leaving at 60% is almost always faster-per-mile than
           stopping at 30% and leaving at 80%, even if you make more stops. This
           calculator lets you run that comparison numerically for your car. For the
@@ -421,8 +434,8 @@ export default function ChargeCurvePage() {
           battery packs. At a given power level, doubling voltage halves the current,
           which halves resistive heat losses (which scale with I²R). That&apos;s why 800V
           cars can hold near-peak power deep into the SOC range: they&apos;re producing
-          less waste heat, so the BMS doesn&apos;t have to taper as aggressively. A 2024
-          Ioniq 5 can hold 235 kW from 5% to 50% SOC; most 400V cars see their peak power
+          less waste heat, so the BMS doesn&apos;t have to taper as aggressively. A{" "}
+          {IONIQ5.year} Ioniq 5 holds {`${IONIQ5_HOLD_KW} kW`} or more from 5% to 50% SOC; most 400V cars see their peak power
           for only 10-15% of the curve.
         </p>
         <h3>What The Charger Cap Does</h3>
@@ -446,7 +459,7 @@ export default function ChargeCurvePage() {
           Curves are representative of a well-preconditioned battery at moderate ambient
           temperature. Cold starts without preconditioning can cut peak power by 40-60%;
           hot batteries on a second back-to-back session can also reduce the curve
-          significantly (especially on passively cooled models like the Leaf and early Bolt).
+          significantly (especially on air-cooled packs like the Nissan Leaf).
         </p>
       </EducationalContent>
       <FAQSection questions={curveFAQ} />
@@ -455,16 +468,30 @@ export default function ChargeCurvePage() {
   );
 }
 
+// FAQ and explainer figures are read from the curve data so they match the simulator.
+const curveById = (id: string): ChargeCurve =>
+  CHARGE_CURVES.find((c) => c.id === id) ?? CHARGE_CURVES[0];
+const M3 = curveById("tesla-model-3-lr-2024");
+const IONIQ5 = curveById("hyundai-ioniq-5-2024");
+const BOLT = curveById("chevy-bolt-euv-2023");
+const kwAt = (c: ChargeCurve, soc: number) => Math.round(interpolateKw(c.curve, soc));
+const peakOf = (c: ChargeCurve) => Math.max(...c.curve.map(([, kw]) => kw));
+const mins10to80 = (c: ChargeCurve, chargerKw: number) =>
+  Math.round(simulateChargeSession(c, 10, 80, chargerKw).totalMinutes);
+const IONIQ5_HOLD_KW = Math.min(
+  ...IONIQ5.curve.filter(([soc]) => soc >= 5 && soc <= 50).map(([, kw]) => kw)
+);
+
 const curveFAQ = [
   {
     question: "Why does my Tesla stop charging at 250 kW after just a few minutes?",
     answer:
-      "The 250 kW peak is real but brief. Model 3 and Model Y Long Range curves hold 250 kW from about 10% to 20% SOC, then step down to roughly 180 kW by 30%, 140 kW by 50%, and under 100 kW by 60%. The 'I saw 250 kW for 30 seconds' experience is normal. That's how the curve is shaped. This calculator plots the whole shape so you know what to expect.",
+      `The ${peakOf(M3)} kW peak is real but brief. The Model 3 Long Range curve holds ${kwAt(M3, 10)} kW from about 10% to 20% SOC, then steps down to roughly ${kwAt(M3, 40)} kW by 40%, ${kwAt(M3, 50)} kW by 50%, and ${kwAt(M3, 60)} kW by 60%; the Model Y Long Range follows a similar shape. The 'I saw ${peakOf(M3)} kW for 30 seconds' experience is normal. That's how the curve is shaped. This calculator plots the whole shape so you know what to expect.`,
   },
   {
     question: "Why do Ioniq 5 and EV6 charge so much faster than other EVs?",
     answer:
-      "Two reasons: 800V battery architecture (which halves current at any given power, cutting resistive heat losses 75%), and aggressive BMS tuning. The E-GMP platform can hold 235 kW from 5% to 50% SOC, which is unique in the sub-$60K market. The cost is that the curve takes a steep step-down at ~55% SOC, so you really should unplug at that point on a road trip.",
+      `Two reasons: 800V battery architecture (which halves current at any given power, cutting resistive heat losses 75%), and aggressive BMS tuning. The E-GMP platform holds ${IONIQ5_HOLD_KW} kW or more from 5% to 50% SOC, which few 400V cars come close to. The cost is that the curve takes a steep step-down at ~55% SOC, so you really should unplug at that point on a road trip.`,
   },
   {
     question: "Is it true that 10% to 80% is faster than 10% to 100%?",
@@ -479,7 +506,7 @@ const curveFAQ = [
   {
     question: "Why is the Bolt so slow, and is it really that bad?",
     answer:
-      "Yes, it's that bad. The Bolt uses passive battery cooling, so heat from fast charging has nowhere to go except into the pack. The BMS compensates by limiting peak power to about 55 kW, and that peak is only held from roughly 0-30% SOC. Above 70%, power drops below 25 kW. A Bolt 10-80% DC fast-charge session is roughly 65 minutes, compared to 18 minutes on an Ioniq 5 at the same charger. If you road-trip often, the Bolt is the wrong tool for the job.",
+      `Yes, it's that slow. The Bolt's battery management caps DC fast charging at about ${peakOf(BOLT)} kW, held only from roughly 10% to 30% SOC, and by 70% power is down to about ${kwAt(BOLT, 70)} kW. A Bolt 10-80% session runs about ${mins10to80(BOLT, 150)} minutes in this simulator, against ${mins10to80(IONIQ5, 350)} minutes for an Ioniq 5 on a 350 kW charger. If you road-trip often, the Bolt is the wrong tool for the job.`,
   },
   {
     question: "How accurate is the session time estimate?",

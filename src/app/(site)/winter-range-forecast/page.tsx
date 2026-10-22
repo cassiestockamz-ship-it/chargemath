@@ -46,6 +46,9 @@ function rangeRetentionAtTemp(tempF: number): number {
   return 1;
 }
 
+// Quick answer percentages read the same curve the forecast uses.
+const pctAt = (tempF: number) => Math.round(rangeRetentionAtTemp(tempF) * 100);
+
 interface DailyForecast {
   date: string;
   tempMinF: number;
@@ -211,8 +214,8 @@ export default function WinterRangeForecastPage() {
       answerBlock={
         <p>
           <strong>Quick answer:</strong> EV range losses follow temperature, not date. A
-          typical EV retains about 86% of rated range at 30°F, 76% at 20°F, 60% at 0°F, and
-          45% at -20°F vs its 70°F baseline. This tool pulls your actual forecast for the coming days
+          typical EV retains about {pctAt(30)}% of rated range at 30°F, {pctAt(20)}% at 20°F,{" "}
+          {pctAt(0)}% at 0°F, and {pctAt(-20)}% at -20°F vs its 70°F baseline. This tool pulls your actual forecast for the coming days
           from the National Weather Service, applies the Recurrent Motors 2023 cold-weather curve, and
           outputs expected daily range in miles. If this week&apos;s worst day shows under
           65% retention, precondition before you leave.

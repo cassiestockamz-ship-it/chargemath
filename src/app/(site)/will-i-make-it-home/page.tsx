@@ -190,6 +190,10 @@ export default function WillIMakeItHomePage() {
     };
   }, [vehicleId, startSoc, distance, speed, tempF, heatKw, elevation, headwind]);
 
+  // Quick answer reads the visitor's own result, never a typed range.
+  const extraPct =
+    (r.effectiveKwhPerMile / (r.vehicle.kwhPer100Miles / 100) - 1) * 100;
+
   const verdictColor =
     r.verdict === "go"
       ? "text-emerald-600"
@@ -213,8 +217,14 @@ export default function WillIMakeItHomePage() {
         <p>
           <strong>Quick answer:</strong> Your real-world arrival battery percentage depends on
           temperature, speed, cabin heat, elevation, and wind, not just miles divided by
-          EPA range. At 32°F and 65 mph with moderate heat, most EVs use{" "}
-          <strong>20-30% more energy per mile</strong> than their EPA rating suggests. This
+          EPA range. With the settings above ({tempF}°F, {speed} mph, {heatKw} kW of cabin
+          heat), a {r.vehicle.year} {r.vehicle.make} {r.vehicle.model} uses{" "}
+          <strong>
+            {extraPct > 0
+              ? `about ${fmt(extraPct, 0)}% more energy per mile`
+              : "about the same energy per mile"}
+          </strong>{" "}
+          than its EPA rating suggests. This
           tool runs a full-energy balance for your exact car, your exact conditions, and
           tells you GO (10%+ arrival), MARGINAL (slow down), or NOPE (detour to a charger now).
         </p>

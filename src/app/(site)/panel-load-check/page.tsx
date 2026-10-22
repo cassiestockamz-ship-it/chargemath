@@ -214,9 +214,13 @@ export default function PanelLoadCheckPage() {
           <p>
             <strong>Quick answer:</strong> Your panel can handle a new EV charger if your
             existing calculated load plus the charger (at 125% of its continuous rating) fits
-            inside your panel&apos;s amperage. For a typical 2,000 sq ft home with a 200 A
-            service, a 48 A Tesla Wall Connector adds 60 A of continuous demand and usually
-            fits with 40-80 A of headroom. Tight panels (100 A or 125 A) almost always need a
+            inside your panel&apos;s amperage. For the home set up above ({fmt(sqft, 0)} sq ft, {panelAmps} A
+            service), a {evChargerAmps} A charger adds {fmt(Number(evChargerAmps) * 1.25, 0)} A
+            of continuous demand and{" "}
+            {r.headroomA >= 0
+              ? `leaves ${fmt(r.headroomA, 0)} A of headroom.`
+              : `puts the panel ${fmt(-r.headroomA, 0)} A over its rating.`}{" "}
+            Tight panels (100 A or 125 A) almost always need a
             lower-amp charger or a load-management device per NEC 625.42(A).
           </p>
         </>
