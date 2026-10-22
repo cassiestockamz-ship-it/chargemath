@@ -88,6 +88,7 @@ const DC_FAST_CLAIMS: Record<string, { from: number; to: number; minutes: number
   "nissan-ariya-2024": { from: 10, to: 80, minutes: 37, source: "nissanusa.com Ariya FAQ, 35 to 40 min" },
   "hyundai-ioniq-5-lr-rwd-2026": { from: 10, to: 80, minutes: 20, source: "hyundaiusa.com Ioniq 5, 84 kWh, 350 kW" },
   "kia-ev6-lr-rwd-2026": { from: 10, to: 80, minutes: 20, source: "kia.com/us/en/ev6/specs, 84 kWh, 350 kW" },
+  "kia-ev9-lr-rwd-2026": { from: 10, to: 80, minutes: 24, source: "kia.com/us/en/ev9, 99.8 kWh, 350 kW" },
   "ford-f150-lightning-2024": { from: 15, to: 80, minutes: 41, source: "Ford launch figure, InsideEVs tests 38 to 43 min" },
 };
 

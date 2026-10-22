@@ -211,6 +211,17 @@ export const EV_VEHICLES: EVVehicle[] = [
     kwhPer100Miles: 37,
     chargerTypes: { level1KW: 1.4, level2KW: 10.9, dcFastKW: 233 },
   },
+  // MY2026: EPA id 49666 "EV9 Long Range RWD" (38.0 kWh/100mi, 305 mi). 99.8 kWh per kia.com/us/en/ev9 (checked 2026-10-22).
+  {
+    id: "kia-ev9-lr-rwd-2026",
+    make: "Kia",
+    model: "EV9 Long Range RWD",
+    year: 2026,
+    batteryCapacityKwh: 99.8,
+    epaRangeMiles: 305,
+    kwhPer100Miles: 38,
+    chargerTypes: { level1KW: 1.4, level2KW: 10.9, dcFastKW: 233 },
+  },
   {
     id: "bmw-ix-2024",
     make: "BMW",
