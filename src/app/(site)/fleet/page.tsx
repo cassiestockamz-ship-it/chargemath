@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
-import { US_GAS_PRICE } from "@/data/fuel-prices";
+import { US_GAS_PRICE, EV_PER_MILE_LO, EV_PER_MILE_HI } from "@/data/fuel-prices";
 import Link from "next/link";
 import CalculatorShell from "@/components/CalculatorShell";
 import SavingsVerdict from "@/components/SavingsVerdict";
@@ -464,7 +464,7 @@ export default function FleetElectrificationPage() {
         </p>
         <h3>Fuel Cost Advantage</h3>
         <p>
-          Electricity costs roughly $0.04 to $0.06 per mile for a typical EV, compared to {`$${(US_GAS_PRICE / 30).toFixed(2)} to $${(US_GAS_PRICE / 18).toFixed(2)}`} per mile for a 30 to 18 MPG gas vehicle at the US average of {`$${US_GAS_PRICE.toFixed(2)}`} per gallon. For a 10-vehicle fleet driving 80 miles per day each on 260 working days, that difference adds up to {`$${(Math.round((US_GAS_PRICE / 30 - 0.06) * 208000 / 1000) * 1000).toLocaleString("en-US")} to $${(Math.round((US_GAS_PRICE / 18 - 0.04) * 208000 / 1000) * 1000).toLocaleString("en-US")}`} in annual fuel savings alone. Commercial electricity rates are often lower than residential rates, and many utilities offer special EV fleet charging programs with off-peak discounts.
+          Electricity costs roughly {`$${EV_PER_MILE_LO.toFixed(3)} to $${EV_PER_MILE_HI.toFixed(3)}`} per mile for a typical EV at the US average home rate, compared to {`$${(US_GAS_PRICE / 30).toFixed(2)} to $${(US_GAS_PRICE / 18).toFixed(2)}`} per mile for a 30 to 18 MPG gas vehicle at the US average of {`$${US_GAS_PRICE.toFixed(2)}`} per gallon. For a 10-vehicle fleet driving 80 miles per day each on 260 working days, that difference adds up to {`$${(Math.round((US_GAS_PRICE / 30 - EV_PER_MILE_HI) * 208000 / 1000) * 1000).toLocaleString("en-US")} to $${(Math.round((US_GAS_PRICE / 18 - EV_PER_MILE_LO) * 208000 / 1000) * 1000).toLocaleString("en-US")}`} in annual fuel savings alone. Commercial electricity rates are often lower than residential rates, and many utilities offer special EV fleet charging programs with off-peak discounts.
         </p>
         <h3>Maintenance Savings Add Up</h3>
         <p>

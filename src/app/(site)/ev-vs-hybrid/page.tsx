@@ -9,6 +9,8 @@ import {
   EV_SAVE_VS_HYBRID_HI,
   EV_PCT_BELOW_GAS_LO,
   EV_PCT_BELOW_GAS_HI,
+  EV_PER_MILE_LO,
+  EV_PER_MILE_HI,
 } from "@/data/fuel-prices";
 import Link from "next/link";
 import CalculatorShell from "@/components/CalculatorShell";
@@ -40,7 +42,7 @@ const evVsHybridFAQ = [
   {
     question: "Is a hybrid or fully electric car cheaper to fuel?",
     answer:
-      `Fully electric vehicles are almost always cheaper to fuel than hybrids. A typical EV costs $0.03-0.05 per mile in electricity, while a 50 MPG hybrid costs about $${(US_GAS_PRICE / 50).toFixed(3)} per mile in gasoline at the US average of $${US_GAS_PRICE.toFixed(2)}/gallon. Over 12,000 miles per year, that difference adds up to $${EV_SAVE_VS_HYBRID_LO}-${EV_SAVE_VS_HYBRID_HI} in annual savings for the EV.`,
+      `Fully electric vehicles are almost always cheaper to fuel than hybrids. A typical EV costs $${EV_PER_MILE_LO.toFixed(3)}-${EV_PER_MILE_HI.toFixed(3)} per mile in electricity at the US average home rate, while a 50 MPG hybrid costs about $${(US_GAS_PRICE / 50).toFixed(3)} per mile in gasoline at the US average of $${US_GAS_PRICE.toFixed(2)}/gallon. Over 12,000 miles per year, that difference adds up to $${EV_SAVE_VS_HYBRID_LO}-${EV_SAVE_VS_HYBRID_HI} in annual savings for the EV.`,
   },
   {
     question: "How does hybrid fuel efficiency compare to a gas car?",
