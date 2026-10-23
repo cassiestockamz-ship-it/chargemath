@@ -300,7 +300,7 @@ export default function RangePage() {
       <CalculatorShell
         eyebrow="Real range"
         title="EV Range Calculator"
-        quickAnswer="To convert EPA range to real-world range, multiply by about 0.9 for mild highway driving at 70 mph, or about 0.5 for 70 mph in freezing weather with the heat on. Pick your car and conditions below."
+        quickAnswer={`At these settings the ${vehicle.year} ${vehicle.make} ${vehicle.model} goes about ${Math.round(results.adjustedRange)} miles, ${Math.round((results.adjustedRange / vehicle.epaRangeMiles) * 100)}% of its ${vehicle.epaRangeMiles}-mile EPA range. As a rule of thumb, multiply EPA range by about ${CONVERTER_SCENARIOS[0].factor.toFixed(2)} for mild highway driving at 70 mph, or ${CONVERTER_SCENARIOS[2].factor.toFixed(2)} at 25°F with the heat on. Change the car and conditions below.`}
         inputs={inputs}
         hero={hero}
       >
