@@ -108,6 +108,17 @@ export const EV_VEHICLES: EVVehicle[] = [
     kwhPer100Miles: 30,
     chargerTypes: { level1KW: 1.4, level2KW: 11.5, dcFastKW: 150 },
   },
+  // MY2026: EPA id 49644 "Blazer EV FWD" (32.29 kWh/100mi, 312 mi). 85 kWh, 150 kW DC per chevrolet.com/electric/previous-year/blazer-ev (checked 2026-10-23).
+  {
+    id: "chevy-blazer-ev-fwd-2026",
+    make: "Chevrolet",
+    model: "Blazer EV FWD",
+    year: 2026,
+    batteryCapacityKwh: 85,
+    epaRangeMiles: 312,
+    kwhPer100Miles: 32,
+    chargerTypes: { level1KW: 1.4, level2KW: 11.5, dcFastKW: 150 },
+  },
   {
     id: "chevy-blazer-ev-2024",
     make: "Chevrolet",
@@ -168,6 +179,17 @@ export const EV_VEHICLES: EVVehicle[] = [
     batteryCapacityKwh: 77.4,
     epaRangeMiles: 303,
     kwhPer100Miles: 29,
+    chargerTypes: { level1KW: 1.4, level2KW: 10.9, dcFastKW: 233 },
+  },
+  // MY2025 (no MY2026 in EPA): id 48362 "Ioniq 6 RWD (18 inch Wheels)" (26.0 kWh/100mi, 342 mi). 77.4 kWh Long Range per insideevs.com/news/729018 (checked 2026-10-23).
+  {
+    id: "hyundai-ioniq-6-lr-rwd-2025",
+    make: "Hyundai",
+    model: "IONIQ 6 Long Range RWD",
+    year: 2025,
+    batteryCapacityKwh: 77.4,
+    epaRangeMiles: 342,
+    kwhPer100Miles: 26,
     chargerTypes: { level1KW: 1.4, level2KW: 10.9, dcFastKW: 233 },
   },
   {

@@ -89,6 +89,8 @@ const DC_FAST_CLAIMS: Record<string, { from: number; to: number; minutes: number
   "hyundai-ioniq-5-lr-rwd-2026": { from: 10, to: 80, minutes: 20, source: "hyundaiusa.com Ioniq 5, 84 kWh, 350 kW" },
   "kia-ev6-lr-rwd-2026": { from: 10, to: 80, minutes: 20, source: "kia.com/us/en/ev6/specs, 84 kWh, 350 kW" },
   "kia-ev9-lr-rwd-2026": { from: 10, to: 80, minutes: 24, source: "kia.com/us/en/ev9, 99.8 kWh, 350 kW" },
+  "hyundai-ioniq-6-lr-rwd-2025": { from: 10, to: 80, minutes: 18, source: "hyundaiusa.com Ioniq 6, 77.4 kWh, 350 kW" },
+  "chevy-blazer-ev-fwd-2026": { from: 10, to: 80, minutes: 39, source: "chevrolet.com Blazer EV, 85 kWh, 150 kW" },
   "ford-f150-lightning-2024": { from: 15, to: 80, minutes: 41, source: "Ford launch figure, InsideEVs tests 38 to 43 min" },
 };
 
