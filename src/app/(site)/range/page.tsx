@@ -14,6 +14,7 @@ import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import FAQSection from "@/components/FAQSection";
 import EducationalContent from "@/components/EducationalContent";
 import EmailCapture from "@/components/EmailCapture";
+import RatingConverter from "@/components/RatingConverter";
 import { useUrlSync } from "@/lib/useUrlState";
 import { rangeFAQ } from "@/data/faq-data";
 import { EV_VEHICLES } from "@/data/ev-vehicles";
@@ -324,6 +325,8 @@ export default function RangePage() {
             Compare gas vs electric costs
           </Link>
         </div>
+
+        <RatingConverter />
 
         <section className="mb-10">
           <h2 className="mb-3 text-xl font-bold text-[var(--color-text)]">EPA to Real-World EV Range Converter</h2>
