@@ -12,6 +12,7 @@ import ShareResults from "@/components/ShareResults";
 import EducationalContent from "@/components/EducationalContent";
 import RelatedCalculators from "@/components/RelatedCalculators";
 import Link from "next/link";
+import RoadTripCard from "@/components/RoadTripCard";
 import {
   CHARGE_CURVES,
   interpolateKw,
@@ -392,6 +393,8 @@ export default function ChargeCurvePage() {
           Public charging cost →
         </Link>
       </div>
+
+      <RoadTripCard make={car.make} model={car.model} />
 
       <ShareResults
         title={`${car.make} ${car.model}: ${startSoc}% → ${endSoc}% in ${fmt(session.totalMinutes, 1)} min`}
